@@ -29,8 +29,14 @@ type UserInfoResp struct {
 }
 
 type GetUserListReq struct {
+	Page     int64  `form:"page,default=1"`
+	PageSize int64  `form:"page_size,default=10"`
+	Keyword  string `form:"keyword,optional"`
 }
 
 type GetUserListResp struct {
-	Users []UserInfoResp `json:"users"`
+	Users    []UserInfoResp `json:"users"`
+	Total    int64          `json:"total"`
+	Page     int64          `json:"page"`
+	PageSize int64          `json:"page_size"`
 }

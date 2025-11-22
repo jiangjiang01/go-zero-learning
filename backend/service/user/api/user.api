@@ -25,12 +25,19 @@ type LoginResp {
 
 type GetUserInfoReq {}
 
-// 用户列表请求（简单版本，暂时不带分页）
-type GetUserListReq {}
+// 用户列表请求（带分页和搜索）
+type GetUserListReq {
+	Page     int64  `form:"page,default=1"`       // 页码，默认第1页
+	PageSize int64  `form:"page_size,default=10"` // 每页数量，默认10条
+	Keyword  string `form:"keyword,optional"`     // 搜索关键词（用户名或邮箱），可选
+}
 
 // 用户列表响应
 type GetUserListResp {
-	users []UserInfoResp `json:"users"`
+	Users []UserInfoResp `json:"users"`
+	Total    int64          `json:"total"`     // 总用户数
+	Page     int64          `json:"page"`      // 当前页码
+	PageSize int64          `json:"page_size"` // 每页数量
 }
 
 service user-api {
