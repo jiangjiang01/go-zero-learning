@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
@@ -51,7 +52,7 @@ func (l *GetUserListLogic) GetUserList(req *types.GetUserListReq) (resp *types.G
 	var total int64
 	if err = db.Count(&total).Error; err != nil {
 		l.Errorf("查询用户总数失败：%v", err)
-		return nil, err
+		return nil, errorx.ErrInternalError
 	}
 
 	// 4. 分页查询用户列表
@@ -59,7 +60,7 @@ func (l *GetUserListLogic) GetUserList(req *types.GetUserListReq) (resp *types.G
 	offset := (req.Page - 1) * req.PageSize
 	if err = db.Offset(int(offset)).Limit(int(req.PageSize)).Find(&users).Error; err != nil {
 		l.Errorf("查询用户列表失败：%v", err)
-		return nil, err
+		return nil, errorx.ErrInternalError
 	}
 
 	// 5. 转换为响应格式

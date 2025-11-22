@@ -8,11 +8,13 @@ import (
 	"errors"
 
 	"go-zero-learning/common/ctxdata"
+	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"gorm.io/gorm"
 )
 
 type GetUserInfoLogic struct {
@@ -33,15 +35,18 @@ func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoReq) (resp *types.U
 	// 1. 从上下文中获取用户 ID（由中间件设置）
 	userID, ok := ctxdata.GetUserID(l.ctx)
 	if !ok {
-		return nil, errors.New("未找到用户信息")
+		return nil, errorx.ErrNoUserInfo
 	}
 
 	// 2. 查询用户信息
 	var user model.User
 	err = l.svcCtx.DB.First(&user, userID).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errorx.ErrUserNotFound
+		}
 		l.Errorf("查询用户信息失败：%v", err)
-		return nil, errors.New("用户不存在")
+		return nil, errorx.ErrInternalError
 	}
 
 	// 3. 返回用户信息

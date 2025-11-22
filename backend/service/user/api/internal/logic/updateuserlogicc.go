@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"go-zero-learning/common/ctxdata"
+	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
@@ -31,23 +32,23 @@ func NewUpdateUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Update
 func (l *UpdateUserLogic) UpdateUser(req *types.UpdateUserReq) (resp *types.UserInfoResp, err error) {
 	// 1. 检查是否有需要更新的字段
 	if req.Email == "" && req.Password == "" {
-		return nil, errors.New("至少需要提供一个更新字段")
+		return nil, errorx.ErrNoUpdateFields
 	}
 
 	// 2. 从上下文中获取用户 ID （由中间件设置）
 	userID, ok := ctxdata.GetUserID(l.ctx)
 	if !ok {
-		return nil, errors.New("未找到用户信息")
+		return nil, errorx.ErrNoUserInfo
 	}
 
 	// 3. 查询用户是否存在
 	var user model.User
 	if err = l.svcCtx.DB.First(&user, userID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("用户不存在")
+			return nil, errorx.ErrUserNotFound
 		}
 		l.Errorf("查询用户失败：%v", err)
-		return nil, errors.New("更新失败")
+		return nil, errorx.ErrInternalError
 	}
 
 	hasUpdate := false // 标记是否有实际更新（兼容用户更新邮箱或密码时，当前邮箱或密码与请求中的相同的情况）
@@ -57,18 +58,18 @@ func (l *UpdateUserLogic) UpdateUser(req *types.UpdateUserReq) (resp *types.User
 		email := strings.TrimSpace(req.Email)
 		// 检查邮箱格式（简单验证）
 		if !strings.Contains(email, "@") {
-			return nil, errors.New("邮箱格式不正确")
+			return nil, errorx.ErrInvalidEmail
 		}
 		// 检查邮箱是否已被其他用户使用
 		var existingUser model.User
 		err = l.svcCtx.DB.Where("email = ? AND id != ?", email, userID).
 			First(&existingUser).Error
 		if err == nil {
-			return nil, errors.New("邮箱已被使用")
+			return nil, errorx.ErrEmailExists
 		}
 		// ErrRecordNotFound 表示没有找到记录，可以使用，但是其他错误需要处理
 		if err != gorm.ErrRecordNotFound {
-			return nil, errors.New("更新失败")
+			return nil, errorx.ErrInternalError
 		}
 
 		// 如果邮箱有变化，则更新邮箱
@@ -83,13 +84,13 @@ func (l *UpdateUserLogic) UpdateUser(req *types.UpdateUserReq) (resp *types.User
 		password := strings.TrimSpace(req.Password)
 		// 密码长度验证（至少6位）
 		if len(password) < 6 {
-			return nil, errors.New("密码至少需要6位")
+			return nil, errorx.ErrPasswordTooShort
 		}
 		// 加密密码
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			l.Errorf("密码加密失败：%v", err)
-			return nil, errors.New("更新失败")
+			return nil, errorx.ErrInternalError
 		}
 		// 如果密码有变化，则更新密码
 		newPassword := string(hashedPassword)
@@ -101,13 +102,13 @@ func (l *UpdateUserLogic) UpdateUser(req *types.UpdateUserReq) (resp *types.User
 
 	// 6. 检查是否有实际更新
 	if !hasUpdate {
-		return nil, errors.New("没有需要更新的字段")
+		return nil, errorx.ErrNoUpdateFields
 	}
 
 	// 7. 保存更新
 	if err := l.svcCtx.DB.Save(user).Error; err != nil {
 		l.Errorf("更新用户失败：%v", err)
-		return nil, errors.New("更新失败")
+		return nil, errorx.ErrInternalError
 	}
 
 	// 8. 返回更新后的用户信息

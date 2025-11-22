@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"errors"
+	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
@@ -28,17 +29,17 @@ func NewGetUserDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Get
 func (l *GetUserDetailLogic) GetUserDetail(req *types.GetUserDetailReq) (resp *types.UserInfoResp, err error) {
 	// 1. 参数校验
 	if req.ID <= 0 {
-		return nil, errors.New("无效的用户ID")
+		return nil, errorx.ErrInvalidParam
 	}
 
 	// 2. 查询用户信息
 	var user model.User
 	if err = l.svcCtx.DB.First(&user, req.ID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("用户不存在")
+			return nil, errorx.ErrUserNotFound
 		}
 		l.Errorf("查询用户失败：%v", err)
-		return nil, errors.New("查询用户失败")
+		return nil, errorx.ErrInternalError
 	}
 
 	// 3. 构建响应结果
