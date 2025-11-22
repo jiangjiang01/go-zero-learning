@@ -1,0 +1,25 @@
+syntax = "v1"
+
+type CreateUserReq {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
+type UserResp {
+	ID       int64  `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
+type GetUserReq {
+	ID int64 `path:"id"`
+}
+
+service user-api {
+	@handler CreateUser
+	post /api/user (CreateUserReq) returns (UserResp)
+
+	@handler GetUser
+	get /api/user/:id (GetUserReq) returns (UserResp)
+}
+

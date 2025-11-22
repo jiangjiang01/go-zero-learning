@@ -2,5 +2,8 @@
   "files.associations": {
     "*.api": "go"
   },
-  "editor.formatOnSave": false
+  "editor.formatOnSave": false,
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+  }
 }
