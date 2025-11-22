@@ -51,6 +51,16 @@ type GetUserDetailReq {
 	ID int64 `path:"id"` // 路径参数：用户ID
 }
 
+// 删除用户请求（路径参数）
+type DeleteUserReq {
+	ID int64 `path:"id"`
+}
+
+// 删除用户响应
+type DeleteUserResp {
+	Message string `json:"message"`
+}
+
 service user-api {
 	@handler Register
 	post /api/users (RegisterReq) returns (LoginResp)
@@ -69,5 +79,8 @@ service user-api {
 
 	@handler UpdateUser
 	put /api/users/me (UpdateUserReq) returns (UserInfoResp)
+
+	@handler DeleteUser
+	delete /api/users/:id (DeleteUserReq) returns (DeleteUserResp)
 }
 

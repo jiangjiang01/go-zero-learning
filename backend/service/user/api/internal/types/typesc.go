@@ -49,3 +49,11 @@ type UpdateUserReq struct {
 type GetUserDetailReq struct {
 	ID int64 `path:"id"`
 }
+
+type DeleteUserReq struct {
+	ID int64 `path:"id"`
+}
+
+type DeleteUserResp struct {
+	Message string `json:"message"`
+}
