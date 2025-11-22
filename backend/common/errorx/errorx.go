@@ -14,6 +14,7 @@ const (
 	CodeForbidden     = 1003 // 禁止访问
 	CodeNotFound      = 1004 // 资源不存在
 	CodeInternalError = 1005 // 内部错误
+	CodeInvalidToken  = 1006 // Token 无效或已过期
 
 	// 用户相关错误码（2000-2999）
 	CodeUserNotFound     = 2001 // 用户不存在
@@ -54,7 +55,7 @@ func GetHTTPStatus(code int) int {
 		return http.StatusOK
 	case CodeInvalidParam:
 		return http.StatusBadRequest
-	case CodeUnauthorized:
+	case CodeUnauthorized, CodeInvalidToken:
 		return http.StatusUnauthorized
 	case CodeForbidden:
 		return http.StatusForbidden
@@ -71,6 +72,7 @@ func GetHTTPStatus(code int) int {
 var (
 	ErrInvalidParam  = NewBusinessError(CodeInvalidParam, "参数错误")
 	ErrUnauthorized  = NewBusinessError(CodeUnauthorized, "未授权")
+	ErrInvalidToken  = NewBusinessError(CodeInvalidToken, "token 无效或已过期")
 	ErrForbidden     = NewBusinessError(CodeForbidden, "禁止访问")
 	ErrNotFound      = NewBusinessError(CodeNotFound, "资源不存在")
 	ErrInternalError = NewBusinessError(CodeInternalError, "内部错误")

@@ -2,14 +2,13 @@ package middleware
 
 import (
 	"context"
-	"errors"
 	"go-zero-learning/common/ctxdata"
+	"go-zero-learning/common/errorx"
 	"go-zero-learning/common/jwt"
 	"net/http"
 	"strings"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 // 权限中间件
@@ -27,14 +26,14 @@ func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		// 1. 从请求头获取 Token
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			httpx.ErrorCtx(r.Context(), w, errors.New("未提取认证 token"))
+			errorx.HandleError(w, r, errorx.ErrUnauthorized)
 			return
 		}
 
 		// 2. 解析 Token
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
-			httpx.ErrorCtx(r.Context(), w, errors.New("token 格式错误"))
+			errorx.HandleError(w, r, errorx.NewBusinessError(errorx.CodeInvalidParam, "token 格式错误"))
 			return
 		}
 
@@ -44,7 +43,7 @@ func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		claims, err := jwt.ParseToken(tokenStr)
 		if err != nil {
 			m.Errorf("token 验证失败：%v", err)
-			httpx.ErrorCtx(r.Context(), w, errors.New("token 无效或已过期"))
+			errorx.HandleError(w, r, errorx.ErrInvalidToken)
 			return
 		}
 
