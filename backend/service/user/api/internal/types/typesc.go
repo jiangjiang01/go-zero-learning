@@ -27,3 +27,10 @@ type UserInfoResp struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 }
+
+type GetUserListReq struct {
+}
+
+type GetUserListResp struct {
+	Users []UserInfoResp `json:"users"`
+}

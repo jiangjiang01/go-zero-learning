@@ -25,6 +25,14 @@ type LoginResp {
 
 type GetUserInfoReq {}
 
+// 用户列表请求（简单版本，暂时不带分页）
+type GetUserListReq {}
+
+// 用户列表响应
+type GetUserListResp {
+	users []UserInfoResp `json:"users"`
+}
+
 service user-api {
 	@handler Register
 	post /api/user/register (RegisterReq) returns (LoginResp)
@@ -34,5 +42,8 @@ service user-api {
 
 	@handler GetUserInfo
 	get /api/user/info (GetUserInfoReq) returns (UserInfoResp)
+
+	@handler GetUserList
+	get /api/user/list (GetUserListReq) returns (GetUserListResp)
 }
 

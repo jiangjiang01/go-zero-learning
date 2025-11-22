@@ -40,6 +40,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			Path:    "/api/user/info",
 			Handler: GetUserInfoHandler(serverCtx),
 		},
+		rest.Route{
+			Method:  http.MethodGet,
+			Path:    "/api/user/list",
+			Handler: GetUserListHandler(serverCtx),
+		},
 	)
 
 	server.AddRoutes(authRoutes)
