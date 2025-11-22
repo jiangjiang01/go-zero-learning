@@ -40,3 +40,8 @@ type GetUserListResp struct {
 	Page     int64          `json:"page"`
 	PageSize int64          `json:"page_size"`
 }
+
+type UpdateUserReq struct {
+	Email    string `json:"email,optional"`
+	Password string `json:"password,optional"`
+}

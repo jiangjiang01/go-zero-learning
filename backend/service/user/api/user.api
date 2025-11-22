@@ -40,6 +40,12 @@ type GetUserListResp {
 	PageSize int64          `json:"page_size"` // 每页数量
 }
 
+// 用户更新请求
+type UpdateUserReq {
+	Email string `json:"email,optional"` // 邮箱（可选）
+	Password string `json:"password,optional"` // 密码（可选）
+}
+
 service user-api {
 	@handler Register
 	post /api/user/register (RegisterReq) returns (LoginResp)
@@ -52,5 +58,8 @@ service user-api {
 
 	@handler GetUserList
 	get /api/user/list (GetUserListReq) returns (GetUserListResp)
+
+	@handler UpdateUser
+	put /api/user/update (UpdateUserReq) returns (UserInfoResp)
 }
 
