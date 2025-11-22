@@ -46,6 +46,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			Handler: GetUserListHandler(serverCtx),
 		},
 		rest.Route{
+			Method:  http.MethodGet,
+			Path:    "/api/users/:id",
+			Handler: GetUserDetailHandler(serverCtx),
+		},
+		rest.Route{
 			Method:  http.MethodPut,
 			Path:    "/api/users/me",
 			Handler: UpdateUserHandler(serverCtx),
