@@ -5,6 +5,7 @@ package logic
 
 import (
 	"context"
+	"errors"
 
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/common/jwt"
@@ -37,7 +38,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 	var user model.User
 	err = l.svcCtx.DB.Where("username = ?", req.Username).First(&user).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errorx.ErrInvalidPassword
 		}
 		l.Errorf("查询用户失败：%v", err)
