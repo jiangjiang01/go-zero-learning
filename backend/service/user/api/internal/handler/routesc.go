@@ -6,19 +6,19 @@ package handler
 import (
 	"net/http"
 
+	"go-zero-learning/common/middleware"
 	"go-zero-learning/service/user/api/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
+	// 创建认证中间件
+	authMiddleware := middleware.NewAuthMiddleware()
+
+	// 不需要认证的路由
 	server.AddRoutes(
 		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/api/user/info",
-				Handler: GetUserInfoHandler(serverCtx),
-			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/api/user/login",
@@ -31,4 +31,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 		},
 	)
+
+	// 需要认证的路由（应用认证中间件）
+	authRoutes := rest.WithMiddlewares(
+		[]rest.Middleware{authMiddleware.Handle},
+		rest.Route{
+			Method:  http.MethodGet,
+			Path:    "/api/user/info",
+			Handler: GetUserInfoHandler(serverCtx),
+		},
+	)
+
+	server.AddRoutes(authRoutes)
 }
