@@ -45,3 +45,7 @@ type UpdateUserReq struct {
 	Email    string `json:"email,optional"`
 	Password string `json:"password,optional"`
 }
+
+type GetUserDetailReq struct {
+	ID int64 `path:"id"`
+}
