@@ -1,0 +1,36 @@
+// Code scaffolded by goctl. Safe to edit.
+// goctl 1.9.2
+
+package svc
+
+import (
+	"go-zero-learning/common/db"
+	"go-zero-learning/model"
+	"go-zero-learning/service/user/api/internal/config"
+
+	"gorm.io/gorm"
+)
+
+type ServiceContext struct {
+	Config config.Config
+	DB     *gorm.DB
+}
+
+func NewServiceContext(c config.Config) *ServiceContext {
+	// 初始化数据库连接
+	err := db.InitDB(c.DataSource)
+	if err != nil {
+		panic(err)
+	}
+
+	// 自动迁移（创建表）
+	err = db.GetDB().AutoMigrate(&model.User{})
+	if err != nil {
+		panic(err)
+	}
+
+	return &ServiceContext{
+		Config: c,
+		DB:     db.GetDB(),
+	}
+}

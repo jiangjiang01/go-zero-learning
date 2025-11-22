@@ -1,0 +1,38 @@
+syntax = "v1"
+
+// 用户 API 定义文件
+type RegisterReq {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type LoginReq {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type UserInfoResp {
+	ID       int64  `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
+type LoginResp {
+	Token    string       `json:"token"`
+	UserInfo UserInfoResp `json:"user_info"`
+}
+
+type GetUserInfoReq {}
+
+service user-api {
+	@handler Register
+	post /api/user/register (RegisterReq) returns (LoginResp)
+
+	@handler Login
+	post /api/user/login (LoginReq) returns (LoginResp)
+
+	@handler GetUserInfo
+	get /api/user/info (GetUserInfoReq) returns (UserInfoResp)
+}
+
