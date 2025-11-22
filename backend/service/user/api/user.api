@@ -46,6 +46,11 @@ type UpdateUserReq {
 	Password string `json:"password,optional"` // 密码（可选）
 }
 
+// 获取用户详情请求（路径参数）
+type GetUserDetailReq {
+	ID int64 `path:"id"` // 路径参数：用户ID
+}
+
 service user-api {
 	@handler Register
 	post /api/users (RegisterReq) returns (LoginResp)
@@ -58,6 +63,9 @@ service user-api {
 
 	@handler GetUserList
 	get /api/users (GetUserListReq) returns (GetUserListResp)
+
+	@handler GetUserDetail
+	get /api/users/:id (GetUserDetailReq) returns (UserInfoResp)
 
 	@handler UpdateUser
 	put /api/users/me (UpdateUserReq) returns (UserInfoResp)
