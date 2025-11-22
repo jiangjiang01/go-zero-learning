@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "*.api": "go"
+  },
+  "editor.formatOnSave": false
+}

@@ -1,0 +1,95 @@
+# Go 编译产物
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.o
+*.a
+
+# Go 工作区文件
+go.work
+go.work.sum
+
+# Go 依赖缓存（可选，通常不忽略）
+# vendor/
+
+# 二进制文件
+/bin/
+/dist/
+/build/
+
+# 测试覆盖率
+*.coverprofile
+coverage.html
+coverage.out
+
+# IDE 配置文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# GoLand
+.idea/
+
+# 日志文件
+*.log
+logs/
+*.log.*
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 环境变量文件（包含敏感信息）
+.env
+.env.local
+.env.*.local
+*.env
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# 配置文件（如果包含敏感信息，可以忽略）
+# etc/*.yaml
+# etc/*.yml
+
+# 操作系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# 备份文件
+*.bak
+*.backup
+*~
+
+# 压缩文件（可选）
+*.zip
+*.tar.gz
+*.rar
+
+# 项目特定
+# 如果 learn/ 目录下的项目需要忽略某些文件，可以在这里添加
+# learn/*/bin/
+# learn/*/dist/
