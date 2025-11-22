@@ -1,0 +1,29 @@
+syntax = "v1"
+
+type LoginReq {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginResp {
+	Token string `json:"token"`
+}
+
+type VerifyReq {
+	Token string `json:"token"`
+}
+
+type VerifyResp {
+	Valid   bool   `json:"valid"`
+	UserId  int64  `json:"user_id.optional"`
+	Message string `json:"message.optional"`
+}
+
+service auth-api {
+	@handler Login
+	post /api/login (LoginReq) returns (LoginResp)
+
+	@handler Verify
+	post /api/verity (VerifyReq) returns (VerifyResp)
+}
+
