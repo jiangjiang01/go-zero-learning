@@ -218,14 +218,19 @@ go-zero-learning/
   - [x] 用户登录逻辑（JWT Token 生成）
   - [x] 参数验证（go-zero 自动验证）
   - [x] 错误处理（用户名/邮箱重复检查）
+  
+- ✅ 认证中间件和用户信息
+  - [x] 认证中间件（JWT 验证）
+  - [x] Context 数据管理（ctxdata 包，避免 key 冲突）
+  - [x] 获取用户信息逻辑（从 context 获取用户 ID）
 
 ### 待完成功能
 
 #### 阶段一：用户认证和管理
 - [x] 用户注册逻辑（密码加密 bcrypt）✅
 - [x] 用户登录逻辑（JWT Token 生成）✅
-- [ ] 获取用户信息逻辑（需要认证中间件）
-- [ ] 认证中间件（JWT 验证）
+- [x] 获取用户信息逻辑（需要认证中间件）✅
+- [x] 认证中间件（JWT 验证）✅
 - [ ] 用户列表 API（分页、搜索）
 - [ ] 用户详情 API
 - [ ] 用户更新 API
@@ -274,12 +279,15 @@ go-zero-learning/
 
 ### 下一步计划
 1. ✅ 实现用户注册和登录逻辑（已完成）
-2. 实现获取用户信息逻辑
-3. 添加认证中间件（JWT 验证）
-4. 完善错误处理
+2. ✅ 实现获取用户信息逻辑（已完成）
+3. ✅ 添加认证中间件（JWT 验证）（已完成）
+4. 用户列表 API（分页、搜索）
+5. 用户更新 API
+6. 用户删除 API
+7. 完善错误处理
 
 **最后更新**：2025-01-22  
-**当前状态**：用户注册和登录功能已完成，待实现认证中间件
+**当前状态**：用户认证功能已完成（注册、登录、获取用户信息、认证中间件），待实现用户管理功能
 
 ---
 
@@ -382,6 +390,47 @@ go-zero-learning/
     -d '{"username":"testuser"}'
   ```
   **预期响应**：`field "password" is not set`
+
+---
+
+### 获取用户信息接口 (`GET /api/user/info`)
+
+**需要认证**：需要在请求头中提供 `Authorization: Bearer <token>`
+
+#### 成功场景
+- [x] **获取用户信息成功**
+  ```bash
+  # 1. 先登录获取 Token
+  curl -X POST http://localhost:8888/api/user/login \
+    -H "Content-Type: application/json" \
+    -d '{"username":"testuser","password":"123456"}'
+  
+  # 2. 使用返回的 Token 获取用户信息（将 YOUR_TOKEN 替换为实际 token）
+  curl -X GET http://localhost:8888/api/user/info \
+    -H "Authorization: Bearer YOUR_TOKEN"
+  ```
+  **预期响应**：返回用户信息（id、username、email）
+
+#### 失败场景
+- [x] **未提供 Token**
+  ```bash
+  curl -X GET http://localhost:8888/api/user/info
+  ```
+  **预期响应**：`未提供认证 token` 或类似错误
+
+- [x] **Token 格式错误**
+  ```bash
+  curl -X GET http://localhost:8888/api/user/info \
+    -H "Authorization: invalid-format"
+  ```
+  **预期响应**：`token 格式错误`
+
+- [x] **Token 无效或已过期**
+  ```bash
+  curl -X GET http://localhost:8888/api/user/info \
+    -H "Authorization: Bearer invalid-token-12345"
+  ```
+  **预期响应**：`token 无效或已过期`
 
 ---
 
