@@ -222,7 +222,9 @@ go-zero-learning/
 | 用户登录 | POST | `/api/users/login` | 登录（子资源操作） |
 | 获取当前用户信息 | GET | `/api/users/me` | 获取当前认证用户信息 |
 | 获取用户列表 | GET | `/api/users` | 获取用户列表（支持分页和搜索） |
+| 获取指定用户详情 | GET | `/api/users/:id` | 获取指定用户信息 |
 | 更新当前用户信息 | PUT | `/api/users/me` | 更新当前认证用户信息 |
+| 删除用户 | DELETE | `/api/users/:id` | 删除用户（防止自删除） |
 
 ### 路径设计说明
 
@@ -235,9 +237,7 @@ go-zero-learning/
 
 | 功能 | HTTP 方法 | 路径 | 说明 |
 |------|----------|------|------|
-| 获取指定用户详情 | GET | `/api/users/:id` | 获取指定用户信息 |
 | 更新指定用户信息 | PUT | `/api/users/:id` | 更新指定用户（需要权限） |
-| 删除用户 | DELETE | `/api/users/:id` | 删除用户（需要权限） |
 
 ---
 
@@ -276,6 +276,8 @@ go-zero-learning/
 - ✅ 用户管理功能
   - [x] 用户列表 API（分页、搜索）
   - [x] 用户更新 API（更新邮箱和密码）
+  - [x] 用户详情 API（根据 ID 获取）
+  - [x] 用户删除 API（防止自删除）
   - [x] RESTful API 重构（统一使用 RESTful 规范）
 
 ### 待完成功能
@@ -287,9 +289,9 @@ go-zero-learning/
 - [x] 认证中间件（JWT 验证）✅
 - [x] 用户列表 API（分页、搜索）✅
 - [x] 用户更新 API ✅
+- [x] 用户详情 API（根据 ID 获取）✅
+- [x] 用户删除 API ✅
 - [x] RESTful API 重构 ✅
-- [ ] 用户详情 API（根据 ID 获取）
-- [ ] 用户删除 API
 - [ ] 错误处理优化
 
 #### 阶段二：权限管理
@@ -338,13 +340,14 @@ go-zero-learning/
 3. ✅ 添加认证中间件（JWT 验证）（已完成）
 4. ✅ 用户列表 API（分页、搜索）（已完成）
 5. ✅ 用户更新 API（已完成）
-6. ✅ RESTful API 重构（已完成）
-7. 用户详情 API（根据 ID 获取）
-8. 用户删除 API
+6. ✅ 用户详情 API（已完成）
+7. ✅ 用户删除 API（已完成）
+8. ✅ RESTful API 重构（已完成）
 9. 完善错误处理
+10. 开始阶段二：权限管理
 
 **最后更新**：2025-01-22  
-**当前状态**：用户认证和管理功能基本完成（注册、登录、获取用户信息、用户列表、用户更新），已重构为 RESTful 风格，待实现用户详情和删除功能
+**当前状态**：阶段一（用户认证和管理）已完成，包括：注册、登录、获取用户信息、用户列表、用户详情、用户更新、用户删除。所有 API 已重构为 RESTful 风格。可以开始阶段二：权限管理。
 
 ---
 
@@ -624,6 +627,90 @@ echo -e "\n"
     -d '{"password":"123"}'
   ```
   **预期响应**：`密码至少需要6位`
+
+---
+
+### 获取用户详情接口 (`GET /api/users/:id`)
+
+**需要认证**：需要在请求头中提供 `Authorization: Bearer <token>`
+
+#### 成功场景
+- [x] **获取用户详情成功**
+  ```bash
+  curl -X GET http://localhost:8888/api/users/1 \
+    -H "Authorization: Bearer YOUR_TOKEN"
+  ```
+  **预期响应**：返回用户信息（id、username、email）
+
+- [x] **获取其他用户详情**
+  ```bash
+  curl -X GET http://localhost:8888/api/users/2 \
+    -H "Authorization: Bearer YOUR_TOKEN"
+  ```
+  **预期响应**：返回指定用户信息
+
+#### 失败场景
+- [x] **用户不存在**
+  ```bash
+  curl -X GET http://localhost:8888/api/users/99999 \
+    -H "Authorization: Bearer YOUR_TOKEN"
+  ```
+  **预期响应**：`用户不存在`
+
+- [x] **无效的用户 ID**
+  ```bash
+  curl -X GET http://localhost:8888/api/users/0 \
+    -H "Authorization: Bearer YOUR_TOKEN"
+  ```
+  **预期响应**：`无效的用户ID` 或 `用户 ID 无效`
+
+- [x] **未提供 Token**
+  ```bash
+  curl -X GET http://localhost:8888/api/users/1
+  ```
+  **预期响应**：`未提供认证 token` 或类似错误
+
+---
+
+### 删除用户接口 (`DELETE /api/users/:id`)
+
+**需要认证**：需要在请求头中提供 `Authorization: Bearer <token>`
+
+#### 成功场景
+- [x] **删除用户成功**
+  ```bash
+  curl -X DELETE http://localhost:8888/api/users/2 \
+    -H "Authorization: Bearer YOUR_TOKEN"
+  ```
+  **预期响应**：`{"message": "用户删除成功"}`
+
+#### 失败场景
+- [x] **尝试删除自己**
+  ```bash
+  curl -X DELETE http://localhost:8888/api/users/1 \
+    -H "Authorization: Bearer YOUR_TOKEN"
+  ```
+  **预期响应**：`不能删除自己的账户`
+
+- [x] **用户不存在**
+  ```bash
+  curl -X DELETE http://localhost:8888/api/users/99999 \
+    -H "Authorization: Bearer YOUR_TOKEN"
+  ```
+  **预期响应**：`用户不存在`
+
+- [x] **无效的用户 ID**
+  ```bash
+  curl -X DELETE http://localhost:8888/api/users/0 \
+    -H "Authorization: Bearer YOUR_TOKEN"
+  ```
+  **预期响应**：`用户 ID 无效` 或 `无效的用户ID`
+
+- [x] **未提供 Token**
+  ```bash
+  curl -X DELETE http://localhost:8888/api/users/2
+  ```
+  **预期响应**：`未提供认证 token` 或类似错误
 
 ---
 
