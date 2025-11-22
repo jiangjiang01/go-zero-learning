@@ -192,6 +192,55 @@ go-zero-learning/
 
 ---
 
+## 🌐 RESTful API 设计规范
+
+### 设计原则
+
+本项目严格遵循 RESTful API 设计规范：
+
+1. **使用复数资源名**
+   - ✅ `/api/users`（正确）
+   - ❌ `/api/user`（错误）
+
+2. **使用 HTTP 方法表示操作**
+   - `POST` - 创建资源
+   - `GET` - 获取资源
+   - `PUT` - 更新资源（完整更新）
+   - `DELETE` - 删除资源
+
+3. **使用路径参数表示资源 ID**
+   - `/api/users/:id` - 操作指定用户
+
+4. **使用特殊资源表示当前用户**
+   - `/api/users/me` - 表示当前认证用户
+
+### 当前 API 路径规范
+
+| 功能 | HTTP 方法 | 路径 | 说明 |
+|------|----------|------|------|
+| 用户注册 | POST | `/api/users` | 创建新用户 |
+| 用户登录 | POST | `/api/users/login` | 登录（子资源操作） |
+| 获取当前用户信息 | GET | `/api/users/me` | 获取当前认证用户信息 |
+| 获取用户列表 | GET | `/api/users` | 获取用户列表（支持分页和搜索） |
+| 更新当前用户信息 | PUT | `/api/users/me` | 更新当前认证用户信息 |
+
+### 路径设计说明
+
+- **资源使用复数**：`/api/users` 而不是 `/api/user`
+- **特殊资源**：`/me` 表示当前认证用户，避免暴露用户 ID
+- **子资源操作**：`/api/users/login` 表示登录操作（特殊操作使用子资源）
+- **路径冲突处理**：`GET /api/users`（列表）和 `POST /api/users`（创建）使用相同路径，通过 HTTP 方法区分
+
+### 后续扩展路径（规划）
+
+| 功能 | HTTP 方法 | 路径 | 说明 |
+|------|----------|------|------|
+| 获取指定用户详情 | GET | `/api/users/:id` | 获取指定用户信息 |
+| 更新指定用户信息 | PUT | `/api/users/:id` | 更新指定用户（需要权限） |
+| 删除用户 | DELETE | `/api/users/:id` | 删除用户（需要权限） |
+
+---
+
 ## 📝 当前项目进度（实时更新）
 
 ### 项目结构
@@ -224,6 +273,11 @@ go-zero-learning/
   - [x] Context 数据管理（ctxdata 包，避免 key 冲突）
   - [x] 获取用户信息逻辑（从 context 获取用户 ID）
 
+- ✅ 用户管理功能
+  - [x] 用户列表 API（分页、搜索）
+  - [x] 用户更新 API（更新邮箱和密码）
+  - [x] RESTful API 重构（统一使用 RESTful 规范）
+
 ### 待完成功能
 
 #### 阶段一：用户认证和管理
@@ -231,9 +285,10 @@ go-zero-learning/
 - [x] 用户登录逻辑（JWT Token 生成）✅
 - [x] 获取用户信息逻辑（需要认证中间件）✅
 - [x] 认证中间件（JWT 验证）✅
-- [ ] 用户列表 API（分页、搜索）
-- [ ] 用户详情 API
-- [ ] 用户更新 API
+- [x] 用户列表 API（分页、搜索）✅
+- [x] 用户更新 API ✅
+- [x] RESTful API 重构 ✅
+- [ ] 用户详情 API（根据 ID 获取）
 - [ ] 用户删除 API
 - [ ] 错误处理优化
 
@@ -281,24 +336,28 @@ go-zero-learning/
 1. ✅ 实现用户注册和登录逻辑（已完成）
 2. ✅ 实现获取用户信息逻辑（已完成）
 3. ✅ 添加认证中间件（JWT 验证）（已完成）
-4. 用户列表 API（分页、搜索）
-5. 用户更新 API
-6. 用户删除 API
-7. 完善错误处理
+4. ✅ 用户列表 API（分页、搜索）（已完成）
+5. ✅ 用户更新 API（已完成）
+6. ✅ RESTful API 重构（已完成）
+7. 用户详情 API（根据 ID 获取）
+8. 用户删除 API
+9. 完善错误处理
 
 **最后更新**：2025-01-22  
-**当前状态**：用户认证功能已完成（注册、登录、获取用户信息、认证中间件），待实现用户管理功能
+**当前状态**：用户认证和管理功能基本完成（注册、登录、获取用户信息、用户列表、用户更新），已重构为 RESTful 风格，待实现用户详情和删除功能
 
 ---
 
 ## 🧪 测试用例
 
-### 用户注册接口 (`POST /api/user/register`)
+> **注意**：所有 API 路径已更新为 RESTful 风格，请使用新的路径进行测试。
+
+### 用户注册接口 (`POST /api/users`)
 
 #### 成功场景
 - [x] **注册新用户成功**
   ```bash
-  curl -X POST http://localhost:8888/api/user/register \
+  curl -X POST http://localhost:8888/api/users \
     -H "Content-Type: application/json" \
     -d '{"username":"testuser","email":"test@example.com","password":"123456"}'
   ```
@@ -307,7 +366,7 @@ go-zero-learning/
 #### 失败场景
 - [x] **用户名已存在**
   ```bash
-  curl -X POST http://localhost:8888/api/user/register \
+  curl -X POST http://localhost:8888/api/users \
     -H "Content-Type: application/json" \
     -d '{"username":"testuser","email":"another@example.com","password":"123456"}'
   ```
@@ -315,7 +374,7 @@ go-zero-learning/
 
 - [x] **邮箱已存在**
   ```bash
-  curl -X POST http://localhost:8888/api/user/register \
+  curl -X POST http://localhost:8888/api/users \
     -H "Content-Type: application/json" \
     -d '{"username":"newuser","email":"test@example.com","password":"123456"}'
   ```
@@ -323,7 +382,7 @@ go-zero-learning/
 
 - [x] **参数缺失（username）**
   ```bash
-  curl -X POST http://localhost:8888/api/user/register \
+  curl -X POST http://localhost:8888/api/users \
     -H "Content-Type: application/json" \
     -d '{"email":"test@example.com","password":"123456"}'
   ```
@@ -331,7 +390,7 @@ go-zero-learning/
 
 - [x] **参数缺失（email）**
   ```bash
-  curl -X POST http://localhost:8888/api/user/register \
+  curl -X POST http://localhost:8888/api/users \
     -H "Content-Type: application/json" \
     -d '{"username":"testuser","password":"123456"}'
   ```
@@ -339,7 +398,7 @@ go-zero-learning/
 
 - [x] **参数缺失（password）**
   ```bash
-  curl -X POST http://localhost:8888/api/user/register \
+  curl -X POST http://localhost:8888/api/users \
     -H "Content-Type: application/json" \
     -d '{"username":"testuser","email":"test@example.com"}'
   ```
@@ -347,12 +406,12 @@ go-zero-learning/
 
 ---
 
-### 用户登录接口 (`POST /api/user/login`)
+### 用户登录接口 (`POST /api/users/login`)
 
 #### 成功场景
 - [x] **登录成功**
   ```bash
-  curl -X POST http://localhost:8888/api/user/login \
+  curl -X POST http://localhost:8888/api/users/login \
     -H "Content-Type: application/json" \
     -d '{"username":"testuser","password":"123456"}'
   ```
@@ -361,7 +420,7 @@ go-zero-learning/
 #### 失败场景
 - [x] **用户名不存在**
   ```bash
-  curl -X POST http://localhost:8888/api/user/login \
+  curl -X POST http://localhost:8888/api/users/login \
     -H "Content-Type: application/json" \
     -d '{"username":"nonexistent","password":"123456"}'
   ```
@@ -369,7 +428,7 @@ go-zero-learning/
 
 - [x] **密码错误**
   ```bash
-  curl -X POST http://localhost:8888/api/user/login \
+  curl -X POST http://localhost:8888/api/users/login \
     -H "Content-Type: application/json" \
     -d '{"username":"testuser","password":"wrongpassword"}'
   ```
@@ -377,7 +436,7 @@ go-zero-learning/
 
 - [x] **参数缺失（username）**
   ```bash
-  curl -X POST http://localhost:8888/api/user/login \
+  curl -X POST http://localhost:8888/api/users/login \
     -H "Content-Type: application/json" \
     -d '{"password":"123456"}'
   ```
@@ -385,7 +444,7 @@ go-zero-learning/
 
 - [x] **参数缺失（password）**
   ```bash
-  curl -X POST http://localhost:8888/api/user/login \
+  curl -X POST http://localhost:8888/api/users/login \
     -H "Content-Type: application/json" \
     -d '{"username":"testuser"}'
   ```
@@ -393,7 +452,7 @@ go-zero-learning/
 
 ---
 
-### 获取用户信息接口 (`GET /api/user/info`)
+### 获取用户信息接口 (`GET /api/users/me`)
 
 **需要认证**：需要在请求头中提供 `Authorization: Bearer <token>`
 
@@ -401,12 +460,12 @@ go-zero-learning/
 - [x] **获取用户信息成功**
   ```bash
   # 1. 先登录获取 Token
-  curl -X POST http://localhost:8888/api/user/login \
+  curl -X POST http://localhost:8888/api/users/login \
     -H "Content-Type: application/json" \
     -d '{"username":"testuser","password":"123456"}'
   
   # 2. 使用返回的 Token 获取用户信息（将 YOUR_TOKEN 替换为实际 token）
-  curl -X GET http://localhost:8888/api/user/info \
+  curl -X GET http://localhost:8888/api/users/me \
     -H "Authorization: Bearer YOUR_TOKEN"
   ```
   **预期响应**：返回用户信息（id、username、email）
@@ -414,20 +473,20 @@ go-zero-learning/
 #### 失败场景
 - [x] **未提供 Token**
   ```bash
-  curl -X GET http://localhost:8888/api/user/info
+  curl -X GET http://localhost:8888/api/users/me
   ```
   **预期响应**：`未提供认证 token` 或类似错误
 
 - [x] **Token 格式错误**
   ```bash
-  curl -X GET http://localhost:8888/api/user/info \
+  curl -X GET http://localhost:8888/api/users/me \
     -H "Authorization: invalid-format"
   ```
   **预期响应**：`token 格式错误`
 
 - [x] **Token 无效或已过期**
   ```bash
-  curl -X GET http://localhost:8888/api/user/info \
+  curl -X GET http://localhost:8888/api/users/me \
     -H "Authorization: Bearer invalid-token-12345"
   ```
   **预期响应**：`token 无效或已过期`
@@ -440,37 +499,37 @@ go-zero-learning/
 #!/bin/bash
 
 echo "=== 1. 注册新用户 ==="
-curl -X POST http://localhost:8888/api/user/register \
+curl -X POST http://localhost:8888/api/users \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser1","email":"test1@example.com","password":"123456"}'
 echo -e "\n\n"
 
 echo "=== 2. 重复注册（用户名已存在） ==="
-curl -X POST http://localhost:8888/api/user/register \
+curl -X POST http://localhost:8888/api/users \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser1","email":"test2@example.com","password":"123456"}'
 echo -e "\n\n"
 
 echo "=== 3. 重复注册（邮箱已存在） ==="
-curl -X POST http://localhost:8888/api/user/register \
+curl -X POST http://localhost:8888/api/users \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser2","email":"test1@example.com","password":"123456"}'
 echo -e "\n\n"
 
 echo "=== 4. 登录成功 ==="
-curl -X POST http://localhost:8888/api/user/login \
+curl -X POST http://localhost:8888/api/users/login \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser1","password":"123456"}'
 echo -e "\n\n"
 
 echo "=== 5. 登录失败（密码错误） ==="
-curl -X POST http://localhost:8888/api/user/login \
+curl -X POST http://localhost:8888/api/users/login \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser1","password":"wrong"}'
 echo -e "\n\n"
 
 echo "=== 6. 登录失败（用户不存在） ==="
-curl -X POST http://localhost:8888/api/user/login \
+curl -X POST http://localhost:8888/api/users/login \
   -H "Content-Type: application/json" \
   -d '{"username":"nonexistent","password":"123456"}'
 echo -e "\n"
@@ -478,9 +537,93 @@ echo -e "\n"
 
 ---
 
-### 获取用户信息接口 (`GET /api/user/info`)
+### 用户列表接口 (`GET /api/users`)
 
-**待实现**：需要认证中间件支持
+**需要认证**：需要在请求头中提供 `Authorization: Bearer <token>`
+
+#### 成功场景
+- [x] **获取用户列表（分页）**
+  ```bash
+  curl -X GET "http://localhost:8888/api/users?page=1&page_size=10" \
+    -H "Authorization: Bearer YOUR_TOKEN"
+  ```
+  **预期响应**：返回用户列表、总数、页码、每页数量
+
+- [x] **获取用户列表（搜索）**
+  ```bash
+  curl -X GET "http://localhost:8888/api/users?keyword=test" \
+    -H "Authorization: Bearer YOUR_TOKEN"
+  ```
+  **预期响应**：返回匹配关键词的用户列表
+
+- [x] **获取用户列表（默认参数）**
+  ```bash
+  curl -X GET http://localhost:8888/api/users \
+    -H "Authorization: Bearer YOUR_TOKEN"
+  ```
+  **预期响应**：返回第1页，每页10条的用户列表
+
+---
+
+### 更新用户信息接口 (`PUT /api/users/me`)
+
+**需要认证**：需要在请求头中提供 `Authorization: Bearer <token>`
+
+#### 成功场景
+- [x] **更新邮箱**
+  ```bash
+  curl -X PUT http://localhost:8888/api/users/me \
+    -H "Authorization: Bearer YOUR_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"newemail@example.com"}'
+  ```
+  **预期响应**：返回更新后的用户信息
+
+- [x] **更新密码**
+  ```bash
+  curl -X PUT http://localhost:8888/api/users/me \
+    -H "Authorization: Bearer YOUR_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"password":"newpassword123"}'
+  ```
+  **预期响应**：返回更新后的用户信息
+
+- [x] **同时更新邮箱和密码**
+  ```bash
+  curl -X PUT http://localhost:8888/api/users/me \
+    -H "Authorization: Bearer YOUR_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"newemail@example.com","password":"newpassword123"}'
+  ```
+  **预期响应**：返回更新后的用户信息
+
+#### 失败场景
+- [x] **未提供任何更新字段**
+  ```bash
+  curl -X PUT http://localhost:8888/api/users/me \
+    -H "Authorization: Bearer YOUR_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{}'
+  ```
+  **预期响应**：`至少需要提供一个更新字段`
+
+- [x] **邮箱已被其他用户使用**
+  ```bash
+  curl -X PUT http://localhost:8888/api/users/me \
+    -H "Authorization: Bearer YOUR_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"existing@example.com"}'
+  ```
+  **预期响应**：`邮箱已被使用`
+
+- [x] **密码长度不足**
+  ```bash
+  curl -X PUT http://localhost:8888/api/users/me \
+    -H "Authorization: Bearer YOUR_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"password":"123"}'
+  ```
+  **预期响应**：`密码至少需要6位`
 
 ---
 
