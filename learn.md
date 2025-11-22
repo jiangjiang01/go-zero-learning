@@ -163,11 +163,17 @@ go-zero-learning/
   - [x] ServiceContext 配置（数据库连接、自动迁移）
   - [x] 服务能正常运行（端口 8888）
 
+- ✅ 用户认证功能
+  - [x] 用户注册逻辑（密码加密 bcrypt）
+  - [x] 用户登录逻辑（JWT Token 生成）
+  - [x] 参数验证（go-zero 自动验证）
+  - [x] 错误处理（用户名/邮箱重复检查）
+
 ### 待完成功能
 
 #### 阶段一：用户认证和管理
-- [ ] 用户注册逻辑（密码加密 bcrypt）
-- [ ] 用户登录逻辑（JWT Token 生成）
+- [x] 用户注册逻辑（密码加密 bcrypt）✅
+- [x] 用户登录逻辑（JWT Token 生成）✅
 - [ ] 获取用户信息逻辑（需要认证中间件）
 - [ ] 认证中间件（JWT 验证）
 - [ ] 用户列表 API（分页、搜索）
@@ -217,13 +223,165 @@ go-zero-learning/
 - 数据库：MySQL 3307 端口，数据库名 testdb
 
 ### 下一步计划
-1. 实现用户注册和登录逻辑
-2. 添加认证中间件
-3. 完善错误处理
-4. 测试所有 API
+1. ✅ 实现用户注册和登录逻辑（已完成）
+2. 实现获取用户信息逻辑
+3. 添加认证中间件（JWT 验证）
+4. 完善错误处理
 
 **最后更新**：2025-01-22  
-**当前状态**：服务已运行，待实现业务逻辑
+**当前状态**：用户注册和登录功能已完成，待实现认证中间件
+
+---
+
+## 🧪 测试用例
+
+### 用户注册接口 (`POST /api/user/register`)
+
+#### 成功场景
+- [x] **注册新用户成功**
+  ```bash
+  curl -X POST http://localhost:8888/api/user/register \
+    -H "Content-Type: application/json" \
+    -d '{"username":"testuser","email":"test@example.com","password":"123456"}'
+  ```
+  **预期响应**：返回 Token 和用户信息
+
+#### 失败场景
+- [x] **用户名已存在**
+  ```bash
+  curl -X POST http://localhost:8888/api/user/register \
+    -H "Content-Type: application/json" \
+    -d '{"username":"testuser","email":"another@example.com","password":"123456"}'
+  ```
+  **预期响应**：`{"message": "用户名已存在"}`
+
+- [x] **邮箱已存在**
+  ```bash
+  curl -X POST http://localhost:8888/api/user/register \
+    -H "Content-Type: application/json" \
+    -d '{"username":"newuser","email":"test@example.com","password":"123456"}'
+  ```
+  **预期响应**：`{"message": "邮箱已存在"}`
+
+- [x] **参数缺失（username）**
+  ```bash
+  curl -X POST http://localhost:8888/api/user/register \
+    -H "Content-Type: application/json" \
+    -d '{"email":"test@example.com","password":"123456"}'
+  ```
+  **预期响应**：`field "username" is not set`
+
+- [x] **参数缺失（email）**
+  ```bash
+  curl -X POST http://localhost:8888/api/user/register \
+    -H "Content-Type: application/json" \
+    -d '{"username":"testuser","password":"123456"}'
+  ```
+  **预期响应**：`field "email" is not set`
+
+- [x] **参数缺失（password）**
+  ```bash
+  curl -X POST http://localhost:8888/api/user/register \
+    -H "Content-Type: application/json" \
+    -d '{"username":"testuser","email":"test@example.com"}'
+  ```
+  **预期响应**：`field "password" is not set`
+
+---
+
+### 用户登录接口 (`POST /api/user/login`)
+
+#### 成功场景
+- [x] **登录成功**
+  ```bash
+  curl -X POST http://localhost:8888/api/user/login \
+    -H "Content-Type: application/json" \
+    -d '{"username":"testuser","password":"123456"}'
+  ```
+  **预期响应**：返回 Token 和用户信息
+
+#### 失败场景
+- [x] **用户名不存在**
+  ```bash
+  curl -X POST http://localhost:8888/api/user/login \
+    -H "Content-Type: application/json" \
+    -d '{"username":"nonexistent","password":"123456"}'
+  ```
+  **预期响应**：`{"message": "用户名或密码错误"}`
+
+- [x] **密码错误**
+  ```bash
+  curl -X POST http://localhost:8888/api/user/login \
+    -H "Content-Type: application/json" \
+    -d '{"username":"testuser","password":"wrongpassword"}'
+  ```
+  **预期响应**：`{"message": "用户名或密码错误"}`
+
+- [x] **参数缺失（username）**
+  ```bash
+  curl -X POST http://localhost:8888/api/user/login \
+    -H "Content-Type: application/json" \
+    -d '{"password":"123456"}'
+  ```
+  **预期响应**：`field "username" is not set`
+
+- [x] **参数缺失（password）**
+  ```bash
+  curl -X POST http://localhost:8888/api/user/login \
+    -H "Content-Type: application/json" \
+    -d '{"username":"testuser"}'
+  ```
+  **预期响应**：`field "password" is not set`
+
+---
+
+### 完整测试脚本
+
+```bash
+#!/bin/bash
+
+echo "=== 1. 注册新用户 ==="
+curl -X POST http://localhost:8888/api/user/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser1","email":"test1@example.com","password":"123456"}'
+echo -e "\n\n"
+
+echo "=== 2. 重复注册（用户名已存在） ==="
+curl -X POST http://localhost:8888/api/user/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser1","email":"test2@example.com","password":"123456"}'
+echo -e "\n\n"
+
+echo "=== 3. 重复注册（邮箱已存在） ==="
+curl -X POST http://localhost:8888/api/user/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser2","email":"test1@example.com","password":"123456"}'
+echo -e "\n\n"
+
+echo "=== 4. 登录成功 ==="
+curl -X POST http://localhost:8888/api/user/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser1","password":"123456"}'
+echo -e "\n\n"
+
+echo "=== 5. 登录失败（密码错误） ==="
+curl -X POST http://localhost:8888/api/user/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser1","password":"wrong"}'
+echo -e "\n\n"
+
+echo "=== 6. 登录失败（用户不存在） ==="
+curl -X POST http://localhost:8888/api/user/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"nonexistent","password":"123456"}'
+echo -e "\n"
+```
+
+---
+
+### 获取用户信息接口 (`GET /api/user/info`)
+
+**待实现**：需要认证中间件支持
 
 ---
 
