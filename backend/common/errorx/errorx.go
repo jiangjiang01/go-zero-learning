@@ -58,7 +58,7 @@ func GetHTTPStatus(code int) int {
 		return http.StatusUnauthorized
 	case CodeForbidden:
 		return http.StatusForbidden
-	case CodeNotFound:
+	case CodeNotFound, CodeUserNotFound:
 		return http.StatusNotFound
 	case CodeInternalError:
 		return http.StatusInternalServerError
