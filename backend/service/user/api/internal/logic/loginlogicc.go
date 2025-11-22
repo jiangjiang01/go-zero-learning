@@ -5,8 +5,8 @@ package logic
 
 import (
 	"context"
-	"errors"
 
+	"go-zero-learning/common/errorx"
 	"go-zero-learning/common/jwt"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
@@ -14,6 +14,7 @@ import (
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type LoginLogic struct {
@@ -36,20 +37,24 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 	var user model.User
 	err = l.svcCtx.DB.Where("username = ?", req.Username).First(&user).Error
 	if err != nil {
-		return nil, errors.New("用户名或密码错误")
+		if err == gorm.ErrRecordNotFound {
+			return nil, errorx.ErrInvalidPassword
+		}
+		l.Errorf("查询用户失败：%v", err)
+		return nil, errorx.ErrInternalError
 	}
 
 	// 2. 校验密码是否正确
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
 	if err != nil {
-		return nil, errors.New("用户名或密码错误")
+		return nil, errorx.ErrInvalidPassword
 	}
 
 	// 3. 生成 Token
 	token, err := jwt.GenerateToken(user.ID, user.Username)
 	if err != nil {
 		l.Errorf("生成 Token 失败：%v", err)
-		return nil, errors.New("登录失败")
+		return nil, errorx.ErrInternalError
 	}
 
 	// 4. 返回响应

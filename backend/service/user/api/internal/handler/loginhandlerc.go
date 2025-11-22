@@ -4,6 +4,7 @@
 package handler
 
 import (
+	"go-zero-learning/common/errorx"
 	"go-zero-learning/service/user/api/internal/logic"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
@@ -16,14 +17,14 @@ func LoginHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.LoginReq
 		if err := httpx.Parse(r, &req); err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
+			errorx.HandleError(w, r, err)
 			return
 		}
 
 		l := logic.NewLoginLogic(r.Context(), svcCtx)
 		resp, err := l.Login(&req)
 		if err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
+			errorx.HandleError(w, r, err)
 		} else {
 			httpx.OkJsonCtx(r.Context(), w, resp)
 		}
