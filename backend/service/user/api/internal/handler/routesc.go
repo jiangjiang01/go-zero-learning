@@ -21,12 +21,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/api/user/login",
+				Path:    "/api/users/login",
 				Handler: LoginHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/api/user/register",
+				Path:    "/api/users",
 				Handler: RegisterHandler(serverCtx),
 			},
 		},
@@ -37,17 +37,17 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Middleware{authMiddleware.Handle},
 		rest.Route{
 			Method:  http.MethodGet,
-			Path:    "/api/user/info",
+			Path:    "/api/users/me",
 			Handler: GetUserInfoHandler(serverCtx),
 		},
 		rest.Route{
 			Method:  http.MethodGet,
-			Path:    "/api/user/list",
+			Path:    "/api/users",
 			Handler: GetUserListHandler(serverCtx),
 		},
 		rest.Route{
 			Method:  http.MethodPut,
-			Path:    "/api/user/update",
+			Path:    "/api/users/me",
 			Handler: UpdateUserHandler(serverCtx),
 		},
 	)

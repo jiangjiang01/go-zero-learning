@@ -48,18 +48,18 @@ type UpdateUserReq {
 
 service user-api {
 	@handler Register
-	post /api/user/register (RegisterReq) returns (LoginResp)
+	post /api/users (RegisterReq) returns (LoginResp)
 
 	@handler Login
-	post /api/user/login (LoginReq) returns (LoginResp)
+	post /api/users/login (LoginReq) returns (LoginResp)
 
 	@handler GetUserInfo
-	get /api/user/info (GetUserInfoReq) returns (UserInfoResp)
+	get /api/users/me (GetUserInfoReq) returns (UserInfoResp)
 
 	@handler GetUserList
-	get /api/user/list (GetUserListReq) returns (GetUserListResp)
+	get /api/users (GetUserListReq) returns (GetUserListResp)
 
 	@handler UpdateUser
-	put /api/user/update (UpdateUserReq) returns (UserInfoResp)
+	put /api/users/me (UpdateUserReq) returns (UserInfoResp)
 }
 
