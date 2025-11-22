@@ -5,7 +5,10 @@ package logic
 
 import (
 	"context"
+	"errors"
 
+	"go-zero-learning/common/ctxdata"
+	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
 
@@ -27,7 +30,26 @@ func NewGetUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 }
 
 func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoReq) (resp *types.UserInfoResp, err error) {
-	// todo: add your logic here and delete this line
+	// 1. 从上下文中获取用户 ID（由中间件设置）
+	userID, ok := ctxdata.GetUserID(l.ctx)
+	if !ok {
+		return nil, errors.New("未找到用户信息")
+	}
 
-	return
+	// 2. 查询用户信息
+	var user model.User
+	err = l.svcCtx.DB.First(&user, userID).Error
+	if err != nil {
+		l.Errorf("查询用户信息失败：%v", err)
+		return nil, errors.New("用户不存在")
+	}
+
+	// 3. 返回用户信息
+	resp = &types.UserInfoResp{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+	}
+
+	return resp, nil
 }
