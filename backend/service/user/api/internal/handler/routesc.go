@@ -55,6 +55,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			Path:    "/api/users/me",
 			Handler: UpdateUserHandler(serverCtx),
 		},
+		rest.Route{
+			Method:  http.MethodDelete,
+			Path:    "/api/users/:id",
+			Handler: DeleteUserHandler(serverCtx),
+		},
 	)
 
 	server.AddRoutes(authRoutes)
