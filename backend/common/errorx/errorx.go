@@ -36,6 +36,14 @@ const (
 	CodeRoleNameExists     = 3003 // 角色名称已存在
 	CodeRoleCodeExists     = 3004 // 角色代码已存在
 	CodeRoleNoUpdateFields = 3005 // 没有需要更新的字段
+
+	// 权限相关错误码（4000-4999）
+	CodePermissionNotFound       = 4001 // 权限不存在
+	CodePermissionAlreadyExists  = 4002 // 权限已存在
+	CodePermissionNameExists     = 4003 // 权限名称已存在
+	CodePermissionCodeExists     = 4004 // 权限代码已存在
+	CodePermissionNoUpdateFields = 4005 // 没有需要更新的字段
+
 )
 
 // 业务错误（使用统一的 Response 结构）
@@ -81,7 +89,7 @@ func GetHTTPStatus(code int) int {
 		return http.StatusUnauthorized
 	case CodeForbidden:
 		return http.StatusForbidden
-	case CodeNotFound, CodeUserNotFound, CodeRoleNotFound:
+	case CodeNotFound, CodeUserNotFound, CodeRoleNotFound, CodePermissionNotFound:
 		return http.StatusNotFound
 	case CodeInternalError:
 		return http.StatusInternalServerError
@@ -116,4 +124,11 @@ var (
 	ErrRoleNameExists     = NewBusinessError(CodeRoleNameExists, "角色名称已存在")
 	ErrRoleCodeExists     = NewBusinessError(CodeRoleCodeExists, "角色代码已存在")
 	ErrRoleNoUpdateFields = NewBusinessError(CodeRoleNoUpdateFields, "至少需要提供一个更新字段")
+
+	// 权限相关错误
+	ErrPermissionNotFound       = NewBusinessError(CodePermissionNotFound, "权限不存在")
+	ErrPermissionAlreadExists   = NewBusinessError(CodePermissionAlreadyExists, "权限已存在")
+	ErrPermissionNameExists     = NewBusinessError(CodePermissionNameExists, "权限名称已存在")
+	ErrPermissionCodeExists     = NewBusinessError(CodePermissionCodeExists, "权限代码已存在")
+	ErrPermissionNoUpdateFields = NewBusinessError(CodePermissionNoUpdateFields, "至少需要提供一个更新字段")
 )
