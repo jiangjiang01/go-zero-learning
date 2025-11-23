@@ -165,3 +165,73 @@ type UpdatePermissionReq struct {
 }
 
 // ========== 权限管理 API End ==========
+
+// ========== 菜单管理 API Start ==========
+
+type CreateMenuReq struct {
+	Name     string `json:"name"`
+	Code     string `json:"code"`
+	Desc     string `json:"desc,omitempty"`
+	ParentID int64  `json:"parent_id,omitempty"`
+	Path     string `json:"path,omitempty"`
+	Icon     string `json:"icon,omitempty"`
+	Type     int    `json:"type"`
+	Sort     int    `json:"sort,omitempty"`
+	Status   int    `json:"status,omitempty"` // 默认在逻辑层处理
+}
+
+type DeleteMenuReq struct {
+	ID int64 `path:"id"`
+}
+
+type DeleteMenuResp struct {
+	Message string `json:"message"`
+}
+
+type GetMenuListReq struct {
+	Page     int64  `form:"page,default=1"`
+	PageSize int64  `form:"page_size,default=10"`
+	Keyword  string `form:"keyword,optional"`
+	All      bool   `form:"all,optional"` // 是否获取全部（不分页），用于树形结构
+}
+
+type GetMenuListResp struct {
+	Menus    []MenuInfoResp `json:"menus"`
+	Total    int64          `json:"total"`
+	Page     int64          `json:"page"`
+	PageSize int64          `json:"page_size"`
+}
+
+type GetMenuDetailReq struct {
+	ID int64 `path:"id"`
+}
+
+type MenuInfoResp struct {
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	Desc      string `json:"desc"`
+	ParentID  int64  `json:"parent_id"`
+	Path      string `json:"path"`
+	Icon      string `json:"icon"`
+	Type      int    `json:"type"`
+	Sort      int    `json:"sort"`
+	Status    int    `json:"status"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
+}
+
+type UpdateMenuReq struct {
+	ID       int64  `path:"id"`
+	Name     string `json:"name,omitempty"`
+	Code     string `json:"code,omitempty"`
+	Desc     string `json:"desc,omitempty"`
+	ParentID int64  `json:"parent_id,omitempty"`
+	Path     string `json:"path,omitempty"`
+	Icon     string `json:"icon,omitempty"`
+	Type     int    `json:"type,omitempty"`
+	Sort     int    `json:"sort,omitempty"`
+	Status   int    `json:"status,omitempty"`
+}
+
+// ========== 菜单管理 API End ==========

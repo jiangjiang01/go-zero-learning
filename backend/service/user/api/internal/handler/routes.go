@@ -126,6 +126,33 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			Path:    "/api/permissions/:id",
 			Handler: DeletePermissionHandler(serverCtx),
 		},
+
+		// 菜单管理路由
+		rest.Route{
+			Method:  http.MethodPost,
+			Path:    "/api/menus",
+			Handler: CreateMenuHandler(serverCtx),
+		},
+		rest.Route{
+			Method:  http.MethodGet,
+			Path:    "/api/menus",
+			Handler: GetMenuListHandler(serverCtx),
+		},
+		rest.Route{
+			Method:  http.MethodGet,
+			Path:    "/api/menus/:id",
+			Handler: GetMenuDetailHandler(serverCtx),
+		},
+		rest.Route{
+			Method:  http.MethodPut,
+			Path:    "/api/menus/:id",
+			Handler: UpdateMenuHandler(serverCtx),
+		},
+		rest.Route{
+			Method:  http.MethodDelete,
+			Path:    "/api/menus/:id",
+			Handler: DeleteMenuHandler(serverCtx),
+		},
 	)
 
 	server.AddRoutes(authRoutes)

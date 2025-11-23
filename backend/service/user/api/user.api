@@ -214,13 +214,20 @@ type MenuInfoResp {
 	UpdatedAt int64 `json:"updated_at"`
 }
 
-// 获取菜单全部列表
-type GetAllMenuListReq {
+// 获取菜单列表请求（带分页和搜索）
+type GetMenuListReq {
+	Page     int64  `form:"page,default=1"`
+	PageSize int64  `form:"page_size,default=10"`
+	Keyword  string `form:"keyword,optional"`
+	All      bool   `form:"all,optional"`  // 是否获取全部（不分页），用于树形结构
 }
 
 // 获取菜单全部列表响应
-type GetAllMenuListResp {
+type GetMenuListResp {
 	Menus []MenuInfoResp `json:"menus"`
+	Total int64 `json:"total"`
+	Page int64 `json:"page"`
+	PageSize int64 `json:"page_size"`
 }
 
 // 获取菜单详情
@@ -317,8 +324,8 @@ service user-api {
 	@handler CreateMenu
 	post /api/menus (CreateMenuReq) returns (MenuInfoResp)
 
-	@handler GetAllMenuList
-	get /api/menus/all (GetAllMenuListReq) returns (GetAllMenuListResp)
+	@handler GetMenuList
+	get /api/menus (GetMenuListReq) returns (GetMenuListResp)
 
 	@handler GetMenuDetail
 	get /api/menus/:id (GetMenuDetailReq) returns (MenuInfoResp)
