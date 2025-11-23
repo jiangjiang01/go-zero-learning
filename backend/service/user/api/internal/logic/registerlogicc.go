@@ -5,8 +5,10 @@ package logic
 
 import (
 	"context"
+	"errors"
 
 	"go-zero-learning/common/errorx"
+	"go-zero-learning/common/validator"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
@@ -32,36 +34,41 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 
 // 用户注册逻辑
 func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.LoginResp, err error) {
-	// 1. 检查用户名是否已存在
+	// 1. 参数校验 - 邮箱格式
+	if err = validator.ValidateEmail(req.Email); err != nil {
+		return nil, err
+	}
+
+	// 2. 检查用户名是否已存在
 	var existingUser model.User
 	err = l.svcCtx.DB.Where("username = ?", req.Username).First(&existingUser).Error
 	if err == nil {
 		return nil, errorx.ErrUsernameExists
 	}
-	if err != gorm.ErrRecordNotFound {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		// 说明这是数据库查询错误（不是未找到记录的错误）
 		l.Errorf("查询用户失败：%v", err)
 		return nil, errorx.ErrInternalError
 	}
 
-	// 2. 检查邮箱是否已存在
+	// 3. 检查邮箱是否已存在
 	err = l.svcCtx.DB.Where("email = ?", req.Email).First(&existingUser).Error
 	if err == nil {
 		return nil, errorx.ErrEmailExists
 	}
-	if err != gorm.ErrRecordNotFound {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		l.Errorf("查询邮箱失败：%v", err)
 		return nil, errorx.ErrInternalError
 	}
 
-	// 3. 加密密码
+	// 4. 加密密码
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		l.Errorf("密码加密失败：%v", err)
 		return nil, errorx.ErrInternalError
 	}
 
-	// 4. 创建用户
+	// 5. 创建用户
 	user := &model.User{
 		Username: req.Username,
 		Email:    req.Email,
@@ -74,14 +81,14 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.LoginResp,
 		return nil, errorx.ErrInternalError
 	}
 
-	// 5. 生成 Token
+	// 6. 生成 Token
 	token, err := l.svcCtx.JWT.GenerateToken(user.ID, user.Username)
 	if err != nil {
 		l.Errorf("生成 Token 失败：%v", err)
 		return nil, errorx.ErrInternalError
 	}
 
-	// 6. 返回响应
+	// 7. 返回响应
 	resp = &types.LoginResp{
 		Token: token,
 		UserInfo: types.UserInfoResp{

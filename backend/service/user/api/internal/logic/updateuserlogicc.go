@@ -5,6 +5,7 @@ import (
 	"errors"
 	"go-zero-learning/common/ctxdata"
 	"go-zero-learning/common/errorx"
+	"go-zero-learning/common/validator"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
@@ -56,10 +57,11 @@ func (l *UpdateUserLogic) UpdateUser(req *types.UpdateUserReq) (resp *types.User
 	// 4. 提供了邮箱
 	if req.Email != "" {
 		email := strings.TrimSpace(req.Email)
-		// 检查邮箱格式（简单验证）
-		if !strings.Contains(email, "@") {
-			return nil, errorx.ErrInvalidEmail
+		// 检查邮箱格式
+		if err = validator.ValidateEmail(email); err != nil {
+			return nil, err
 		}
+
 		// 检查邮箱是否已被其他用户使用
 		var existingUser model.User
 		err = l.svcCtx.DB.Where("email = ? AND id != ?", email, userID).
@@ -68,7 +70,8 @@ func (l *UpdateUserLogic) UpdateUser(req *types.UpdateUserReq) (resp *types.User
 			return nil, errorx.ErrEmailExists
 		}
 		// ErrRecordNotFound 表示没有找到记录，可以使用，但是其他错误需要处理
-		if err != gorm.ErrRecordNotFound {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			l.Errorf("查询邮箱失败：%v", err)
 			return nil, errorx.ErrInternalError
 		}
 

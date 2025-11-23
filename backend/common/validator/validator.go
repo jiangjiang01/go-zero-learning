@@ -3,6 +3,7 @@ package validator
 import (
 	"fmt"
 	"go-zero-learning/common/errorx"
+	"regexp"
 	"strings"
 )
 
@@ -73,4 +74,21 @@ func translateFieldName(fieldName string) string {
 	}
 
 	return fieldName
+}
+
+// ValidateEmail 验证邮箱格式
+func ValidateEmail(email string) error {
+	if email == "" {
+		return nil // 空值由必填校验处理
+	}
+
+	// 邮箱格式正则表达式（RFC 5322 简化版）
+	// 匹配格式：username@domain.com
+	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
+
+	if !emailRegex.MatchString(email) {
+		return errorx.ErrInvalidEmail
+	}
+
+	return nil
 }
