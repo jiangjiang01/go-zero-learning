@@ -85,6 +85,16 @@ service.interceptors.response.use(
       const status = error.response.status
       const data = error.response.data
       
+      // 如果后端返回了统一格式的错误响应（包含 code 和 message），使用业务错误信息
+      if (data && typeof data === 'object' && 'code' in data && 'message' in data) {
+        // 这是统一格式的业务错误响应，使用业务错误消息
+        message = data.message || '请求失败'
+        // 显示业务错误消息
+        ElMessage.error(message)
+        // 创建一个新的 Error 对象，使用业务错误消息，这样调用方的 catch 块就不会再显示错误了
+        return Promise.reject(new Error(message))
+      }
+      
       // 如果后端返回了错误信息，使用后端的错误信息
       if (data && data.message) {
         message = data.message
@@ -118,7 +128,7 @@ service.interceptors.response.use(
     }
 
     ElMessage.error(message)
-    return Promise.reject(error)
+    return Promise.reject(new Error(message))
   }
 )
 

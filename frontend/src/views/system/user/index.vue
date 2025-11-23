@@ -187,7 +187,9 @@ const handleDelete = async (row: UserInfo) => {
         ElMessage.success('删除成功')
         fetchUserList()
       } catch (error: any) {
-        ElMessage.error(error.message || '删除失败')
+        // 错误消息已经在 request.ts 的响应拦截器中显示过了，这里不需要再次显示
+        // 只需要处理业务逻辑（如刷新列表等）
+        console.error('删除用户失败:', error)
       }
     })
     .catch(() => {})

@@ -199,7 +199,9 @@ const handleSubmit = async () => {
         handleClose()
         emit('success')
       } catch (error: any) {
-        ElMessage.error(error.message || '操作失败')
+        // 错误消息已经在 request.ts 的响应拦截器中显示过了，这里不需要再次显示
+        // 只需要处理业务逻辑（如关闭对话框等）
+        console.error('操作失败:', error)
       } finally {
         loading.value = false
       }
