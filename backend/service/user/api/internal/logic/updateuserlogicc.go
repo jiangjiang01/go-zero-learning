@@ -85,9 +85,9 @@ func (l *UpdateUserLogic) UpdateUser(req *types.UpdateUserReq) (resp *types.User
 	// 5. 提供了密码
 	if req.Password != "" {
 		password := strings.TrimSpace(req.Password)
-		// 密码长度验证（至少6位）
-		if len(password) < 6 {
-			return nil, errorx.ErrPasswordTooShort
+		// 用户密码强度验证
+		if err = validator.ValidateUserPassword(password); err != nil {
+			return nil, err
 		}
 		// 加密密码
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

@@ -92,3 +92,83 @@ func ValidateEmail(email string) error {
 
 	return nil
 }
+
+// ValidatePassword 验证密码强度
+// minLength: 最小长度，默认6
+// requireUpper: 是否需要大写字母
+// requireLower: 是否需要小写字母
+// requireNumber: 是否需要数字
+// requireSpecial: 是否需要特殊字符
+func ValidatePassword(
+	password string,
+	minLength int,
+	requireUpper bool,
+	requireLower bool,
+	requireNumber bool,
+	requireSpecial bool,
+) error {
+	if password == "" {
+		return nil // 空值由必填校验处理
+	}
+
+	// 默认最小长度为6
+	if len(password) <= 0 {
+		minLength = 6
+	}
+
+	// 1. 长度校验
+	if len(password) < minLength {
+		return errorx.NewBusinessErrorf(errorx.CodeInvalidParam, "密码长度至少需要 %d 位", minLength)
+	}
+
+	// 2. 复杂度校验
+	hasUpper := false
+	hasLower := false
+	hasNumber := false
+	hasSpecial := false
+
+	for _, char := range password {
+		switch {
+		case char >= 'A' && char <= 'Z':
+			hasUpper = true
+		case char >= 'a' && char <= 'z':
+			hasLower = true
+		case char >= '0' && char <= '9':
+			hasNumber = true
+		case strings.ContainsRune("!@#$%^&*()_+-=[]{}|;:,.<>?", char):
+			hasSpecial = true
+		}
+	}
+
+	// 检查是否满足要求
+	var missing []string
+	if requireUpper && !hasUpper {
+		missing = append(missing, "大写字母")
+	}
+	if requireLower && !hasLower {
+		missing = append(missing, "小写字母")
+	}
+	if requireNumber && !hasNumber {
+		missing = append(missing, "数字")
+	}
+	if requireSpecial && !hasSpecial {
+		missing = append(missing, "特殊字符")
+	}
+
+	if len(missing) > 0 {
+		return errorx.NewBusinessErrorf(errorx.CodeInvalidParam, "密码必须包含：%s", strings.Join(missing, "、"))
+	}
+
+	return nil
+}
+
+// ValidatePasswordSimple 简单密码校验（仅长度）
+func ValidatePasswordSimple(password string) error {
+	return ValidatePassword(password, 6, false, false, false, false)
+}
+
+// ValidateUserPassword 统一的用户密码校验（用于注册和更新）
+// 规则：至少6位，包含大小写字母和数字
+func ValidateUserPassword(password string) error {
+	return ValidatePassword(password, 6, true, true, true, false)
+}

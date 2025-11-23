@@ -39,7 +39,12 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.LoginResp,
 		return nil, err
 	}
 
-	// 2. 检查用户名是否已存在
+	// 2. 参数校验 - 用户密码强度
+	if err = validator.ValidateUserPassword(req.Password); err != nil {
+		return nil, err
+	}
+
+	// 3. 检查用户名是否已存在
 	var existingUser model.User
 	err = l.svcCtx.DB.Where("username = ?", req.Username).First(&existingUser).Error
 	if err == nil {
@@ -51,7 +56,7 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.LoginResp,
 		return nil, errorx.ErrInternalError
 	}
 
-	// 3. 检查邮箱是否已存在
+	// 4. 检查邮箱是否已存在
 	err = l.svcCtx.DB.Where("email = ?", req.Email).First(&existingUser).Error
 	if err == nil {
 		return nil, errorx.ErrEmailExists
@@ -61,14 +66,14 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.LoginResp,
 		return nil, errorx.ErrInternalError
 	}
 
-	// 4. 加密密码
+	// 5. 加密密码
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		l.Errorf("密码加密失败：%v", err)
 		return nil, errorx.ErrInternalError
 	}
 
-	// 5. 创建用户
+	// 6. 创建用户
 	user := &model.User{
 		Username: req.Username,
 		Email:    req.Email,
@@ -81,14 +86,14 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.LoginResp,
 		return nil, errorx.ErrInternalError
 	}
 
-	// 6. 生成 Token
+	// 7. 生成 Token
 	token, err := l.svcCtx.JWT.GenerateToken(user.ID, user.Username)
 	if err != nil {
 		l.Errorf("生成 Token 失败：%v", err)
 		return nil, errorx.ErrInternalError
 	}
 
-	// 7. 返回响应
+	// 8. 返回响应
 	resp = &types.LoginResp{
 		Token: token,
 		UserInfo: types.UserInfoResp{
