@@ -13,7 +13,7 @@ import (
 
 // 权限中间件
 type AuthMiddleware struct {
-	logx.LessLogger
+	logx.Logger
 	jwtManager *jwt.JWTManager
 }
 
