@@ -62,6 +62,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			Handler: UpdateUserHandler(serverCtx),
 		},
 		rest.Route{
+			Method: http.MethodPut,
+			// 注意顺序，要放到/me下面;如果放到/me上，/me无法处理了
+			Path:    "/api/users/:id",
+			Handler: UpdateUserByIdHandler(serverCtx),
+		},
+		rest.Route{
 			Method:  http.MethodDelete,
 			Path:    "/api/users/:id",
 			Handler: DeleteUserHandler(serverCtx),
