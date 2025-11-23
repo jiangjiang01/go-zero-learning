@@ -14,11 +14,14 @@ import (
 // 权限中间件
 type AuthMiddleware struct {
 	logx.LessLogger
+	jwtManager *jwt.JWTManager
 }
 
 // 创建权限中间件实例
-func NewAuthMiddleware() *AuthMiddleware {
-	return &AuthMiddleware{}
+func NewAuthMiddleware(jwtManager *jwt.JWTManager) *AuthMiddleware {
+	return &AuthMiddleware{
+		jwtManager: jwtManager,
+	}
 }
 
 func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
@@ -40,7 +43,7 @@ func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		tokenStr := parts[1]
 
 		// 3. 解析 Token
-		claims, err := jwt.ParseToken(tokenStr)
+		claims, err := m.jwtManager.ParseToken(tokenStr)
 		if err != nil {
 			m.Errorf("token 验证失败：%v", err)
 			errorx.HandleError(w, r, errorx.ErrInvalidToken)

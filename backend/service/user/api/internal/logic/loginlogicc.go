@@ -8,7 +8,6 @@ import (
 	"errors"
 
 	"go-zero-learning/common/errorx"
-	"go-zero-learning/common/jwt"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
@@ -52,7 +51,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 	}
 
 	// 3. 生成 Token
-	token, err := jwt.GenerateToken(user.ID, user.Username)
+	token, err := l.svcCtx.JWT.GenerateToken(user.ID, user.Username)
 	if err != nil {
 		l.Errorf("生成 Token 失败：%v", err)
 		return nil, errorx.ErrInternalError

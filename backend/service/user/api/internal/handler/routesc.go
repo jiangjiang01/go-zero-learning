@@ -14,7 +14,7 @@ import (
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	// 创建认证中间件
-	authMiddleware := middleware.NewAuthMiddleware()
+	authMiddleware := middleware.NewAuthMiddleware(serverCtx.JWT)
 
 	// 不需要认证的路由
 	server.AddRoutes(

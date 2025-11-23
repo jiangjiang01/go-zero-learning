@@ -9,15 +9,15 @@ import (
 
 // JWT 管理器
 type JWTManager struct {
-	secret               []byte
-	tokenExpireDuaration time.Duration
+	secret              []byte
+	tokenExpireDuration time.Duration
 }
 
 // 创建 JWT 管理器实例
 func NewJWTManager(secret string, expireDays int) *JWTManager {
 	return &JWTManager{
-		secret:               []byte(secret),
-		tokenExpireDuaration: time.Duration(expireDays) * 24 * time.Hour,
+		secret:              []byte(secret),
+		tokenExpireDuration: time.Duration(expireDays) * 24 * time.Hour,
 	}
 }
 
@@ -35,10 +35,10 @@ func (m *JWTManager) GenerateToken(userID int64, username string) (string, error
 		UserID:   userID,
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(m.tokenExpireDuaration)), // 过期时间
-			IssuedAt:  jwt.NewNumericDate(time.Now()),                             // 签发时间
-			NotBefore: jwt.NewNumericDate(time.Now()),                             // 生效时间
-			Issuer:    "jwt-basic",                                                // 签发者
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(m.tokenExpireDuration)), // 过期时间
+			IssuedAt:  jwt.NewNumericDate(time.Now()),                            // 签发时间
+			NotBefore: jwt.NewNumericDate(time.Now()),                            // 生效时间
+			Issuer:    "jwt-basic",                                               // 签发者
 		},
 	}
 
