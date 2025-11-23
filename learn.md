@@ -241,26 +241,59 @@ go-zero-learning/
 
 ---
 
-## 🔧 错误处理机制
+## 🔧 统一响应格式和错误处理机制
 
 ### 设计原则
 
-本项目使用统一的错误处理机制，所有错误都通过 `errorx` 包处理：
+本项目使用统一的响应格式，成功和失败响应都使用相同的结构：
 
-1. **统一错误响应格式**
+1. **统一响应格式**
    ```json
    {
-     "code": 2001,
-     "message": "用户不存在"
+     "code": 0,              // 状态码，0 表示成功，非 0 表示失败
+     "message": "success",   // 消息
+     "data": {...},         // 数据（成功时返回，失败时为空）
+     "timestamp": 1705939200 // 时间戳
    }
    ```
 
-2. **错误码分类**
+2. **成功响应示例**
+   ```json
+   {
+     "code": 0,
+     "message": "success",
+     "data": {
+       "token": "eyJhbGci...",
+       "user_info": {
+         "id": 1,
+         "username": "testuser",
+         "email": "test@example.com"
+       }
+     },
+     "timestamp": 1705939200
+   }
+   ```
+
+3. **失败响应示例**
+   ```json
+   {
+     "code": 2001,
+     "message": "用户不存在",
+     "timestamp": 1705939200
+   }
+   ```
+
+### 错误处理机制
+
+本项目使用统一的错误处理机制，所有错误都通过 `errorx` 包处理：
+
+1. **错误码分类**
+   - `0`：成功
    - `1000-1999`：通用错误码
    - `2000-2999`：用户相关错误码
    - `3000-3999`：后续扩展（商品、订单等）
 
-3. **自动 HTTP 状态码映射**
+2. **自动 HTTP 状态码映射**
    - 根据错误码自动返回对应的 HTTP 状态码
    - 例如：`CodeUnauthorized` → `401 Unauthorized`
 
@@ -286,9 +319,21 @@ go-zero-learning/
 - `2009` - 没有需要更新的字段
 - `2010` - 未找到用户信息
 
+### 包结构
+
+```
+backend/common/
+├── errorx/          # 错误处理
+│   ├── errorx.go    # 错误码、错误类型（使用统一的 Response 结构）
+│   └── handler.go   # 错误处理函数
+└── response/        # 统一响应
+    ├── response.go  # 响应结构定义
+    └── handler.go   # 成功响应处理函数
+```
+
 ### 使用方式
 
-#### 在 Logic 中使用
+#### 在 Logic 中使用错误处理
 ```go
 import "go-zero-learning/common/errorx"
 
@@ -301,22 +346,30 @@ return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "参数错误")
 
 #### 在 Handler 中使用
 ```go
-import "go-zero-learning/common/errorx"
+import (
+    "go-zero-learning/common/errorx"
+    "go-zero-learning/common/response"
+)
 
-// 统一错误处理
+// 错误处理
 if err != nil {
     errorx.HandleError(w, r, err)
     return
 }
+
+// 成功响应
+response.OkJson(w, r, resp)
 ```
 
 ### 优势
 
-1. ✅ **统一格式**：所有错误响应格式一致，便于前端处理
-2. ✅ **错误码管理**：集中管理错误码，避免重复和冲突
-3. ✅ **自动映射**：自动将错误码映射到 HTTP 状态码
-4. ✅ **易于扩展**：新增错误码只需在 errorx 包中定义
-5. ✅ **类型安全**：使用预定义错误，避免字符串拼写错误
+1. ✅ **统一格式**：成功和失败响应格式一致，便于前端处理
+2. ✅ **通用字段集中**：code、message、timestamp、request_id 等字段只定义一次
+3. ✅ **错误码管理**：集中管理错误码，避免重复和冲突
+4. ✅ **自动映射**：自动将错误码映射到 HTTP 状态码
+5. ✅ **易于扩展**：新增字段只需在 Response 结构中添加
+6. ✅ **类型安全**：使用预定义错误，避免字符串拼写错误
+7. ✅ **职责清晰**：errorx 处理错误逻辑，response 定义响应结构
 
 ---
 
@@ -367,6 +420,12 @@ if err != nil {
   - [x] 所有 handler 和 logic 使用统一错误处理
   - [x] 认证中间件使用统一错误处理
 
+- ✅ 统一响应格式
+  - [x] 统一响应结构（backend/common/response）
+  - [x] 成功和失败响应使用统一格式（code + message + data + timestamp）
+  - [x] 所有 handler 使用统一成功响应
+  - [x] 错误响应包含 timestamp
+
 ### 待完成功能
 
 #### 阶段一：用户认证和管理
@@ -380,6 +439,7 @@ if err != nil {
 - [x] 用户删除 API ✅
 - [x] RESTful API 重构 ✅
 - [x] 错误处理优化 ✅
+- [x] 统一响应格式 ✅
 
 #### 阶段二：权限管理
 - [ ] 角色管理（角色 CRUD）
@@ -431,10 +491,11 @@ if err != nil {
 7. ✅ 用户删除 API（已完成）
 8. ✅ RESTful API 重构（已完成）
 9. ✅ 错误处理优化（已完成）
-10. 开始阶段二：权限管理
+10. ✅ 统一响应格式（已完成）
+11. 开始阶段二：权限管理
 
 **最后更新**：2025-01-22  
-**当前状态**：阶段一（用户认证和管理）全部完成，包括：注册、登录、获取用户信息、用户列表、用户详情、用户更新、用户删除。所有 API 已重构为 RESTful 风格，错误处理机制已统一。可以开始阶段二：权限管理。
+**当前状态**：阶段一（用户认证和管理）全部完成，包括：注册、登录、获取用户信息、用户列表、用户详情、用户更新、用户删除。所有 API 已重构为 RESTful 风格，错误处理机制和统一响应格式已实现。可以开始阶段二：权限管理。
 
 ---
 
