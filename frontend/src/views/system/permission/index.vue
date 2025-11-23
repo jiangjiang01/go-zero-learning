@@ -1,5 +1,5 @@
 <template>
-  <div class="role-container p-4">
+  <div class="permission-container p-4">
     <el-card>
       <!-- 搜索栏 -->
       <div class="mb-4">
@@ -11,7 +11,7 @@
           <el-form-item label="关键词">
             <el-input
               v-model="searchForm.keyword"
-              placeholder="角色名称/代码"
+              placeholder="权限名称/代码"
               clearable
               style="width: 200px"
               @keyup.enter="handleSearch"
@@ -29,7 +29,7 @@
               type="success"
               @click="handleAdd"
             >
-              新增角色
+              新增权限
             </el-button>
           </el-form-item>
         </el-form>
@@ -50,12 +50,12 @@
         />
         <el-table-column
           prop="name"
-          label="角色名称"
+          label="权限名称"
           width="150"
         />
         <el-table-column
           prop="code"
-          label="角色代码"
+          label="权限代码"
           width="150"
         />
         <el-table-column
@@ -119,9 +119,9 @@
     </el-card>
 
     <!-- 新增/编辑对话框 -->
-    <role-dialog
+    <permission-dialog
       v-model="dialogVisible"
-      :role-id="currentRoleId"
+      :permission-id="currentPermissionId"
       @success="handleDialogSuccess"
     />
   </div>
@@ -131,17 +131,17 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
-  getRoleList,
-  deleteRole,
-  type RoleInfo
-} from '@/api/role'
+  getPermissionList,
+  deletePermission,
+  type PermissionInfo
+} from '@/api/permission'
 import { formatDateTime } from '@/utils/format'
-import RoleDialog from './components/RoleDialog.vue'
+import PermissionDialog from './components/PermissionDialog.vue'
 
 const loading = ref(false)
-const tableData = ref<RoleInfo[]>([])
+const tableData = ref<PermissionInfo[]>([])
 const dialogVisible = ref(false)
-const currentRoleId = ref<number | null>(null)
+const currentPermissionId = ref<number | null>(null)
 
 const searchForm = reactive({
   keyword: ''
@@ -153,19 +153,19 @@ const pagination = reactive({
   total: 0
 })
 
-// 获取角色列表
-const fetchRoleList = async () => {
+// 获取权限列表
+const fetchPermissionList = async () => {
   loading.value = true
   try {
-    const res = await getRoleList({
+    const res = await getPermissionList({
       page: pagination.page,
       page_size: pagination.pageSize,
       keyword: searchForm.keyword || undefined
     })
-    tableData.value = res.data.roles || []
+    tableData.value = res.data.permissions || []
     pagination.total = res.data.total || 0
   } catch (error: any) {
-    ElMessage.error(error.message || '获取角色列表失败')
+    ElMessage.error(error.message || '获取权限列表失败')
   } finally {
     loading.value = false
   }
@@ -174,43 +174,43 @@ const fetchRoleList = async () => {
 // 搜索
 const handleSearch = () => {
   pagination.page = 1
-  fetchRoleList()
+  fetchPermissionList()
 }
 
 // 重置
 const handleReset = () => {
   searchForm.keyword = ''
   pagination.page = 1
-  fetchRoleList()
+  fetchPermissionList()
 }
 
 // 新增
 const handleAdd = () => {
-  currentRoleId.value = null
+  currentPermissionId.value = null
   dialogVisible.value = true
 }
 
 // 编辑
-const handleEdit = (row: RoleInfo) => {
-  currentRoleId.value = row.id
+const handleEdit = (row: PermissionInfo) => {
+  currentPermissionId.value = row.id
   dialogVisible.value = true
 }
 
 // 删除
-const handleDelete = async (row: RoleInfo) => {
-  ElMessageBox.confirm(`确定要删除角色 "${row.name}" 吗？`, '提示', {
+const handleDelete = async (row: PermissionInfo) => {
+  ElMessageBox.confirm(`确定要删除权限 "${row.name}" 吗？`, '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   })
     .then(async () => {
       try {
-        await deleteRole(row.id)
+        await deletePermission(row.id)
         ElMessage.success('删除成功')
-        fetchRoleList()
+        fetchPermissionList()
       } catch (error: any) {
         // 错误消息已经在 request.ts 的响应拦截器中显示过了，这里不需要再次显示
-        console.error('删除角色失败:', error)
+        console.error('删除权限失败:', error)
       }
     })
     .catch(() => {})
@@ -219,21 +219,21 @@ const handleDelete = async (row: RoleInfo) => {
 // 分页大小变更
 const handleSizeChange = () => {
   pagination.page = 1
-  fetchRoleList()
+  fetchPermissionList()
 }
 
 // 页码变更
 const handlePageChange = () => {
-  fetchRoleList()
+  fetchPermissionList()
 }
 
 // 对话框成功回调
 const handleDialogSuccess = () => {
-  fetchRoleList()
+  fetchPermissionList()
 }
 
 onMounted(() => {
-  fetchRoleList()
+  fetchPermissionList()
 })
 </script>
 

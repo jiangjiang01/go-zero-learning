@@ -195,6 +195,7 @@ const handleDelete = async (row: UserInfo) => {
 
 // 分页大小变更
 const handleSizeChange = () => {
+  pagination.page = 1
   fetchUserList()
 }
 

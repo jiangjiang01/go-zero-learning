@@ -47,6 +47,12 @@ const routes: RouteRecordRaw[] = [
         name: 'SystemRole',
         component: () => import('@/views/system/role/index.vue'),
         meta: { title: '角色管理', icon: 'UserFilled' }
+      },
+      {
+        path: 'permission',
+        name: 'SystemPermission',
+        component: () => import('@/views/system/permission/index.vue'),
+        meta: { title: '权限管理', icon: 'Key' }
       }
     ]
   },
