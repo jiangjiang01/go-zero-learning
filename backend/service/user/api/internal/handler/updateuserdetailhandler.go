@@ -12,16 +12,16 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func UpdateUserByIdHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func UpdateUserDetailHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.UpdateUserByIdReq
+		var req types.UpdateUserDetailReq
 		if err := httpx.Parse(r, &req); err != nil {
 			errorx.HandleError(w, r, validator.ParseError(err))
 			return
 		}
 
-		l := logic.NewUpdateUserByIdLogic(r.Context(), svcCtx)
-		resp, err := l.UpdateUserById(&req)
+		l := logic.NewUpdateUserDetailLogic(r.Context(), svcCtx)
+		resp, err := l.UpdateUserDetail(&req)
 		if err != nil {
 			errorx.HandleError(w, r, err)
 		} else {

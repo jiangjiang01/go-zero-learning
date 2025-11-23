@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { getUser, createUser, updateUser, updateUserById, type CreateUserRequest, type UpdateUserRequest } from '@/api/user'
+import { getUser, createUser, updateUser, updateUserDetail, type CreateUserRequest, type UpdateUserRequest } from '@/api/user'
 import { validateUsername, validatePassword, validateEmail } from '@/utils/validate'
 
 interface Props {
@@ -184,7 +184,7 @@ const handleSubmit = async () => {
           if (form.password) {
             updateData.password = form.password
           }
-          await updateUserById(props.userId, updateData)
+          await updateUserDetail(props.userId, updateData)
           ElMessage.success('更新成功')
         } else {
           // 新增

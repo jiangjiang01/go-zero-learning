@@ -84,7 +84,7 @@ export function updateUser(data: UpdateUserRequest): Promise<ResponseData<UserIn
  * @param data - 用户数据
  * @returns Promise
  */
-export function updateUserById(id: number, data: UpdateUserRequest): Promise<ResponseData<UserInfo>> {
+export function updateUserDetail(id: number, data: UpdateUserRequest): Promise<ResponseData<UserInfo>> {
   return request({
     url: `/api/users/${id}`,
     method: 'put',

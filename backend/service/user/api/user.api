@@ -46,8 +46,8 @@ type UpdateUserReq {
 	Password string `json:"password,optional"` // 密码（可选）
 }
 
-// 更新用户请求（路径参数 + 请求体）
-type UpdateUserByIdReq {
+// 更新用户详情请求（路径参数 + 请求体）
+type UpdateUserDetailReq {
 	ID int64 `path:"id"` // 路径参数：用户ID
 	Email string `json:"email,optional"` // 邮箱（可选）
 	Password string `json:"password,optional"` // 密码（可选）
@@ -87,8 +87,8 @@ service user-api {
 	@handler UpdateUser
 	put /api/users/me (UpdateUserReq) returns (UserInfoResp)
 
-	@handler UpdateUserById
-	put /api/users/:id (UpdateUserByIdReq) returns (UserInfoResp)
+	@handler UpdateUserDetail
+	put /api/users/:id (UpdateUserDetailReq) returns (UserInfoResp)
 
 
 	@handler DeleteUser

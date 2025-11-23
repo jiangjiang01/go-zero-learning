@@ -15,21 +15,21 @@ import (
 	"gorm.io/gorm"
 )
 
-type UpdateUserByIdLogic struct {
+type UpdateUserDetailLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewUpdateUserByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UpdateUserByIdLogic {
-	return &UpdateUserByIdLogic{
+func NewUpdateUserDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UpdateUserDetailLogic {
+	return &UpdateUserDetailLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *UpdateUserByIdLogic) UpdateUserById(req *types.UpdateUserByIdReq) (resp *types.UserInfoResp, err error) {
+func (l *UpdateUserDetailLogic) UpdateUserDetail(req *types.UpdateUserDetailReq) (resp *types.UserInfoResp, err error) {
 	// 1. 检查是否有需要更新的字段
 	if req.Email == "" && req.Password == "" {
 		return nil, errorx.ErrNoUpdateFields
