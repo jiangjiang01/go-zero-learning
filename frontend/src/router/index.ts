@@ -53,6 +53,12 @@ const routes: RouteRecordRaw[] = [
         name: 'SystemPermission',
         component: () => import('@/views/system/permission/index.vue'),
         meta: { title: '权限管理', icon: 'Key' }
+      },
+      {
+        path: 'menu',
+        name: 'SystemMenu',
+        component: () => import('@/views/system/menu/index.vue'),
+        meta: { title: '菜单管理', icon: 'Menu' }
       }
     ]
   },

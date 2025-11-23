@@ -1,13 +1,15 @@
 /**
  * 格式化日期时间
- * @param date - 日期
+ * @param date - 日期（支持 Date、字符串、Unix 时间戳（秒））
  * @param format - 格式，默认 'YYYY-MM-DD HH:mm:ss'
  * @returns 格式化后的日期字符串
  */
-export function formatDateTime(date: string | Date | null | undefined, format = 'YYYY-MM-DD HH:mm:ss'): string {
+export function formatDateTime(date: string | Date | number | null | undefined, format = 'YYYY-MM-DD HH:mm:ss'): string {
   if (!date) return ''
   
-  const d = new Date(date)
+  // 如果是数字（Unix 时间戳，秒级），转换为毫秒
+  const timestamp = typeof date === 'number' ? date * 1000 : date
+  const d = new Date(timestamp)
   const year = d.getFullYear()
   const month = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
