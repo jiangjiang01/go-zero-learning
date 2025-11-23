@@ -13,7 +13,6 @@ import (
 
 // 权限中间件
 type AuthMiddleware struct {
-	logx.Logger
 	jwtManager *jwt.JWTManager
 }
 
@@ -26,6 +25,9 @@ func NewAuthMiddleware(jwtManager *jwt.JWTManager) *AuthMiddleware {
 
 func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// 从请求上下文中获取 logger (包含 trace 信息)
+		logger := logx.WithContext(r.Context())
+
 		// 1. 从请求头获取 Token
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
@@ -45,7 +47,7 @@ func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		// 3. 解析 Token
 		claims, err := m.jwtManager.ParseToken(tokenStr)
 		if err != nil {
-			m.Errorf("token 验证失败：%v", err)
+			logger.Errorf("token 验证失败：%v", err)
 			errorx.HandleError(w, r, errorx.ErrInvalidToken)
 			return
 		}

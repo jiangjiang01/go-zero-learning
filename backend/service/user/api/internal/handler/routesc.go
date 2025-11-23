@@ -13,28 +13,34 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
-	// 创建认证中间件
+	// 创建权限中间件
 	authMiddleware := middleware.NewAuthMiddleware(serverCtx.JWT)
+	// 创建日志中间件
+	loggingMiddleware := middleware.NewLoggingMiddleware()
 
 	// 不需要认证的路由
 	server.AddRoutes(
-		[]rest.Route{
-			{
+		rest.WithMiddleware(
+			loggingMiddleware.Handle, // 应用日志中间件
+			rest.Route{
 				Method:  http.MethodPost,
 				Path:    "/api/users/login",
 				Handler: LoginHandler(serverCtx),
 			},
-			{
+			rest.Route{
 				Method:  http.MethodPost,
 				Path:    "/api/users",
 				Handler: RegisterHandler(serverCtx),
 			},
-		},
+		),
 	)
 
-	// 需要认证的路由（应用认证中间件）
+	// 需要认证的路由（应用认证和日志中间件）
 	authRoutes := rest.WithMiddlewares(
-		[]rest.Middleware{authMiddleware.Handle},
+		[]rest.Middleware{
+			authMiddleware.Handle,    // 认证中间件
+			loggingMiddleware.Handle, // 日志中间件
+		},
 		rest.Route{
 			Method:  http.MethodGet,
 			Path:    "/api/users/me",
