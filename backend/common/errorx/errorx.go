@@ -44,6 +44,14 @@ const (
 	CodePermissionCodeExists     = 4004 // 权限代码已存在
 	CodePermissionNoUpdateFields = 4005 // 没有需要更新的字段
 
+	// 菜单相关错误码（5000-5999）
+	CodeMenuNotFound       = 5001 // 菜单不存在
+	CodeMenuAlreadyExists  = 5002 // 菜单已存在
+	CodeMenuCodeExists     = 5003 // 菜单代码已存在
+	CodeMenuNoUpdateFields = 5004 // 没有需要更新的字段
+	CodeMenuHasChildren    = 5005 // 菜单下有子菜单，不能删除
+	CodeMenuCircularRef    = 5006 // 不能将父菜单设置为自己的子菜单
+
 )
 
 // 业务错误（使用统一的 Response 结构）
@@ -89,7 +97,11 @@ func GetHTTPStatus(code int) int {
 		return http.StatusUnauthorized
 	case CodeForbidden:
 		return http.StatusForbidden
-	case CodeNotFound, CodeUserNotFound, CodeRoleNotFound, CodePermissionNotFound:
+	case CodeNotFound,
+		CodeUserNotFound,
+		CodeRoleNotFound,
+		CodePermissionNotFound,
+		CodeMenuNotFound:
 		return http.StatusNotFound
 	case CodeInternalError:
 		return http.StatusInternalServerError
@@ -131,4 +143,12 @@ var (
 	ErrPermissionNameExists     = NewBusinessError(CodePermissionNameExists, "权限名称已存在")
 	ErrPermissionCodeExists     = NewBusinessError(CodePermissionCodeExists, "权限代码已存在")
 	ErrPermissionNoUpdateFields = NewBusinessError(CodePermissionNoUpdateFields, "至少需要提供一个更新字段")
+
+	// 菜单相关错误
+	ErrMenuNotFound       = NewBusinessError(CodeMenuNotFound, "菜单不存在")
+	ErrMenuAlreadExists   = NewBusinessError(CodeMenuAlreadyExists, "菜单已存在")
+	ErrMenuCodeExists     = NewBusinessError(CodeMenuCodeExists, "菜单代码已存在")
+	ErrMenuNoUpdateFields = NewBusinessError(CodeMenuNoUpdateFields, "至少需要提供一个更新字段")
+	ErrMenuHasChildren    = NewBusinessError(CodeMenuHasChildren, "菜单下有子菜单，不能删除")
+	ErrMenuCircularRef    = NewBusinessError(CodeMenuCircularRef, "不能将父菜单设置为自己的子菜单")
 )
