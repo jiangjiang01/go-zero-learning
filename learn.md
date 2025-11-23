@@ -224,6 +224,7 @@ go-zero-learning/
 | 获取用户列表 | GET | `/api/users` | 获取用户列表（支持分页和搜索） |
 | 获取指定用户详情 | GET | `/api/users/:id` | 获取指定用户信息 |
 | 更新当前用户信息 | PUT | `/api/users/me` | 更新当前认证用户信息 |
+| 更新指定用户信息 | PUT | `/api/users/:id` | 更新指定用户信息（防止自更新） |
 | 删除用户 | DELETE | `/api/users/:id` | 删除用户（防止自删除） |
 
 ### 路径设计说明
@@ -233,11 +234,6 @@ go-zero-learning/
 - **子资源操作**：`/api/users/login` 表示登录操作（特殊操作使用子资源）
 - **路径冲突处理**：`GET /api/users`（列表）和 `POST /api/users`（创建）使用相同路径，通过 HTTP 方法区分
 
-### 后续扩展路径（规划）
-
-| 功能 | HTTP 方法 | 路径 | 说明 |
-|------|----------|------|------|
-| 更新指定用户信息 | PUT | `/api/users/:id` | 更新指定用户（需要权限） |
 
 ---
 
@@ -411,6 +407,7 @@ response.OkJson(w, r, resp)
   - [x] 用户详情 API（根据 ID 获取）
   - [x] 用户删除 API（防止自删除）
   - [x] RESTful API 重构（统一使用 RESTful 规范）
+  - [x] API 命名优化（UpdateUserById → UpdateUserDetail，与 GetUserDetail 保持一致）
 
 - ✅ 错误处理机制
   - [x] 统一错误处理模块（backend/common/errorx）
@@ -425,6 +422,10 @@ response.OkJson(w, r, resp)
   - [x] 成功和失败响应使用统一格式（code + message + data + timestamp）
   - [x] 所有 handler 使用统一成功响应
   - [x] 错误响应包含 timestamp
+
+- ✅ 代码质量优化
+  - [x] API 命名规范统一（UpdateUserById → UpdateUserDetail）
+  - [x] 前端错误提示优化（避免重复显示错误消息）
 
 ### 待完成功能
 
@@ -495,7 +496,7 @@ response.OkJson(w, r, resp)
 11. 开始阶段二：权限管理
 
 **最后更新**：2025-01-22  
-**当前状态**：阶段一（用户认证和管理）全部完成，包括：注册、登录、获取用户信息、用户列表、用户详情、用户更新、用户删除。所有 API 已重构为 RESTful 风格，错误处理机制和统一响应格式已实现。可以开始阶段二：权限管理。
+**当前状态**：阶段一（用户认证和管理）全部完成，包括：注册、登录、获取用户信息、用户列表、用户详情、用户更新、用户删除。所有 API 已重构为 RESTful 风格，错误处理机制和统一响应格式已实现。已完成 API 命名优化和前端错误提示优化。可以开始阶段二：权限管理。
 
 ---
 
@@ -817,6 +818,50 @@ echo -e "\n"
   curl -X GET http://localhost:8888/api/users/1
   ```
   **预期响应**：`未提供认证 token` 或类似错误
+
+---
+
+### 更新指定用户信息接口 (`PUT /api/users/:id`)
+
+**需要认证**：需要在请求头中提供 `Authorization: Bearer <token>`
+
+#### 成功场景
+- [x] **更新指定用户邮箱**
+  ```bash
+  curl -X PUT http://localhost:8888/api/users/2 \
+    -H "Authorization: Bearer YOUR_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"newemail@example.com"}'
+  ```
+  **预期响应**：返回更新后的用户信息
+
+- [x] **更新指定用户密码**
+  ```bash
+  curl -X PUT http://localhost:8888/api/users/2 \
+    -H "Authorization: Bearer YOUR_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"password":"newpassword123"}'
+  ```
+  **预期响应**：返回更新后的用户信息
+
+#### 失败场景
+- [x] **尝试更新自己（应使用 /api/users/me）**
+  ```bash
+  curl -X PUT http://localhost:8888/api/users/1 \
+    -H "Authorization: Bearer YOUR_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"newemail@example.com"}'
+  ```
+  **预期响应**：`不能通过此接口修改自己的账户，请使用 /api/users/me`
+
+- [x] **用户不存在**
+  ```bash
+  curl -X PUT http://localhost:8888/api/users/99999 \
+    -H "Authorization: Bearer YOUR_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"newemail@example.com"}'
+  ```
+  **预期响应**：`用户不存在`
 
 ---
 
