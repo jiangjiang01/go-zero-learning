@@ -42,14 +42,14 @@ type GetUserListResp struct {
 }
 
 type UpdateUserReq struct {
-	Email    string `json:"email,optional"`
-	Password string `json:"password,optional"`
+	Email    string `json:"email,omitempty"`
+	Password string `json:"password,omitempty"`
 }
 
 type UpdateUserDetailReq struct {
 	ID       int64  `path:"id"`
-	Email    string `json:"email,optional"`
-	Password string `json:"password,optional"`
+	Email    string `json:"email,omitempty"`
+	Password string `json:"password,omitempty"`
 }
 
 type GetUserDetailReq struct {
