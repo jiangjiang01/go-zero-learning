@@ -1,5 +1,5 @@
 <template>
-  <div class="user-container p-4">
+  <div class="role-container p-4">
     <el-card>
       <!-- 搜索栏 -->
       <div class="mb-4">
@@ -11,7 +11,7 @@
           <el-form-item label="关键词">
             <el-input
               v-model="searchForm.keyword"
-              placeholder="用户名/邮箱"
+              placeholder="角色名称/代码"
               clearable
               style="width: 200px"
               @keyup.enter="handleSearch"
@@ -29,7 +29,7 @@
               type="success"
               @click="handleAdd"
             >
-              新增用户
+              新增角色
             </el-button>
           </el-form-item>
         </el-form>
@@ -49,13 +49,37 @@
           align="center"
         />
         <el-table-column
-          prop="username"
-          label="用户名"
+          prop="name"
+          label="角色名称"
+          width="150"
         />
         <el-table-column
-          prop="email"
-          label="邮箱"
+          prop="code"
+          label="角色代码"
+          width="150"
         />
+        <el-table-column
+          prop="desc"
+          label="描述"
+          min-width="200"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          label="创建时间"
+          align="center"
+        >
+          <template #default="{ row }">
+            {{ formatDateTime(row.created_at) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="更新时间"
+          align="center"
+        >
+          <template #default="{ row }">
+            {{ formatDateTime(row.updated_at) }}
+          </template>
+        </el-table-column>
         <el-table-column
           label="操作"
           width="180"
@@ -67,7 +91,7 @@
               size="small"
               @click="handleEdit(row)"
             >
-              查看
+              编辑
             </el-button>
             <el-button
               type="danger"
@@ -95,9 +119,9 @@
     </el-card>
 
     <!-- 新增/编辑对话框 -->
-    <user-dialog
+    <role-dialog
       v-model="dialogVisible"
-      :user-id="currentUserId"
+      :role-id="currentRoleId"
       @success="handleDialogSuccess"
     />
   </div>
@@ -107,17 +131,17 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
-  getUserList,
-  deleteUser,
-  type UserInfo
-} from '@/api/user'
+  getRoleList,
+  deleteRole,
+  type RoleInfo
+} from '@/api/role'
 import { formatDateTime } from '@/utils/format'
-import UserDialog from './components/UserDialog.vue'
+import RoleDialog from './components/RoleDialog.vue'
 
 const loading = ref(false)
-const tableData = ref<UserInfo[]>([])
+const tableData = ref<RoleInfo[]>([])
 const dialogVisible = ref(false)
-const currentUserId = ref<number | null>(null)
+const currentRoleId = ref<number | null>(null)
 
 const searchForm = reactive({
   keyword: ''
@@ -129,19 +153,19 @@ const pagination = reactive({
   total: 0
 })
 
-// 获取用户列表
-const fetchUserList = async () => {
+// 获取角色列表
+const fetchRoleList = async () => {
   loading.value = true
   try {
-    const res = await getUserList({
+    const res = await getRoleList({
       page: pagination.page,
       page_size: pagination.pageSize,
       keyword: searchForm.keyword || undefined
     })
-    tableData.value = res.data.users || []
+    tableData.value = res.data.roles || []
     pagination.total = res.data.total || 0
   } catch (error: any) {
-    ElMessage.error(error.message || '获取用户列表失败')
+    ElMessage.error(error.message || '获取角色列表失败')
   } finally {
     loading.value = false
   }
@@ -150,44 +174,43 @@ const fetchUserList = async () => {
 // 搜索
 const handleSearch = () => {
   pagination.page = 1
-  fetchUserList()
+  fetchRoleList()
 }
 
 // 重置
 const handleReset = () => {
   searchForm.keyword = ''
   pagination.page = 1
-  fetchUserList()
+  fetchRoleList()
 }
 
 // 新增
 const handleAdd = () => {
-  currentUserId.value = null
+  currentRoleId.value = null
   dialogVisible.value = true
 }
 
-// 查看/编辑（后端接口只能更新当前用户，这里暂时只支持查看）
-const handleEdit = (row: UserInfo) => {
-  currentUserId.value = row.id
+// 编辑
+const handleEdit = (row: RoleInfo) => {
+  currentRoleId.value = row.id
   dialogVisible.value = true
 }
 
 // 删除
-const handleDelete = async (row: UserInfo) => {
-  ElMessageBox.confirm(`确定要删除用户 "${row.username}" 吗？`, '提示', {
+const handleDelete = async (row: RoleInfo) => {
+  ElMessageBox.confirm(`确定要删除角色 "${row.name}" 吗？`, '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   })
     .then(async () => {
       try {
-        await deleteUser(row.id)
+        await deleteRole(row.id)
         ElMessage.success('删除成功')
-        fetchUserList()
+        fetchRoleList()
       } catch (error: any) {
         // 错误消息已经在 request.ts 的响应拦截器中显示过了，这里不需要再次显示
-        // 只需要处理业务逻辑（如刷新列表等）
-        console.error('删除用户失败:', error)
+        console.error('删除角色失败:', error)
       }
     })
     .catch(() => {})
@@ -195,22 +218,23 @@ const handleDelete = async (row: UserInfo) => {
 
 // 分页大小变更
 const handleSizeChange = () => {
-  fetchUserList()
+  fetchRoleList()
 }
 
 // 页码变更
 const handlePageChange = () => {
-  fetchUserList()
+  fetchRoleList()
 }
 
 // 对话框成功回调
 const handleDialogSuccess = () => {
-  fetchUserList()
+  fetchRoleList()
 }
 
 onMounted(() => {
-  fetchUserList()
+  fetchRoleList()
 })
 </script>
 
 <style scoped></style>
+
