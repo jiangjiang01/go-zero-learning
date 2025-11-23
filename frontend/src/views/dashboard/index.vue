@@ -2,201 +2,108 @@
   <div class="dashboard-container p-4">
     <h1 class="text-2xl font-bold mb-6">仪表盘</h1>
 
-    <!-- 统计卡片 -->
-    <el-row :gutter="20" class="mb-6">
-      <!-- 用户统计 -->
-      <el-col :xs="24" :sm="12" :md="6">
-        <el-card shadow="hover" class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon user-icon">
-              <el-icon :size="40">
-                <User />
-              </el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.user_total || 0 }}</div>
-              <div class="stat-label">用户总数</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :md="6">
-        <el-card shadow="hover" class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon today-icon">
-              <el-icon :size="40">
-                <UserFilled />
-              </el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.user_today || 0 }}</div>
-              <div class="stat-label">今日新增</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :md="6">
-        <el-card shadow="hover" class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon enabled-icon">
-              <el-icon :size="40">
-                <CircleCheck />
-              </el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.user_enabled || 0 }}</div>
-              <div class="stat-label">启用用户</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :md="6">
-        <el-card shadow="hover" class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon disabled-icon">
-              <el-icon :size="40">
-                <CircleClose />
-              </el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.user_disabled || 0 }}</div>
-              <div class="stat-label">禁用用户</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <!-- 系统统计 -->
-    <el-row :gutter="20" class="mb-6">
-      <el-col :xs="24" :sm="12" :md="6">
-        <el-card shadow="hover" class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon role-icon">
-              <el-icon :size="40">
-                <Avatar />
-              </el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.role_total || 0 }}</div>
-              <div class="stat-label">角色总数</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :md="6">
-        <el-card shadow="hover" class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon menu-icon">
-              <el-icon :size="40">
-                <Menu />
-              </el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.menu_total || 0 }}</div>
-              <div class="stat-label">菜单总数</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :md="6">
-        <el-card shadow="hover" class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon log-icon">
-              <el-icon :size="40">
-                <Document />
-              </el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.operation_log_today || 0 }}</div>
-              <div class="stat-label">今日操作日志</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :md="6">
-        <el-card shadow="hover" class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon login-icon">
-              <el-icon :size="40">
-                <Key />
-              </el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.login_log_today || 0 }}</div>
-              <div class="stat-label">今日登录日志</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <!-- 欢迎信息 -->
-    <el-card>
+    <!-- 欢迎卡片 -->
+    <el-card class="mb-6 welcome-card">
       <div class="welcome-content">
-        <h2 class="text-xl font-bold mb-2">欢迎使用 Admin-Gin-Vue 管理系统</h2>
-        <p class="text-gray-600">系统运行正常，所有功能正常使用</p>
+        <h2 class="text-2xl font-bold mb-3">欢迎使用 Go-Zero-Learning 管理系统</h2>
+        <p class="text-gray-600 mb-4">基于 go-zero 框架构建的微服务管理系统</p>
+        <el-row :gutter="16">
+          <el-col :span="8">
+            <div class="feature-item">
+              <User :size="24" class="feature-icon" />
+              <div>
+                <div class="feature-title">用户管理</div>
+                <div class="feature-desc">完整的用户注册、登录、信息管理功能</div>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="feature-item">
+              <Lock :size="24" class="feature-icon" />
+              <div>
+                <div class="feature-title">安全认证</div>
+                <div class="feature-desc">JWT Token 认证，保障系统安全</div>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="feature-item">
+              <Setting :size="24" class="feature-icon" />
+              <div>
+                <div class="feature-title">系统管理</div>
+                <div class="feature-desc">统一的错误处理和响应格式</div>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
       </div>
     </el-card>
+
+    <!-- 快速操作 -->
+    <el-row :gutter="20">
+      <el-col :xs="24" :sm="12" :md="8">
+        <el-card shadow="hover" class="quick-card">
+          <template #header>
+            <div class="card-header">
+              <User :size="18" />
+              <span>用户管理</span>
+            </div>
+          </template>
+          <div class="quick-content">
+            <p class="text-gray-600 mb-4">管理系统的用户信息，包括用户列表、用户详情、用户编辑等功能。</p>
+            <el-button type="primary" @click="goToUserManagement">前往用户管理</el-button>
+          </div>
+        </el-card>
+      </el-col>
+
+      <el-col :xs="24" :sm="12" :md="8">
+        <el-card shadow="hover" class="quick-card">
+          <template #header>
+            <div class="card-header">
+              <Setting :size="18" />
+              <span>系统设置</span>
+            </div>
+          </template>
+          <div class="quick-content">
+            <p class="text-gray-600 mb-4">配置系统参数，包括 JWT 配置、日志配置、数据库配置等。</p>
+            <el-button type="info" disabled>功能开发中</el-button>
+          </div>
+        </el-card>
+      </el-col>
+
+      <el-col :xs="24" :sm="12" :md="8">
+        <el-card shadow="hover" class="quick-card">
+          <template #header>
+            <div class="card-header">
+              <Document :size="18" />
+              <span>系统信息</span>
+            </div>
+          </template>
+          <div class="quick-content">
+            <p class="text-gray-600 mb-4">查看系统运行状态、版本信息、API 文档等系统相关信息。</p>
+            <el-button type="info" disabled>功能开发中</el-button>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { getDashboardStats, type DashboardStats } from '@/api/dashboard'
-import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 import {
   User,
-  UserFilled,
-  CircleCheck,
-  CircleClose,
-  Avatar,
-  Menu,
   Document,
-  Key
+  Lock,
+  Setting
 } from '@element-plus/icons-vue'
 
-const stats = ref<DashboardStats>({
-  user_total: 0,
-  user_today: 0,
-  user_enabled: 0,
-  user_disabled: 0,
-  role_total: 0,
-  menu_total: 0,
-  operation_log_today: 0,
-  login_log_today: 0
-})
+const router = useRouter()
 
-const loading = ref(false)
-
-// 获取统计数据
-const fetchStats = async () => {
-  loading.value = true
-  try {
-    const res = await getDashboardStats()
-    if (res.code === 200) {
-      stats.value = res.data
-    } else {
-      ElMessage.error(res.message || '获取统计数据失败')
-    }
-  } catch (error: any) {
-    console.error('获取统计数据失败:', error)
-    ElMessage.error('获取统计数据失败')
-  } finally {
-    loading.value = false
-  }
+// 前往用户管理
+const goToUserManagement = () => {
+  router.push('/system/user')
 }
-
-// 组件挂载时获取数据
-onMounted(() => {
-  fetchStats()
-})
 </script>
 
 <style scoped>
@@ -204,86 +111,64 @@ onMounted(() => {
   min-height: calc(100vh - 84px);
 }
 
-.stat-card {
-  cursor: pointer;
+.welcome-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.welcome-card :deep(.el-card__body) {
+  color: white;
+}
+
+.welcome-content h2 {
+  color: white;
+}
+
+.welcome-content .text-gray-600 {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.feature-icon {
+  color: white;
+  margin-top: 4px;
+}
+
+.feature-title {
+  font-weight: bold;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.feature-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+.quick-card {
+  height: 100%;
   transition: all 0.3s;
 }
 
-.stat-card:hover {
+.quick-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.stat-content {
+.card-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-}
-
-.stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-}
-
-.user-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.today-icon {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.enabled-icon {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.disabled-icon {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-}
-
-.role-icon {
-  background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
-}
-
-.menu-icon {
-  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-  color: #333;
-}
-
-.log-icon {
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-}
-
-.login-icon {
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-  color: #333;
-}
-
-.stat-info {
-  flex: 1;
-  text-align: right;
-}
-
-.stat-value {
-  font-size: 28px;
+  gap: 8px;
   font-weight: bold;
-  color: #303133;
-  line-height: 1;
-  margin-bottom: 8px;
 }
 
-.stat-label {
-  font-size: 14px;
-  color: #909399;
-}
-
-.welcome-content {
-  text-align: center;
-  padding: 40px 0;
+.quick-content {
+  min-height: 120px;
 }
 </style>

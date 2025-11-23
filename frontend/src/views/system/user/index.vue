@@ -11,7 +11,7 @@
           <el-form-item label="关键词">
             <el-input
               v-model="searchForm.keyword"
-              placeholder="用户名/昵称/邮箱"
+              placeholder="用户名/邮箱"
               clearable
               style="width: 200px"
               @keyup.enter="handleSearch"
@@ -51,45 +51,16 @@
         <el-table-column
           prop="username"
           label="用户名"
-          width="120"
-        />
-        <el-table-column
-          prop="nickname"
-          label="昵称"
-          width="120"
+          width="150"
         />
         <el-table-column
           prop="email"
           label="邮箱"
-          width="180"
-        />
-        <el-table-column
-          prop="phone"
-          label="手机号"
-          width="130"
-        />
-        <el-table-column
-          prop="status"
-          label="状态"
-          width="100"
-          align="center"
-        >
-          <template #default="{ row }">
-            <el-tag
-              :type="row.status === 1 ? 'success' : 'danger'"
-            >
-              {{ row.status === 1 ? '启用' : '禁用' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="created_at"
-          label="创建时间"
-          width="180"
+          width="200"
         />
         <el-table-column
           label="操作"
-          width="280"
+          width="180"
           fixed="right"
         >
           <template #default="{ row }">
@@ -98,14 +69,7 @@
               size="small"
               @click="handleEdit(row)"
             >
-              编辑
-            </el-button>
-            <el-button
-              :type="row.status === 1 ? 'warning' : 'success'"
-              size="small"
-              @click="handleStatusChange(row)"
-            >
-              {{ row.status === 1 ? '禁用' : '启用' }}
+              查看
             </el-button>
             <el-button
               type="danger"
@@ -147,7 +111,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   getUserList,
   deleteUser,
-  updateUserStatus,
   type UserInfo
 } from '@/api/user'
 import { formatDateTime } from '@/utils/format'
@@ -174,14 +137,11 @@ const fetchUserList = async () => {
   try {
     const res = await getUserList({
       page: pagination.page,
-      pageSize: pagination.pageSize,
+      page_size: pagination.pageSize,
       keyword: searchForm.keyword || undefined
     })
-    tableData.value = res.data.list.map((item: any) => ({
-      ...item,
-      created_at: formatDateTime(item.created_at)
-    }))
-    pagination.total = res.data.total
+    tableData.value = res.data.users || []
+    pagination.total = res.data.total || 0
   } catch (error: any) {
     ElMessage.error(error.message || '获取用户列表失败')
   } finally {
@@ -208,24 +168,10 @@ const handleAdd = () => {
   dialogVisible.value = true
 }
 
-// 编辑
+// 查看/编辑（后端接口只能更新当前用户，这里暂时只支持查看）
 const handleEdit = (row: UserInfo) => {
   currentUserId.value = row.id
   dialogVisible.value = true
-}
-
-// 状态变更
-const handleStatusChange = async (row: UserInfo) => {
-  const newStatus = row.status === 1 ? 0 : 1
-  const statusText = newStatus === 1 ? '启用' : '禁用'
-  
-  try {
-    await updateUserStatus(row.id, newStatus)
-    ElMessage.success(`${statusText}成功`)
-    fetchUserList()
-  } catch (error: any) {
-    ElMessage.error(error.message || `${statusText}失败`)
-  }
 }
 
 // 删除

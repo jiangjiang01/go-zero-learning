@@ -8,19 +8,18 @@
         <Fold v-if="!appStore.sidebarCollapsed" />
         <Expand v-else />
       </el-icon>
-      <h1 class="text-xl font-bold text-gray-800">Admin-Gin-Vue</h1>
+      <h1 class="text-xl font-bold text-gray-800">Go-Zero-Learning</h1>
     </div>
     <div class="flex-center">
       <el-dropdown @command="handleCommand">
         <div class="flex-center cursor-pointer">
           <el-avatar
             :size="32"
-            :src="userStore.avatar"
             class="mr-2"
           >
-            {{ userStore.nickname.charAt(0) }}
+            {{ userStore.username ? userStore.username.charAt(0).toUpperCase() : 'U' }}
           </el-avatar>
-          <span class="mr-2">{{ userStore.nickname || userStore.username }}</span>
+          <span class="mr-2">{{ userStore.username }}</span>
           <el-icon><ArrowDown /></el-icon>
         </div>
         <template #dropdown>

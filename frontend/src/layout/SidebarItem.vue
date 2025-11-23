@@ -5,7 +5,7 @@
       :index="resolvePath"
     >
       <el-icon v-if="item.meta?.icon">
-        <component :is="item.meta.icon" />
+        <component :is="getIconComponent(item.meta.icon)" />
       </el-icon>
       <template #title>{{ item.meta?.title }}</template>
     </el-menu-item>
@@ -16,7 +16,7 @@
     >
       <template #title>
         <el-icon v-if="item.meta?.icon">
-          <component :is="item.meta.icon" />
+          <component :is="getIconComponent(item.meta.icon)" />
         </el-icon>
         <span>{{ item.meta?.title }}</span>
       </template>
@@ -34,6 +34,7 @@
 import { computed } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 import { isExternal } from '@/utils/route'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 interface Props {
   item: RouteRecordRaw
@@ -42,11 +43,19 @@ interface Props {
 
 const props = defineProps<Props>()
 
+// 获取图标组件
+const getIconComponent = (iconName?: string) => {
+  if (!iconName) return null
+  return (ElementPlusIconsVue as any)[iconName] || null
+}
+
 const hasChildren = computed(() => {
   return props.item.children && props.item.children.length > 0
 })
 
 const onlyOneChild = computed(() => {
+  // 如果父级路由有 redirect 属性，说明是父级菜单，应该显示为子菜单
+  if (props.item.redirect) return false
   if (!props.item.children) return false
   const showingChildren = props.item.children.filter((child) => {
     return !child.meta?.hidden

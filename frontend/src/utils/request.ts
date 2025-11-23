@@ -28,9 +28,17 @@ const service: AxiosInstance = axios.create({
 service.interceptors.request.use(
   (config) => {
     const userStore = useUserStore()
-    if (userStore.token) {
-      config.headers!['Authorization'] = `Bearer ${userStore.token}`
+    
+    // 设置 Content-Type
+    if (!config.headers['Content-Type']) {
+      config.headers['Content-Type'] = 'application/json'
     }
+    
+    // 添加 Authorization 头
+    if (userStore.token) {
+      config.headers['Authorization'] = `Bearer ${userStore.token}`
+    }
+    
     return config
   },
   (error) => {
@@ -74,25 +82,36 @@ service.interceptors.response.use(
     let message = '请求失败'
 
     if (error.response) {
-      switch (error.response.status) {
-        case 401:
-          message = '未授权，请重新登录'
-          const userStore = useUserStore()
-          userStore.logout().then(() => {
-            router.push('/login')
-          })
-          break
-        case 403:
-          message = '拒绝访问'
-          break
-        case 404:
-          message = '请求地址不存在'
-          break
-        case 500:
-          message = '服务器内部错误'
-          break
-        default:
-          message = `请求失败: ${error.response.status}`
+      const status = error.response.status
+      const data = error.response.data
+      
+      // 如果后端返回了错误信息，使用后端的错误信息
+      if (data && data.message) {
+        message = data.message
+      } else {
+        switch (status) {
+          case 401:
+            message = '未授权，请重新登录'
+            const userStore = useUserStore()
+            userStore.logout().then(() => {
+              router.push('/login')
+            })
+            break
+          case 403:
+            message = '拒绝访问'
+            break
+          case 404:
+            message = '请求地址不存在'
+            break
+          case 405:
+            message = '请求方法不允许'
+            break
+          case 500:
+            message = '服务器内部错误'
+            break
+          default:
+            message = `请求失败: ${status}`
+        }
       }
     } else if (error.request) {
       message = '网络连接失败'

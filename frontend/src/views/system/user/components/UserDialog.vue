@@ -36,16 +36,6 @@
       </el-form-item>
 
       <el-form-item
-        label="昵称"
-        prop="nickname"
-      >
-        <el-input
-          v-model="form.nickname"
-          placeholder="请输入昵称"
-        />
-      </el-form-item>
-
-      <el-form-item
         label="邮箱"
         prop="email"
       >
@@ -56,23 +46,16 @@
       </el-form-item>
 
       <el-form-item
-        label="手机号"
-        prop="phone"
+        v-if="userId"
+        label="新密码"
+        prop="newPassword"
       >
         <el-input
-          v-model="form.phone"
-          placeholder="请输入手机号"
+          v-model="form.password"
+          type="password"
+          placeholder="留空则不修改密码"
+          show-password
         />
-      </el-form-item>
-
-      <el-form-item
-        label="状态"
-        prop="status"
-      >
-        <el-radio-group v-model="form.status">
-          <el-radio :label="1">启用</el-radio>
-          <el-radio :label="0">禁用</el-radio>
-        </el-radio-group>
       </el-form-item>
     </el-form>
 
@@ -93,7 +76,7 @@
 import { ref, reactive, watch } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { getUser, createUser, updateUser, type CreateUserRequest, type UpdateUserRequest } from '@/api/user'
-import { validateUsername, validatePassword, validateEmail, validatePhone } from '@/utils/validate'
+import { validateUsername, validatePassword, validateEmail } from '@/utils/validate'
 
 interface Props {
   modelValue: boolean
@@ -116,18 +99,26 @@ const visible = ref(false)
 const form = reactive<CreateUserRequest & UpdateUserRequest>({
   username: '',
   password: '',
-  nickname: '',
-  email: '',
-  phone: '',
-  status: 1
+  email: ''
 })
 
 const rules: FormRules = {
   username: [{ validator: validateUsername, trigger: 'blur' }],
-  password: [{ validator: validatePassword, trigger: 'blur' }],
-  nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
-  email: [{ validator: validateEmail, trigger: 'blur' }],
-  phone: [{ validator: validatePhone, trigger: 'blur' }]
+  password: [
+    { 
+      validator: (rule, value, callback) => {
+        if (!props.userId && !value) {
+          callback(new Error('请输入密码'))
+        } else if (value && !validatePassword(rule, value, callback)) {
+          return
+        } else {
+          callback()
+        }
+      }, 
+      trigger: 'blur' 
+    }
+  ],
+  email: [{ validator: validateEmail, trigger: 'blur' }]
 }
 
 // 监听 visible 变化
@@ -158,10 +149,8 @@ const fetchUserInfo = async () => {
     const res = await getUser(props.userId)
     Object.assign(form, {
       username: res.data.username,
-      nickname: res.data.nickname,
       email: res.data.email || '',
-      phone: res.data.phone || '',
-      status: res.data.status
+      password: '' // 编辑时不显示密码
     })
   } catch (error: any) {
     ElMessage.error(error.message || '获取用户信息失败')
@@ -173,10 +162,7 @@ const resetForm = () => {
   Object.assign(form, {
     username: '',
     password: '',
-    nickname: '',
-    email: '',
-    phone: '',
-    status: 1
+    email: ''
   })
   formRef.value?.clearValidate()
 }
@@ -190,24 +176,23 @@ const handleSubmit = async () => {
       loading.value = true
       try {
         if (props.userId) {
-          // 编辑
-          const updateData: UpdateUserRequest = {
-            nickname: form.nickname,
-            email: form.email,
-            phone: form.phone,
-            status: form.status
+          // 编辑：后端接口只能更新当前用户，这里暂时不支持编辑其他用户
+          // 如果需要编辑其他用户，需要后端提供相应的接口
+          const updateData: UpdateUserRequest = {}
+          if (form.email) {
+            updateData.email = form.email
           }
-          await updateUser(props.userId, updateData)
-          ElMessage.success('编辑成功')
+          if (form.password) {
+            updateData.password = form.password
+          }
+          await updateUser(updateData)
+          ElMessage.success('更新成功')
         } else {
           // 新增
           const createData: CreateUserRequest = {
             username: form.username,
             password: form.password!,
-            nickname: form.nickname,
-            email: form.email,
-            phone: form.phone,
-            status: form.status
+            email: form.email || ''
           }
           await createUser(createData)
           ElMessage.success('新增成功')
