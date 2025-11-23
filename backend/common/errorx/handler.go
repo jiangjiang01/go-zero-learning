@@ -1,7 +1,9 @@
 package errorx
 
 import (
+	"go-zero-learning/common/response"
 	"net/http"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest/httpx"
@@ -16,14 +18,17 @@ func HandleError(w http.ResponseWriter, r *http.Request, err error) {
 	// 判断是否为业务错误
 	if bizErr, ok := err.(*BusinessError); ok {
 		statusCode := GetHTTPStatus(bizErr.Code)
-		httpx.WriteJson(w, statusCode, bizErr)
+		httpx.WriteJson(w, statusCode, bizErr.Response)
 		return
 	}
 
 	// 其他错误，记录日志并返回通用错误
 	logx.Errorf("处理请求失败：%v", err)
 	httpx.WriteJson(w, http.StatusInternalServerError, &BusinessError{
-		Code:    CodeInternalError,
-		Message: "服务器内部错误",
+		Response: &response.Response{
+			Code:      CodeInternalError,
+			Message:   "服务器内部错误",
+			Timestamp: time.Now().Unix(),
+		},
 	})
 }

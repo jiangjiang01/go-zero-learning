@@ -2,7 +2,9 @@ package errorx
 
 import (
 	"fmt"
+	"go-zero-learning/common/response"
 	"net/http"
+	"time"
 )
 
 // 错误码定义
@@ -29,17 +31,30 @@ const (
 	CodeNoUserInfo       = 2010 // 未找到用户信息
 )
 
-// 业务错误
+// 业务错误（使用统一的 Response 结构）
 type BusinessError struct {
-	Code    int    `json:"code"`    // 错误码
-	Message string `json:"message"` // 错误消息
+	*response.Response
+}
+
+// 创建业务错误
+func NewBusinessError(code int, message string) *BusinessError {
+	return &BusinessError{
+		Response: &response.Response{
+			Code:      code,
+			Message:   message,
+			Timestamp: time.Now().Unix(),
+		},
+	}
 }
 
 // 创建业务错误（格式化消息）
-func NewBusinessError(code int, message string, args ...interface{}) *BusinessError {
+func NewBusinessErrorf(code int, format string, args ...interface{}) *BusinessError {
 	return &BusinessError{
-		Code:    code,
-		Message: fmt.Sprintf(message, args...),
+		Response: &response.Response{
+			Code:      code,
+			Message:   fmt.Sprintf(format, args...),
+			Timestamp: time.Now().Unix(),
+		},
 	}
 }
 

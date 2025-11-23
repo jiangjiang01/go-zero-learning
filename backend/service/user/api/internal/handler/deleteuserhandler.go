@@ -2,6 +2,7 @@ package handler
 
 import (
 	"go-zero-learning/common/errorx"
+	"go-zero-learning/common/response"
 	"go-zero-learning/service/user/api/internal/logic"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
@@ -23,7 +24,7 @@ func DeleteUserHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		if err != nil {
 			errorx.HandleError(w, r, err)
 		} else {
-			httpx.OkJsonCtx(r.Context(), w, resp)
+			response.OkJson(w, r, resp)
 		}
 	}
 }
