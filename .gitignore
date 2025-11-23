@@ -93,3 +93,72 @@ Desktop.ini
 # 如果 learn/ 目录下的项目需要忽略某些文件，可以在这里添加
 # learn/*/bin/
 # learn/*/dist/
+
+# ==================== 前端项目 ====================
+# Node.js 依赖
+frontend/node_modules/
+frontend/.pnpm-store/
+frontend/.yarn/
+frontend/.yarn/cache/
+frontend/.yarn/unplugged/
+frontend/.yarn/build-state.yml
+frontend/.yarn/install-state.gz
+frontend/.pnp.*
+
+# 前端构建产物
+frontend/dist/
+frontend/build/
+frontend/.output/
+frontend/.nuxt/
+frontend/.next/
+frontend/.vuepress/dist/
+
+# 前端构建工具缓存
+frontend/.vite/
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/.turbo/
+frontend/.swc/
+
+# 前端环境变量文件（保留模板文件）
+frontend/.env.local
+frontend/.env.*.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# 前端测试覆盖率
+frontend/coverage/
+frontend/.nyc_output/
+frontend/*.lcov
+
+# 前端日志文件
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+
+# 前端编辑器配置
+frontend/.vscode/
+frontend/.idea/
+frontend/*.suo
+frontend/*.ntvs*
+frontend/*.njsproj
+frontend/*.sln
+frontend/*.sw?
+
+# 前端临时文件
+frontend/.temp/
+frontend/.tmp/
+frontend/temp/
+frontend/tmp/
+
+# TypeScript 编译产物
+frontend/*.tsbuildinfo
+frontend/tsconfig.tsbuildinfo
+
+# 前端锁文件（可选，根据团队规范决定是否忽略）
+# frontend/package-lock.json
+# frontend/yarn.lock
+# frontend/pnpm-lock.yaml
