@@ -8,6 +8,7 @@ import (
 
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/common/response"
+	"go-zero-learning/common/validator"
 	"go-zero-learning/service/user/api/internal/logic"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
@@ -19,7 +20,7 @@ func RegisterHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.RegisterReq
 		if err := httpx.Parse(r, &req); err != nil {
-			errorx.HandleError(w, r, err)
+			errorx.HandleError(w, r, validator.ParseError(err))
 			return
 		}
 
