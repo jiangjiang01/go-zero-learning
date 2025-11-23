@@ -114,3 +114,54 @@ type UpdateRoleReq struct {
 }
 
 // ========== 角色管理 API End ==========
+
+// ========== 权限管理 API Start ==========
+
+type CreatePermissionReq struct {
+	Name string `json:"name"`
+	Code string `json:"code"`
+	Desc string `json:"desc,omitempty"`
+}
+
+type DeletePermissionReq struct {
+	ID int64 `path:"id"`
+}
+
+type DeletePermissionResp struct {
+	Message string `json:"message"`
+}
+
+type GetPermissionDetailReq struct {
+	ID int64 `path:"id"`
+}
+
+type GetPermissionListReq struct {
+	Page     int64  `form:"page,default=1"`
+	PageSize int64  `form:"page_size,default=10"`
+	Keyword  string `form:"keyword,optional"`
+}
+
+type GetPermissionListResp struct {
+	Permissions []PermissionInfoResp `json:"permissions"`
+	Total       int64                `json:"total"`
+	Page        int64                `json:"page"`
+	PageSize    int64                `json:"page_size"`
+}
+
+type PermissionInfoResp struct {
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	Desc      string `json:"desc"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
+}
+
+type UpdatePermissionReq struct {
+	ID   int64  `path:"id"`
+	Name string `json:"name,omitempty"`
+	Code string `json:"code,omitempty"`
+	Desc string `json:"desc,omitempty"`
+}
+
+// ========== 权限管理 API End ==========

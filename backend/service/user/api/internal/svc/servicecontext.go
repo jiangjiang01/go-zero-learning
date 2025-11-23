@@ -29,6 +29,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	err = db.GetDB().AutoMigrate(
 		&model.User{},
 		&model.Role{},
+		&model.Permission{},
 	)
 	if err != nil {
 		panic(err)
