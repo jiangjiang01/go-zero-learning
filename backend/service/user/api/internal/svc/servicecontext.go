@@ -26,7 +26,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	}
 
 	// 自动迁移（创建表）
-	err = db.GetDB().AutoMigrate(&model.User{})
+	err = db.GetDB().AutoMigrate(
+		&model.User{},
+		&model.Role{},
+	)
 	if err != nil {
 		panic(err)
 	}
