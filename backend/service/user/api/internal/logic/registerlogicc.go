@@ -50,7 +50,7 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.LoginResp,
 	if err == nil {
 		return nil, errorx.ErrUsernameExists
 	}
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		// 说明这是数据库查询错误（不是未找到记录的错误）
 		l.Errorf("查询用户失败：%v", err)
 		return nil, errorx.ErrInternalError
@@ -61,7 +61,7 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.LoginResp,
 	if err == nil {
 		return nil, errorx.ErrEmailExists
 	}
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		l.Errorf("查询邮箱失败：%v", err)
 		return nil, errorx.ErrInternalError
 	}

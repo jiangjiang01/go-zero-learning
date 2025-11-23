@@ -109,7 +109,7 @@ func (l *UpdateUserLogic) UpdateUser(req *types.UpdateUserReq) (resp *types.User
 	}
 
 	// 7. 保存更新
-	if err := l.svcCtx.DB.Save(user).Error; err != nil {
+	if err := l.svcCtx.DB.Save(&user).Error; err != nil {
 		l.Errorf("更新用户失败：%v", err)
 		return nil, errorx.ErrInternalError
 	}
