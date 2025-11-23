@@ -4,3 +4,8 @@ Port: 8888
 
 # 数据库配置
 DataSource: root:123456@tcp(localhost:3307)/testdb?charset=utf8mb4&parseTime=True&loc=Local
+
+# JWT 配置
+JWT:
+  Secret: "your-256-bit-secret" # JWT 密钥（生产环境请修改为更安全的密钥）
+  ExpireDays: 7 # Token 过期天数（生产环境请根据需要调整）

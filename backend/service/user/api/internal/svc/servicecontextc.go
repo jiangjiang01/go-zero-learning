@@ -5,6 +5,7 @@ package svc
 
 import (
 	"go-zero-learning/common/db"
+	"go-zero-learning/common/jwt"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/config"
 
@@ -14,6 +15,7 @@ import (
 type ServiceContext struct {
 	Config config.Config
 	DB     *gorm.DB
+	JWT    *jwt.JWTManager // JWT 管理器
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -29,8 +31,12 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		panic(err)
 	}
 
+	// 初始化 JWT 管理器
+	jwtManager := jwt.NewJWTManager(c.JWT.Secret, c.JWT.ExpireDays)
+
 	return &ServiceContext{
 		Config: c,
 		DB:     db.GetDB(),
+		JWT:    jwtManager,
 	}
 }
