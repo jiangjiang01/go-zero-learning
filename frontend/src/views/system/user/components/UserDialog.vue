@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { getUser, createUser, updateUser, type CreateUserRequest, type UpdateUserRequest } from '@/api/user'
+import { getUser, createUser, updateUser, updateUserById, type CreateUserRequest, type UpdateUserRequest } from '@/api/user'
 import { validateUsername, validatePassword, validateEmail } from '@/utils/validate'
 
 interface Props {
@@ -176,8 +176,7 @@ const handleSubmit = async () => {
       loading.value = true
       try {
         if (props.userId) {
-          // 编辑：后端接口只能更新当前用户，这里暂时不支持编辑其他用户
-          // 如果需要编辑其他用户，需要后端提供相应的接口
+          // 编辑：更新指定用户
           const updateData: UpdateUserRequest = {}
           if (form.email) {
             updateData.email = form.email
@@ -185,7 +184,7 @@ const handleSubmit = async () => {
           if (form.password) {
             updateData.password = form.password
           }
-          await updateUser(updateData)
+          await updateUserById(props.userId, updateData)
           ElMessage.success('更新成功')
         } else {
           // 新增

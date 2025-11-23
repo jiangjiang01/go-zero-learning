@@ -79,6 +79,20 @@ export function updateUser(data: UpdateUserRequest): Promise<ResponseData<UserIn
 }
 
 /**
+ * 更新指定用户信息
+ * @param id - 用户ID
+ * @param data - 用户数据
+ * @returns Promise
+ */
+export function updateUserById(id: number, data: UpdateUserRequest): Promise<ResponseData<UserInfo>> {
+  return request({
+    url: `/api/users/${id}`,
+    method: 'put',
+    data
+  })
+}
+
+/**
  * 删除用户
  * @param id - 用户ID
  * @returns Promise
