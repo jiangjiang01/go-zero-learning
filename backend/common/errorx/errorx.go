@@ -29,6 +29,13 @@ const (
 	CodeCannotDeleteSelf = 2008 // 不能删除自己
 	CodeNoUpdateFields   = 2009 // 没有需要更新的字段
 	CodeNoUserInfo       = 2010 // 未找到用户信息
+
+	// 角色相关错误码（3000-3999）
+	CodeRoleNotFound       = 3001 // 角色不存在
+	CodeRoleAlreadyExists  = 3002 // 角色已存在
+	CodeRoleNameExists     = 3003 // 角色名称已存在
+	CodeRoleCodeExists     = 3004 // 角色代码已存在
+	CodeRoleNoUpdateFields = 3005 // 没有需要更新的字段
 )
 
 // 业务错误（使用统一的 Response 结构）
@@ -74,7 +81,7 @@ func GetHTTPStatus(code int) int {
 		return http.StatusUnauthorized
 	case CodeForbidden:
 		return http.StatusForbidden
-	case CodeNotFound, CodeUserNotFound:
+	case CodeNotFound, CodeUserNotFound, CodeRoleNotFound:
 		return http.StatusNotFound
 	case CodeInternalError:
 		return http.StatusInternalServerError
@@ -102,4 +109,11 @@ var (
 	ErrCannotDeleteSelf = NewBusinessError(CodeCannotDeleteSelf, "不能删除自己的账户")
 	ErrNoUpdateFields   = NewBusinessError(CodeNoUpdateFields, "至少需要提供一个更新字段")
 	ErrNoUserInfo       = NewBusinessError(CodeNoUserInfo, "未找到用户信息")
+
+	// 角色相关错误
+	ErrRoleNotFound       = NewBusinessError(CodeRoleNotFound, "角色不存在")
+	ErrRoleAlreadExists   = NewBusinessError(CodeRoleAlreadyExists, "角色已存在")
+	ErrRoleNameExists     = NewBusinessError(CodeRoleNameExists, "角色名称已存在")
+	ErrRoleCodeExists     = NewBusinessError(CodeRoleCodeExists, "角色代码已存在")
+	ErrRoleNoUpdateFields = NewBusinessError(CodeRoleNoUpdateFields, "至少需要提供一个更新字段")
 )

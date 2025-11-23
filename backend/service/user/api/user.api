@@ -74,7 +74,7 @@ type DeleteUserResp {
 type CreateRoleReq {
 	Name string `json:"name"`
 	Code string `json:"code"`
-	Desc string `json:"desc"`
+	Desc string `json:"desc,optional"`
 }
 
 // 角色响应信息
