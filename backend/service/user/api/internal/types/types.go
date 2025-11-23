@@ -63,3 +63,54 @@ type DeleteUserReq struct {
 type DeleteUserResp struct {
 	Message string `json:"message"`
 }
+
+// ========== 角色管理 API Start ==========
+
+type CreateRoleReq struct {
+	Name string `json:"name"`
+	Code string `json:"code"`
+	Desc string `json:"desc,omitempty"`
+}
+
+type DeleteRoleReq struct {
+	ID int64 `path:"id"`
+}
+
+type DeleteRoleResp struct {
+	Message string `json:"message"`
+}
+
+type GetRoleDetailReq struct {
+	ID int64 `path:"id"`
+}
+
+type GetRoleListReq struct {
+	Page     int64  `form:"page,default=1"`
+	PageSize int64  `form:"page_size,default=10"`
+	Keyword  string `form:"keyword,optional"`
+}
+
+type GetRoleListResp struct {
+	Roles    []RoleInfoResp `json:"roles"`
+	Total    int64          `json:"total"`
+	Page     int64          `json:"page"`
+	PageSize int64          `json:"page_size"`
+}
+
+type RoleInfoResp struct {
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	Desc      string `json:"desc"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
+}
+
+type UpdateRoleReq struct {
+	ID   int64  `path:"id"`            // 路径参数：角色ID
+	Name string `json:"name,omitempty"` // 角色名称（可选）
+	Code string `json:"code,omitempty"` // 角色代码（可选）
+	Desc string `json:"desc,omitempty"` // 角色描述（可选）
+}
+
+// ========== 角色管理 API End ==========

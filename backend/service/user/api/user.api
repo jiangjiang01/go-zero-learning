@@ -27,29 +27,29 @@ type GetUserInfoReq {}
 
 // 用户列表请求（带分页和搜索）
 type GetUserListReq {
-	Page     int64  `form:"page,default=1"`       // 页码，默认第1页
+	Page     int64  `form:"page,default=1"` // 页码，默认第1页
 	PageSize int64  `form:"page_size,default=10"` // 每页数量，默认10条
-	Keyword  string `form:"keyword,optional"`     // 搜索关键词（用户名或邮箱），可选
+	Keyword  string `form:"keyword,optional"` // 搜索关键词（用户名或邮箱），可选
 }
 
 // 用户列表响应
 type GetUserListResp {
-	Users []UserInfoResp `json:"users"`
-	Total    int64          `json:"total"`     // 总用户数
-	Page     int64          `json:"page"`      // 当前页码
+	Users    []UserInfoResp `json:"users"`
+	Total    int64          `json:"total"` // 总用户数
+	Page     int64          `json:"page"` // 当前页码
 	PageSize int64          `json:"page_size"` // 每页数量
 }
 
 // 用户更新请求
 type UpdateUserReq {
-	Email string `json:"email,optional"` // 邮箱（可选）
+	Email    string `json:"email,optional"` // 邮箱（可选）
 	Password string `json:"password,optional"` // 密码（可选）
 }
 
 // 更新用户详情请求（路径参数 + 请求体）
 type UpdateUserDetailReq {
-	ID int64 `path:"id"` // 路径参数：用户ID
-	Email string `json:"email,optional"` // 邮箱（可选）
+	ID       int64  `path:"id"` // 路径参数：用户ID
+	Email    string `json:"email,optional"` // 邮箱（可选）
 	Password string `json:"password,optional"` // 密码（可选）
 }
 
@@ -69,7 +69,6 @@ type DeleteUserResp {
 }
 
 // ========== 角色管理 API Start ==========
-
 // 创建角色请求
 type CreateRoleReq {
 	Name string `json:"name"`
@@ -79,27 +78,27 @@ type CreateRoleReq {
 
 // 角色响应信息
 type RoleInfoResp {
-	ID int64 `json:"id"`
-	Name string `json:"name"`
-	Code string `json:"code"`
-	Desc string `json:"desc"`
-	CreatedAt int64 `json:"created_at"`
-	UpdatedAt int64 `json:"updated_at"`
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	Desc      string `json:"desc"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
 }
 
 // 获取角色列表请求（带分页和搜索）
 type GetRoleListReq {
-	Page int64 `form:"page,default=1"`
-	PageSize int64 `form:"page_size,default=10"`
-	Keyword string `form:"keyword,optional"`
+	Page     int64  `form:"page,default=1"`
+	PageSize int64  `form:"page_size,default=10"`
+	Keyword  string `form:"keyword,optional"`
 }
 
 // 获取角色列表响应
 type GetRoleListResp {
-	Roles []RoleInfoResp `json:"roles"`
-	Total int64 `json:"total"`
-	Page int64 `json:"page"`
-	PageSize int64 `json:"page_size"`
+	Roles    []RoleInfoResp `json:"roles"`
+	Total    int64          `json:"total"`
+	Page     int64          `json:"page"`
+	PageSize int64          `json:"page_size"`
 }
 
 // 获取角色详情(路径参数)
@@ -109,7 +108,7 @@ type GetRoleDetailReq {
 
 // 更新角色请求（路径参数 + 请求体）
 type UpdateRoleReq {
-	ID int64 `path:"id"` // 路径参数：角色ID
+	ID   int64  `path:"id"` // 路径参数：角色ID
 	Name string `json:"name,optional"` // 角色名称（可选）
 	Code string `json:"code,optional"` // 角色代码（可选）
 	Desc string `json:"desc,optional"` // 角色描述（可选）
@@ -126,7 +125,6 @@ type DeleteRoleResp {
 }
 
 // ========== 角色管理 API End ==========
-
 service user-api {
 	@handler Register
 	post /api/users (RegisterReq) returns (LoginResp)
@@ -149,12 +147,10 @@ service user-api {
 	@handler UpdateUserDetail
 	put /api/users/:id (UpdateUserDetailReq) returns (UserInfoResp)
 
-
 	@handler DeleteUser
 	delete /api/users/:id (DeleteUserReq) returns (DeleteUserResp)
 
 	// ========== 角色管理 API Start ==========
-
 	@handler CreateRole
 	post /api/roles (CreateRoleReq) returns (RoleInfoResp)
 
@@ -169,7 +165,6 @@ service user-api {
 
 	@handler DeleteRole
 	delete /api/roles/:id (DeleteRoleReq) returns (DeleteRoleResp)
-
-	// ========== 角色管理 API End ==========
+// ========== 角色管理 API End ==========
 }
 

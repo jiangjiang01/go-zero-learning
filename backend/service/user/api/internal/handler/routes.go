@@ -72,6 +72,33 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			Path:    "/api/users/:id",
 			Handler: DeleteUserHandler(serverCtx),
 		},
+
+		// 角色管理路由
+		rest.Route{
+			Method:  http.MethodPost,
+			Path:    "/api/roles",
+			Handler: CreateRoleHandler(serverCtx),
+		},
+		rest.Route{
+			Method:  http.MethodGet,
+			Path:    "/api/roles",
+			Handler: GetRoleListHandler(serverCtx),
+		},
+		rest.Route{
+			Method:  http.MethodGet,
+			Path:    "/api/roles/:id",
+			Handler: GetRoleDetailHandler(serverCtx),
+		},
+		rest.Route{
+			Method:  http.MethodPut,
+			Path:    "/api/roles/:id",
+			Handler: UpdateRoleHandler(serverCtx),
+		},
+		rest.Route{
+			Method:  http.MethodDelete,
+			Path:    "/api/roles/:id",
+			Handler: DeleteRoleHandler(serverCtx),
+		},
 	)
 
 	server.AddRoutes(authRoutes)
