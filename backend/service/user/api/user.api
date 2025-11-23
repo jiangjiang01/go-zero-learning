@@ -125,6 +125,65 @@ type DeleteRoleResp {
 }
 
 // ========== 角色管理 API End ==========
+
+// ========== 权限管理 API Start ==========
+
+// 创建权限请求
+type CreatePermissionReq {
+	Name string `json:"name"`
+	Code string `json:"code"`
+	Desc string `json:"desc,optional"`
+}
+
+// 权限响应信息
+type PermissionInfoResp {
+	ID int64 `json:"id"`
+	Name string `json:"name"`
+	Code string `json:"code"`
+	Desc string `json:"desc"`
+	CreatedAt int64 `json:"created_at"`
+	UpdatedAt int64 `json:"updated_at"`
+}
+
+// 获取权限列表请求（带分页和搜索）
+type GetPermissionListReq {
+	Page     int64  `form:"page,default=1"`
+	PageSize int64  `form:"page_size,default=10"`
+	Keyword  string `form:"keyword,optional"`
+}
+
+// 获取权限列表响应
+type GetPermissionListResp {
+	Permissions []PermissionInfoResp `json:"permissions"`
+	Total int64 `json:"total"`
+	Page int64 `json:"page"`
+	PageSize int64 `json:"page_size"`
+}
+
+// 获取权限详情（路径参数）
+type GetPermissionDetailReq {
+	ID int64 `path:"id"`
+}
+
+// 更新权限请求（路径参数 + 请求体）
+type UpdatePermissionReq {
+	ID int64 `path:"id"`
+	Name string `json:"name,optional"`
+	Code string `json:"code,optional"`
+	Desc string `json:"desc,optional"`
+}
+
+// 删除权限（路径参数）
+type DeletePermissionReq {
+	ID int64 `path:"id"`
+}
+
+// 删除权限响应
+type DeletePermissionResp {
+	Message string `json:"message"`
+}
+// ========== 权限管理 API End ==========
+
 service user-api {
 	@handler Register
 	post /api/users (RegisterReq) returns (LoginResp)
@@ -165,6 +224,23 @@ service user-api {
 
 	@handler DeleteRole
 	delete /api/roles/:id (DeleteRoleReq) returns (DeleteRoleResp)
-// ========== 角色管理 API End ==========
+	// ========== 角色管理 API End ==========
+
+	// ========== 权限管理 API Start ==========
+	@handler CreatePermission
+	post /api/permissions (CreatePermissionReq) returns (PermissionInfoResp)
+
+	@handler GetPermissionList
+	get /api/permissions (GetPermissionListReq) returns (GetPermissionListResp)
+
+	@handler GetPermissionDetail
+	get /api/permissions/:id (GetPermissionDetailReq) returns (PermissionInfoResp)
+
+	@handler UpdatePermission
+	put /api/permissions/:id (UpdatePermissionReq) returns (PermissionInfoResp)
+
+	@handler DeletePermission
+	delete /api/permissions/:id (DeletePermissionReq) returns (DeletePermissionResp)
+	// ========== 权限管理 API End ==========
 }
 
