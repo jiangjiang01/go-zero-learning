@@ -184,6 +184,76 @@ type DeletePermissionResp {
 }
 // ========== 权限管理 API End ==========
 
+// ========== 菜单管理 API Start ==========
+// 创建菜单请求
+type CreateMenuReq {
+	Name string `json:"name"`
+	Code string `json:"code"`
+	Desc string `json:"desc,optional"`
+	ParentID int64 `json:"parent_id,optional"`
+	Path string `json:"path,optional"`
+	Icon string `json:"icon,optional"`
+	Type int `json:"type"`
+	Sort int `json:"sort,optional"`
+	Status int `json:"status,optional"` // 默认在逻辑层处理
+}
+
+// 菜单响应信息
+type MenuInfoResp {
+	ID int64 `json:"id"`
+	Name string `json:"name"`
+	Code string `json:"code"`
+	Desc string `json:"desc"`
+	ParentID int64 `json:"parent_id"`
+	Path string `json:"path"`
+	Icon string `json:"icon"`
+	Type int `json:"type"`
+	Sort int `json:"sort"`
+	Status int `json:"status"`
+	CreatedAt int64 `json:"created_at"`
+	UpdatedAt int64 `json:"updated_at"`
+}
+
+// 获取菜单全部列表
+type GetAllMenuListReq {
+}
+
+// 获取菜单全部列表响应
+type GetAllMenuListResp {
+	Menus []MenuInfoResp `json:"menus"`
+}
+
+// 获取菜单详情
+type GetMenuDetailReq {
+	ID int64 `path:"id"`
+}
+
+// 编辑菜单请求
+type UpdateMenuReq {
+	ID int64 `path:"id"`
+	Name string `json:"name,optional"`
+	Code string `json:"code,optional"`
+	Desc string `json:"desc,optional"`
+	ParentID int64 `json:"parent_id,optional"`
+	Path string `json:"path,optional"`
+	Icon string `json:"icon,optional"`
+	Type int `json:"type,optional"`
+	Sort int `json:"sort,optional"`
+	Status int `json:"status,optional"`
+}
+
+// 删除菜单请求
+type DeleteMenuReq {
+	ID int64 `path:"id"`
+}
+
+// 删除菜单响应
+type DeleteMenuResp {
+	Message string `json:"message"`
+}
+
+// ========== 菜单管理 API End ==========
+
 service user-api {
 	@handler Register
 	post /api/users (RegisterReq) returns (LoginResp)
@@ -242,5 +312,22 @@ service user-api {
 	@handler DeletePermission
 	delete /api/permissions/:id (DeletePermissionReq) returns (DeletePermissionResp)
 	// ========== 权限管理 API End ==========
+
+	// ========== 菜单管理 API Start ==========
+	@handler CreateMenu
+	post /api/menus (CreateMenuReq) returns (MenuInfoResp)
+
+	@handler GetAllMenuList
+	get /api/menus/all (GetAllMenuListReq) returns (GetAllMenuListResp)
+
+	@handler GetMenuDetail
+	get /api/menus/:id (GetMenuDetailReq) returns (MenuInfoResp)
+
+	@handler UpdateMenu
+	put /api/menus/:id (UpdateMenuReq) returns (MenuInfoResp)
+
+	@handler DeleteMenu
+	delete /api/menus/:id (DeleteMenuReq) returns (DeleteMenuResp)
+	// ========== 菜单管理 API End ==========
 }
 
