@@ -29,6 +29,47 @@
 
 ---
 
+### `init_test_data.sql`
+数据库测试数据初始化脚本
+
+**用途：** 初始化系统测试数据，包括用户、角色、权限、菜单等基础数据
+
+**使用方法：**
+```bash
+# 方式1：使用 MySQL 命令行
+mysql -u your_username -p your_database < scripts/init_test_data.sql
+
+# 方式2：在 MySQL 客户端中执行
+source scripts/init_test_data.sql;
+```
+
+**包含的测试数据：**
+1. **用户数据：**
+   - `admin` / `123456` - 管理员账号（拥有所有权限）
+   - `testuser` / `123456` - 测试账号（拥有管理员权限，用于测试脚本）
+   - `normaluser` / `Normal123` - 普通用户（无角色，用于测试脚本）
+
+2. **角色数据：**
+   - 管理员角色（拥有所有权限）
+   - 普通用户角色（仅拥有查看权限）
+
+3. **权限数据：**
+   - 用户管理权限（user:list, user:create, user:update, user:delete）
+   - 角色管理权限（role:list, role:create, role:update, role:delete）
+   - 权限管理权限（permission:list, permission:create, permission:update, permission:delete）
+
+4. **菜单数据：**
+   - 仪表盘菜单
+   - 系统管理菜单及其子菜单（用户管理、角色管理、权限管理、菜单管理、系统设置）
+
+**注意事项：**
+- 脚本会先清理旧数据，然后插入新数据
+- 如果不想清理旧数据，请注释掉脚本开头的 DELETE 语句
+- 所有密码已使用 bcrypt 加密存储
+- 执行脚本前请确保数据库表结构已创建
+
+---
+
 ## 命名规范
 
 测试脚本统一使用以下命名规范：
