@@ -165,7 +165,8 @@ const fetchPermissionList = async () => {
     tableData.value = res.data.permissions || []
     pagination.total = res.data.total || 0
   } catch (error: any) {
-    ElMessage.error(error.message || '获取权限列表失败')
+    // 错误消息已在响应拦截器中统一处理，这里只记录日志
+    console.error('获取权限列表失败:', error)
   } finally {
     loading.value = false
   }

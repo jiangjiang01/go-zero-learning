@@ -162,7 +162,8 @@ const fetchRoleInfo = async () => {
       desc: res.data.desc || ''
     })
   } catch (error: any) {
-    ElMessage.error(error.message || '获取角色信息失败')
+    // 错误消息已在响应拦截器中统一处理，这里只记录日志
+    console.error('获取角色信息失败:', error)
   }
 }
 

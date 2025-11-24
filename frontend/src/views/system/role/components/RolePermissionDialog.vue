@@ -118,7 +118,8 @@ const fetchData = async () => {
     allPermissions.value = allPermissionsRes.data.permissions || []
     selectedPermissionId.value = null
   } catch (error: any) {
-    ElMessage.error(error.message || '获取数据失败')
+    // 错误消息已在响应拦截器中统一处理，这里只记录日志
+    console.error('获取数据失败:', error)
   } finally {
     loading.value = false
   }
@@ -135,7 +136,8 @@ const handleAddPermission = async (permissionId: number) => {
     await fetchData()
     emit('success')
   } catch (error: any) {
-    ElMessage.error(error.message || '权限分配失败')
+    // 错误消息已在响应拦截器中统一处理，这里只记录日志
+    console.error('权限分配失败:', error)
     selectedPermissionId.value = null
   }
 }
@@ -156,7 +158,8 @@ const handleRemovePermission = async (permission: PermissionInfo) => {
         await fetchData()
         emit('success')
       } catch (error: any) {
-        ElMessage.error(error.message || '权限移除失败')
+        // 错误消息已在响应拦截器中统一处理，这里只记录日志
+        console.error('权限移除失败:', error)
       }
     })
     .catch(() => {})

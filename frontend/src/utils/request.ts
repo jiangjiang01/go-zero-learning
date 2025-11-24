@@ -1,7 +1,14 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
+import axios, { type AxiosInstance, type AxiosResponse } from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import router from '@/router'
+
+// 扩展 AxiosRequestConfig 类型，添加 skipErrorHandler 选项
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    skipErrorHandler?: boolean // 是否跳过响应拦截器的自动错误提示（用于业务代码自定义错误处理）
+  }
+}
 
 // 响应数据类型
 export interface ResponseData<T = any> {
@@ -54,7 +61,10 @@ service.interceptors.response.use(
 
     // 后端统一响应格式：code: 0 表示成功，非 0 表示失败
     if (res.code !== 0) {
-      // 1002: 未授权，需要重新登录
+      // 检查是否需要跳过错误处理
+      const skipErrorHandler = response.config.skipErrorHandler || false
+
+      // 1002: 未授权，需要重新登录（无论是否跳过都要处理）
       if (res.code === 1002 || res.code === 1006) {
         ElMessageBox.confirm('登录状态已过期，请重新登录', '系统提示', {
           confirmButtonText: '重新登录',
@@ -69,17 +79,23 @@ service.interceptors.response.use(
         return Promise.reject(new Error(res.message || '未授权'))
       }
 
-      // 其他错误
-      ElMessage.error(res.message || '请求失败')
+      // 其他错误：只有未设置 skipErrorHandler 时才自动显示
+      if (!skipErrorHandler) {
+        ElMessage.error(res.message || '请求失败')
+      }
       return Promise.reject(new Error(res.message || '请求失败'))
     } else {
-      // 成功：返回 data 字段
-      return res
+      // 成功：返回 data 字段（ResponseData 类型）
+      // 注意：拦截器返回 ResponseData，业务代码直接使用 .data 访问
+      return res as any
     }
   },
   (error) => {
     console.error('响应错误:', error)
     let message = '请求失败'
+
+    // 检查是否需要跳过错误处理
+    const skipErrorHandler = error.config?.skipErrorHandler || false
 
     if (error.response) {
       const status = error.response.status
@@ -89,9 +105,10 @@ service.interceptors.response.use(
       if (data && typeof data === 'object' && 'code' in data && 'message' in data) {
         // 这是统一格式的业务错误响应，使用业务错误消息
         message = data.message || '请求失败'
-        // 显示业务错误消息
-        ElMessage.error(message)
-        // 创建一个新的 Error 对象，使用业务错误消息，这样调用方的 catch 块就不会再显示错误了
+        // 只有未设置 skipErrorHandler 时才显示
+        if (!skipErrorHandler) {
+          ElMessage.error(message)
+        }
         return Promise.reject(new Error(message))
       }
       
@@ -102,10 +119,13 @@ service.interceptors.response.use(
         switch (status) {
           case 401:
             message = '未授权，请重新登录'
-            const userStore = useUserStore()
-            userStore.logout().then(() => {
-              router.push('/login')
-            })
+            // 401 错误需要特殊处理（登出），无论是否跳过都要执行
+            if (!skipErrorHandler) {
+              const userStore = useUserStore()
+              userStore.logout().then(() => {
+                router.push('/login')
+              })
+            }
             break
           case 403:
             message = '拒绝访问'
@@ -127,7 +147,10 @@ service.interceptors.response.use(
       message = '网络连接失败'
     }
 
-    ElMessage.error(message)
+    // 只有未设置 skipErrorHandler 时才显示
+    if (!skipErrorHandler) {
+      ElMessage.error(message)
+    }
     return Promise.reject(new Error(message))
   }
 )

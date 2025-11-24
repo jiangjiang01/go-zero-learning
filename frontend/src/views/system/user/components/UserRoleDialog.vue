@@ -118,7 +118,8 @@ const fetchData = async () => {
     allRoles.value = allRolesRes.data.roles || []
     selectedRoleId.value = null
   } catch (error: any) {
-    ElMessage.error(error.message || '获取数据失败')
+    // 错误消息已在响应拦截器中统一处理，这里只记录日志
+    console.error('获取数据失败:', error)
   } finally {
     loading.value = false
   }
@@ -135,7 +136,8 @@ const handleAddRole = async (roleId: number) => {
     await fetchData()
     emit('success')
   } catch (error: any) {
-    ElMessage.error(error.message || '角色分配失败')
+    // 错误消息已在响应拦截器中统一处理，这里只记录日志
+    console.error('角色分配失败:', error)
     selectedRoleId.value = null
   }
 }
@@ -156,7 +158,8 @@ const handleRemoveRole = async (role: RoleInfo) => {
         await fetchData()
         emit('success')
       } catch (error: any) {
-        ElMessage.error(error.message || '角色移除失败')
+        // 错误消息已在响应拦截器中统一处理，这里只记录日志
+        console.error('角色移除失败:', error)
       }
     })
     .catch(() => {})

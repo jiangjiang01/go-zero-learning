@@ -87,7 +87,8 @@ const handleLogin = async () => {
         const redirect = (route.query.redirect as string) || '/'
         router.push(redirect)
       } catch (error: any) {
-        ElMessage.error(error.message || '登录失败')
+        // 错误消息已在响应拦截器中统一处理，这里只记录日志
+        console.error('登录失败:', error)
       } finally {
         loading.value = false
       }

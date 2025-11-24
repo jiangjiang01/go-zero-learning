@@ -153,7 +153,8 @@ const fetchUserInfo = async () => {
       password: '' // 编辑时不显示密码
     })
   } catch (error: any) {
-    ElMessage.error(error.message || '获取用户信息失败')
+    // 错误消息已在响应拦截器中统一处理，这里只记录日志
+    console.error('获取用户信息失败:', error)
   }
 }
 

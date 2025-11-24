@@ -295,7 +295,8 @@ const fetchMenuInfo = async () => {
       status: res.data.status
     })
   } catch (error: any) {
-    ElMessage.error(error.message || '获取菜单信息失败')
+    // 错误消息已在响应拦截器中统一处理，这里只记录日志
+    console.error('获取菜单信息失败:', error)
   }
 }
 
