@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <!-- 渐变背景 -->
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <!-- 阴影效果 -->
+    <filter id="shadow">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- 背景圆形（带阴影） -->
+  <circle cx="32" cy="32" r="30" fill="url(#grad1)" filter="url(#shadow)" />
+  
+  <!-- 主图标：现代化管理面板 -->
+  <!-- 外框卡片 -->
+  <rect x="14" y="14" width="36" height="36" rx="5" fill="white" fill-opacity="0.95" />
+  
+  <!-- 顶部标题栏 -->
+  <rect x="16" y="16" width="32" height="6" rx="2" fill="#667eea" fill-opacity="0.2" />
+  
+  <!-- 网格布局（表示数据管理界面） -->
+  <!-- 水平分隔线 -->
+  <line x1="20" y1="26" x2="46" y2="26" stroke="#667eea" stroke-width="1.5" stroke-linecap="round" opacity="0.6" />
+  <line x1="20" y1="32" x2="46" y2="32" stroke="#667eea" stroke-width="1.5" stroke-linecap="round" opacity="0.6" />
+  <line x1="20" y1="38" x2="46" y2="38" stroke="#667eea" stroke-width="1.5" stroke-linecap="round" opacity="0.6" />
+  <line x1="20" y1="44" x2="46" y2="44" stroke="#667eea" stroke-width="1.5" stroke-linecap="round" opacity="0.6" />
+  
+  <!-- 垂直分隔线 -->
+  <line x1="30" y1="24" x2="30" y2="46" stroke="#667eea" stroke-width="1.5" stroke-linecap="round" opacity="0.6" />
+  <line x1="38" y1="24" x2="38" y2="46" stroke="#667eea" stroke-width="1.5" stroke-linecap="round" opacity="0.6" />
+  
+  <!-- 数据指示点（表示活跃数据） -->
+  <circle cx="25" cy="29" r="2.5" fill="#764ba2" />
+  <circle cx="34" cy="29" r="2.5" fill="#764ba2" />
+  <circle cx="42" cy="29" r="2.5" fill="#764ba2" />
+  <circle cx="25" cy="35" r="2.5" fill="#764ba2" />
+  <circle cx="34" cy="35" r="2.5" fill="#667eea" />
+  <circle cx="42" cy="35" r="2.5" fill="#764ba2" />
+  <circle cx="25" cy="41" r="2.5" fill="#764ba2" />
+  <circle cx="34" cy="41" r="2.5" fill="#764ba2" />
+  <circle cx="42" cy="41" r="2.5" fill="#764ba2" />
+</svg>
