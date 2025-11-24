@@ -18,7 +18,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	// 创建日志中间件
 	loggingMiddleware := middleware.NewLoggingMiddleware()
 	// 创建权限验证中间件
-	// permissionMiddleware := middleware.NewPermissionMiddleware(serverCtx.DB)
+	permissionMiddleware := middleware.NewPermissionMiddleware(serverCtx.DB)
 
 	// 不需要认证的路由
 	server.AddRoutes(
@@ -37,160 +37,374 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		),
 	)
 
-	// 需要认证的路由（应用认证和日志中间件）
-	authRoutes := rest.WithMiddlewares(
-		[]rest.Middleware{
-			authMiddleware.Handle,    // 认证中间件
-			loggingMiddleware.Handle, // 日志中间件
-			// permissionMiddleware.Handle("user:create"), // 权限认证中间件（示例）
-		},
-		rest.Route{
-			Method:  http.MethodGet,
-			Path:    "/api/users/me",
-			Handler: GetUserInfoHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodGet,
-			Path:    "/api/users",
-			Handler: GetUserListHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodGet,
-			Path:    "/api/users/:id",
-			Handler: GetUserDetailHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodPut,
-			Path:    "/api/users/me",
-			Handler: UpdateUserHandler(serverCtx),
-		},
-		rest.Route{
-			Method: http.MethodPut,
-			// 注意顺序，要放到/me下面;如果放到/me上，/me无法处理了
-			Path:    "/api/users/:id",
-			Handler: UpdateUserDetailHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodDelete,
-			Path:    "/api/users/:id",
-			Handler: DeleteUserHandler(serverCtx),
-		},
-
-		// 角色管理路由
-		rest.Route{
-			Method:  http.MethodPost,
-			Path:    "/api/roles",
-			Handler: CreateRoleHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodGet,
-			Path:    "/api/roles",
-			Handler: GetRoleListHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodGet,
-			Path:    "/api/roles/:id",
-			Handler: GetRoleDetailHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodPut,
-			Path:    "/api/roles/:id",
-			Handler: UpdateRoleHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodDelete,
-			Path:    "/api/roles/:id",
-			Handler: DeleteRoleHandler(serverCtx),
-		},
-
-		// 权限管理路由
-		rest.Route{
-			Method:  http.MethodPost,
-			Path:    "/api/permissions",
-			Handler: CreatePermissionHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodGet,
-			Path:    "/api/permissions",
-			Handler: GetPermissionListHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodGet,
-			Path:    "/api/permissions/:id",
-			Handler: GetPermissionDetailHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodPut,
-			Path:    "/api/permissions/:id",
-			Handler: UpdatePermissionHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodDelete,
-			Path:    "/api/permissions/:id",
-			Handler: DeletePermissionHandler(serverCtx),
-		},
-
-		// 菜单管理路由
-		rest.Route{
-			Method:  http.MethodPost,
-			Path:    "/api/menus",
-			Handler: CreateMenuHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodGet,
-			Path:    "/api/menus",
-			Handler: GetMenuListHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodGet,
-			Path:    "/api/menus/:id",
-			Handler: GetMenuDetailHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodPut,
-			Path:    "/api/menus/:id",
-			Handler: UpdateMenuHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodDelete,
-			Path:    "/api/menus/:id",
-			Handler: DeleteMenuHandler(serverCtx),
-		},
-
-		// 用户角色管理
-		rest.Route{
-			Method:  http.MethodPost,
-			Path:    "/api/users/:id/roles",
-			Handler: AssignUserRoleHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodGet,
-			Path:    "/api/users/:id/roles",
-			Handler: GetUserRolesHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodDelete,
-			Path:    "/api/users/:id/roles/:role_id",
-			Handler: RemoveUserRoleHandler(serverCtx),
-		},
-
-		// 角色权限管理
-		rest.Route{
-			Method:  http.MethodPost,
-			Path:    "/api/roles/:id/permissions",
-			Handler: AssignRolePermissionHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodGet,
-			Path:    "/api/roles/:id/permissions",
-			Handler: GetRolePermissionListHandler(serverCtx),
-		},
-		rest.Route{
-			Method:  http.MethodDelete,
-			Path:    "/api/roles/:id/permissions/:permission_id",
-			Handler: RemoveRolePermissionHandler(serverCtx),
-		},
+	// ========== 需要认证但不需要特殊权限的路由 ==========
+	// 获取当前用户信息，更新当前用户信息（任何登录用户都可以）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/users/me",
+				Handler: GetUserInfoHandler(serverCtx),
+			},
+			rest.Route{
+				Method:  http.MethodPut,
+				Path:    "/api/users/me",
+				Handler: UpdateUserHandler(serverCtx),
+			},
+		),
 	)
 
-	server.AddRoutes(authRoutes)
+	// ========== 用户管理相关路由 ==========
+
+	// 需要 user:list 权限的路由（查看用户列表和详情）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("user:list"),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/users",
+				Handler: GetUserListHandler(serverCtx),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/users/:id",
+				Handler: GetUserDetailHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 user:update 权限的路由（更新指定用户）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("user:update"),
+			},
+			rest.Route{
+				Method: http.MethodPut,
+				// 注意顺序，要放到/me下面;如果放到/me上，/me无法处理了
+				Path:    "/api/users/:id",
+				Handler: UpdateUserDetailHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 user:delete 权限的路由（删除指定用户）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("user:delete"),
+			},
+			rest.Route{
+				Method:  http.MethodDelete,
+				Path:    "/api/users/:id",
+				Handler: DeleteUserHandler(serverCtx),
+			},
+		),
+	)
+
+	// ========== 角色管理相关路由 ==========
+
+	// 需要 role:list 权限的路由（查看角色列表和详情）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("role:list"),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/roles",
+				Handler: GetRoleListHandler(serverCtx),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/roles/:id",
+				Handler: GetRoleDetailHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 role:create 权限的路由（创建角色）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("role:create"),
+			},
+			rest.Route{
+				Method:  http.MethodPost,
+				Path:    "/api/roles",
+				Handler: CreateRoleHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 role:update 权限的路由（更新指定角色）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("role:update"),
+			},
+			rest.Route{
+				Method:  http.MethodPut,
+				Path:    "/api/roles/:id",
+				Handler: UpdateRoleHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 role:delete 权限的路由（删除指定角色）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("role:delete"),
+			},
+			rest.Route{
+				Method:  http.MethodDelete,
+				Path:    "/api/roles/:id",
+				Handler: DeleteRoleHandler(serverCtx),
+			},
+		),
+	)
+
+	// ========== 权限管理相关路由 ==========
+
+	// 需要 permission:list 权限的路由（查看权限列表和详情）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("permission:list"),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/permissions",
+				Handler: GetPermissionListHandler(serverCtx),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/permissions/:id",
+				Handler: GetPermissionDetailHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 permission:create 权限的路由（创建权限）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("permission:create"),
+			},
+			rest.Route{
+				Method:  http.MethodPost,
+				Path:    "/api/permissions",
+				Handler: CreatePermissionHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 permission:update 权限的路由（更新指定权限）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("permission:update"),
+			},
+			rest.Route{
+				Method:  http.MethodPut,
+				Path:    "/api/permissions/:id",
+				Handler: UpdatePermissionHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 permission:delete 权限的路由（删除指定权限）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("permission:delete"),
+			},
+			rest.Route{
+				Method:  http.MethodDelete,
+				Path:    "/api/permissions/:id",
+				Handler: DeletePermissionHandler(serverCtx),
+			},
+		),
+	)
+
+	// ========== 菜单管理相关路由 ==========
+	// 注意：菜单管理暂时复用权限管理的权限，后续可以扩展 menu:* 权限
+
+	// 需要 permission:list 权限的路由（查看菜单列表和详情）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("permission:list"),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/menus",
+				Handler: GetMenuListHandler(serverCtx),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/menus/:id",
+				Handler: GetMenuDetailHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 permission:create 权限的路由（创建菜单）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("permission:create"),
+			},
+			rest.Route{
+				Method:  http.MethodPost,
+				Path:    "/api/menus",
+				Handler: CreateMenuHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 permission:update 权限的路由（更新指定菜单）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("permission:update"),
+			},
+			rest.Route{
+				Method:  http.MethodPut,
+				Path:    "/api/menus/:id",
+				Handler: UpdateMenuHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 permission:delete 权限的路由（删除指定菜单）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("permission:delete"),
+			},
+			rest.Route{
+				Method:  http.MethodDelete,
+				Path:    "/api/menus/:id",
+				Handler: DeleteMenuHandler(serverCtx),
+			},
+		),
+	)
+
+	// ========== 用户角色管理相关路由 ==========
+
+	// 需要 role:list 权限的路由（查看用户角色）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("role:list"),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/users/:id/roles",
+				Handler: GetUserRolesHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 role:update 权限的路由（分配和移除用户角色）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("role:update"),
+			},
+			rest.Route{
+				Method:  http.MethodPost,
+				Path:    "/api/users/:id/roles",
+				Handler: AssignUserRoleHandler(serverCtx),
+			},
+
+			rest.Route{
+				Method:  http.MethodDelete,
+				Path:    "/api/users/:id/roles/:role_id",
+				Handler: RemoveUserRoleHandler(serverCtx),
+			},
+		),
+	)
+
+	// ========== 角色权限管理相关路由 ==========
+
+	// 需要 permission:list 权限的路由（查看角色权限）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("permission:list"),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/roles/:id/permissions",
+				Handler: GetRolePermissionListHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 permission:update 权限的路由（分配和移除角色权限）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("permission:update"), // 分配权限视为更新操作
+			},
+			rest.Route{
+				Method:  http.MethodPost,
+				Path:    "/api/roles/:id/permissions",
+				Handler: AssignRolePermissionHandler(serverCtx),
+			},
+
+			rest.Route{
+				Method:  http.MethodDelete,
+				Path:    "/api/roles/:id/permissions/:permission_id",
+				Handler: RemoveRolePermissionHandler(serverCtx),
+			},
+		),
+	)
 }
