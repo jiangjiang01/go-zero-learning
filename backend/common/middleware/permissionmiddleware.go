@@ -58,11 +58,14 @@ func (m *PermissionMiddleware) Handle(requiredPermission string) func(http.Handl
 
 			// 4. 检查这些角色的所有权限
 			var rolePermissions []model.RolePermission
-			err = m.db.Where("role_id IN ?", roleIDs).Find(&rolePermissions).Error
-			if err != nil {
-				logger.Errorf("查询角色权限失败：%v", err)
-				errorx.HandleError(w, r, errorx.ErrInternalError)
-				return
+			// 避免空切片查询数据库
+			if len(roleIDs) > 0 {
+				err = m.db.Where("role_id IN ?", roleIDs).Find(&rolePermissions).Error
+				if err != nil {
+					logger.Errorf("查询角色权限失败：%v", err)
+					errorx.HandleError(w, r, errorx.ErrInternalError)
+					return
+				}
 			}
 
 			// 5. 收集所有的权限 ID
@@ -73,11 +76,14 @@ func (m *PermissionMiddleware) Handle(requiredPermission string) func(http.Handl
 
 			// 6. 查询权限代码
 			var permissions []model.Permission
-			err = m.db.Where("id IN ?", permissionIDs).Find(&permissions).Error
-			if err != nil {
-				logger.Errorf("查询权限失败：%v", err)
-				errorx.HandleError(w, r, errorx.ErrInternalError)
-				return
+			// 避免空切片查询数据库
+			if len(permissionIDs) > 0 {
+				err = m.db.Where("id IN ?", permissionIDs).Find(&permissions).Error
+				if err != nil {
+					logger.Errorf("查询权限失败：%v", err)
+					errorx.HandleError(w, r, errorx.ErrInternalError)
+					return
+				}
 			}
 
 			// 7. 检查是否有需要的权限
