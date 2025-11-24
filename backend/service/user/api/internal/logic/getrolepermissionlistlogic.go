@@ -58,10 +58,12 @@ func (l *GetRolePermissionListLogic) GetRolePermissionList(req *types.GetRolePer
 
 	// 4. 查询权限详情（列表）
 	var permissions []model.Permission
-	err = l.svcCtx.DB.Where("id IN ?", permissionIDs).Find(&permissions).Error
-	if err != nil {
-		l.Errorf("查询权限详情失败：%v", err)
-		return nil, errorx.ErrInternalError
+	if len(permissionIDs) > 0 {
+		err = l.svcCtx.DB.Where("id IN ?", permissionIDs).Find(&permissions).Error
+		if err != nil {
+			l.Errorf("查询权限详情失败：%v", err)
+			return nil, errorx.ErrInternalError
+		}
 	}
 
 	// 5. 构建响应

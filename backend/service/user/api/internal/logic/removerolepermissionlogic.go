@@ -71,5 +71,5 @@ func (l *RemoveRolePermissionLogic) RemoveRolePermission(req *types.RemoveRolePe
 		Message: "权限移除成功",
 	}
 
-	return
+	return resp, nil
 }

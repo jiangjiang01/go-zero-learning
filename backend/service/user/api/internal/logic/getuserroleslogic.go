@@ -59,10 +59,12 @@ func (l *GetUserRolesLogic) GetUserRoles(req *types.GetUserRolesReq) (resp *type
 
 	// 4. 查询角色详情
 	var roles []model.Role
-	err = l.svcCtx.DB.Where("id IN ?", roleIDs).Find(&roles).Error
-	if err != nil {
-		l.Errorf("查询角色详情失败：%v", err)
-		return nil, errorx.ErrInternalError
+	if len(roleIDs) > 0 {
+		err = l.svcCtx.DB.Where("id IN ?", roleIDs).Find(&roles).Error
+		if err != nil {
+			l.Errorf("查询角色详情失败：%v", err)
+			return nil, errorx.ErrInternalError
+		}
 	}
 
 	// 5. 构建响应
