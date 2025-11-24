@@ -17,6 +17,8 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	authMiddleware := middleware.NewAuthMiddleware(serverCtx.JWT)
 	// 创建日志中间件
 	loggingMiddleware := middleware.NewLoggingMiddleware()
+	// 创建权限验证中间件
+	// permissionMiddleware := middleware.NewPermissionMiddleware(serverCtx.DB)
 
 	// 不需要认证的路由
 	server.AddRoutes(
@@ -40,6 +42,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Middleware{
 			authMiddleware.Handle,    // 认证中间件
 			loggingMiddleware.Handle, // 日志中间件
+			// permissionMiddleware.Handle("user:create"), // 权限认证中间件（示例）
 		},
 		rest.Route{
 			Method:  http.MethodGet,
