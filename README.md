@@ -457,6 +457,7 @@ response.OkJson(w, r, resp)
 - 运行方式：`cd backend/service/user/api && go run user-api.go -f etc/user-api.yaml`
 - 数据库：MySQL 3307 端口，数据库名 testdb
 - go-zero 参数验证：可选字段（optional）在 JSON 中缺失时会报错，需要在请求中包含所有字段（临时方案）
+- 网络配置：如果系统无法解析 `localhost`，配置文件已使用 `127.0.0.1` 替代
 
 ### 下一步计划
 

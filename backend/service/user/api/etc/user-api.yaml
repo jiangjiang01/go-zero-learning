@@ -3,7 +3,7 @@ Host: 0.0.0.0
 Port: 8888
 
 # 数据库配置
-DataSource: root:123456@tcp(localhost:3307)/testdb?charset=utf8mb4&parseTime=True&loc=Local
+DataSource: root:123456@tcp(127.0.0.1:3307)/testdb?charset=utf8mb4&parseTime=True&loc=Local
 
 # JWT 配置
 JWT:
