@@ -1,5 +1,5 @@
 <template>
-  <div class="header-container flex-between h-16 px-4 bg-white shadow-sm">
+  <div class="header-container flex-between h-16 px-4 shadow-sm">
     <div class="flex-center">
       <el-icon
         class="cursor-pointer text-xl mr-4"
@@ -24,6 +24,7 @@
         </div>
         <template #dropdown>
           <el-dropdown-menu>
+            <el-dropdown-item command="settings">系统设置</el-dropdown-item>
             <el-dropdown-item command="profile">个人中心</el-dropdown-item>
             <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
           </el-dropdown-menu>
@@ -63,13 +64,26 @@ const handleCommand = async (command: string) => {
   } else if (command === 'profile') {
     // TODO: 跳转到个人中心
     console.log('个人中心')
+  } else if (command === 'settings') {
+    router.push('/system/settings')
   }
 }
 </script>
 
 <style scoped>
 .header-container {
+  background-color: #fff;
   border-bottom: 1px solid #e5e7eb;
+}
+
+/* 深色模式下的 Header */
+:global(.dark) .header-container {
+  background-color: #1f2937;
+  border-bottom-color: #374151;
+}
+
+:global(.dark) .header-container h1 {
+  color: #f9fafb;
 }
 </style>
 

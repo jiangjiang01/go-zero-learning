@@ -7,6 +7,7 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 
 import App from './App.vue'
 import router from './router'
+import { useAppStore } from './stores/app'
 import 'uno.css'
 import './styles/index.css'
 
@@ -23,5 +24,9 @@ app.use(router)
 app.use(ElementPlus, {
   locale: zhCn
 })
+
+// 初始化深色模式
+const appStore = useAppStore()
+appStore.initDarkMode()
 
 app.mount('#app')

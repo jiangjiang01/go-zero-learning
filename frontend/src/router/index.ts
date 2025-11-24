@@ -59,6 +59,12 @@ const routes: RouteRecordRaw[] = [
         name: 'SystemMenu',
         component: () => import('@/views/system/menu/index.vue'),
         meta: { title: '菜单管理', icon: 'Menu' }
+      },
+      {
+        path: 'settings',
+        name: 'SystemSettings',
+        component: () => import('@/views/system/settings/index.vue'),
+        meta: { title: '系统设置', icon: 'Setting' }
       }
     ]
   },
