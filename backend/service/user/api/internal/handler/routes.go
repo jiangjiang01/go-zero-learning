@@ -156,6 +156,23 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			Path:    "/api/menus/:id",
 			Handler: DeleteMenuHandler(serverCtx),
 		},
+
+		// 用户角色管理
+		rest.Route{
+			Method:  http.MethodPost,
+			Path:    "/api/users/:id/roles",
+			Handler: AssignUserRoleHandler(serverCtx),
+		},
+		rest.Route{
+			Method:  http.MethodGet,
+			Path:    "/api/users/:id/roles",
+			Handler: GetUserRolesHandler(serverCtx),
+		},
+		rest.Route{
+			Method:  http.MethodDelete,
+			Path:    "/api/users/:id/roles/:role_id",
+			Handler: RemoveUserRoleHandler(serverCtx),
+		},
 	)
 
 	server.AddRoutes(authRoutes)

@@ -235,3 +235,33 @@ type UpdateMenuReq struct {
 }
 
 // ========== 菜单管理 API End ==========
+
+// ========== 用户角色管理 API Start ==========
+
+type AssignUserRoleReq struct {
+	UserID int64 `path:"id"`      // 用户ID(路径参数)
+	RoleID int64 `json:"role_id"` // 角色ID(请求体)
+}
+
+type AssignUserRoleResp struct {
+	Message string `json:"message"`
+}
+
+type GetUserRolesReq struct {
+	UserID int64 `path:"id"` // 用户ID(路径参数)
+}
+
+type GetUserRolesResp struct {
+	Roles []RoleInfoResp `json:"roles"` // 角色列表
+}
+
+type RemoveUserRoleReq struct {
+	UserID int64 `path:"id"`      // 用户ID(路径参数)
+	RoleID int64 `path:"role_id"` // 角色ID(路径参数)
+}
+
+type RemoveUserRoleResp struct {
+	Message string `json:"message"`
+}
+
+// ========== 用户角色管理 API End ==========
