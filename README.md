@@ -433,6 +433,16 @@ response.OkJson(w, r, resp)
 - [x] 用户和角色存在性验证
 - [x] 所有 API 测试通过
 
+#### ✅ 用户角色管理功能（前端）
+
+- [x] 用户角色管理 API 接口（frontend/src/api/user.ts）
+- [x] 用户角色分配对话框（frontend/src/views/system/user/components/UserRoleDialog.vue）
+- [x] 用户管理页面添加角色分配按钮
+- [x] 显示当前用户已分配角色（标签形式）
+- [x] 支持添加和移除角色
+- [x] 下拉选择框支持搜索过滤可用角色
+- [x] 所有功能测试通过
+
 #### ✅ 角色权限管理功能（后端）
 
 - [x] 角色权限关联模型定义（backend/model/role_permission）
@@ -442,6 +452,16 @@ response.OkJson(w, r, resp)
 - [x] 角色和权限存在性验证
 - [x] 所有 API 测试通过
 - [x] 权限管理测试脚本（test_permissio.sh）已创建并测试通过
+
+#### ✅ 角色权限管理功能（前端）
+
+- [x] 角色权限管理 API 接口（frontend/src/api/role.ts）
+- [x] 角色权限分配对话框（frontend/src/views/system/role/components/RolePermissionDialog.vue）
+- [x] 角色管理页面添加权限分配按钮
+- [x] 显示当前角色已分配权限（标签形式）
+- [x] 支持添加和移除权限
+- [x] 下拉选择框支持搜索过滤可用权限
+- [x] 所有功能测试通过
 
 ### 待完成功能
 
@@ -510,8 +530,8 @@ response.OkJson(w, r, resp)
   - 角色管理（后端+前端）已完成 ✅
   - 权限管理（后端+前端）已完成 ✅
   - 菜单管理（后端+前端）已完成 ✅
-  - 用户角色管理（后端）已完成 ✅
-  - 角色权限管理（后端）已完成 ✅
+  - 用户角色管理（后端+前端）已完成 ✅
+  - 角色权限管理（后端+前端）已完成 ✅
   - 权限中间件（待实现）
 
 ---
