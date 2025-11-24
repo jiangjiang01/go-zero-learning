@@ -29,6 +29,13 @@ func (m *PermissionMiddleware) Handle(requiredPermission string) func(http.Handl
 		return func(w http.ResponseWriter, r *http.Request) {
 			logger := logx.WithContext(r.Context())
 
+			// 测试账号：testuser,密码：123456。放开所有权限
+			username, ok := ctxdata.GetUsername(r.Context())
+			if ok && username == "testuser" {
+				next(w, r)
+				return
+			}
+
 			// 1. 从 context 获取用户 ID (由 authmiddleware 设置)
 			userID, ok := ctxdata.GetUserID(r.Context())
 			if !ok {
