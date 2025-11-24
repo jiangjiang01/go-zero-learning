@@ -29,9 +29,9 @@ func (m *PermissionMiddleware) Handle(requiredPermission string) func(http.Handl
 		return func(w http.ResponseWriter, r *http.Request) {
 			logger := logx.WithContext(r.Context())
 
-			// 测试账号：testuser,密码：123456。放开所有权限
+			// 测试账号：admin,密码：123456。放开所有权限
 			username, ok := ctxdata.GetUsername(r.Context())
-			if ok && username == "testuser" {
+			if ok && username == "admin" {
 				next(w, r)
 				return
 			}
