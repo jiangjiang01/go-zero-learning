@@ -261,6 +261,42 @@ type DeleteMenuResp {
 
 // ========== 菜单管理 API End ==========
 
+// ========== 用户角色管理 API Start ==========
+
+// 给用户分配角色请求
+type AssignUserRoleReq {
+	UserID int64 `path:"id"` // 用户ID(路径参数)
+	RoleID int64 `json:"role_id"` // 角色ID(请求体)
+}
+
+// 给用户分配角色响应
+type AssignUserRoleResp {
+	Message string `json:"message"`
+}
+
+// 获取用户角色列表请求
+type GetUserRolesReq {
+	UserID int64 `path:"id"` // 用户ID(路径参数)
+}
+
+// 获取用户角色列表响应
+type GetUserRolesResp {
+	Roles []RoleInfoResp `json:"roles"` // 角色列表
+}
+
+// 移除用户角色请求
+type RemoveUserRoleReq {
+	UserID int64 `path:"id"` // 用户ID(路径参数)
+	RoleID int64 `path:"role_id"` // 角色ID(路径参数)
+}
+
+// 移除用户角色响应
+type RemoveUserRoleResp {
+	Message string `json:"message"`
+}
+
+// ========== 用户角色管理 API End ==========
+
 service user-api {
 	@handler Register
 	post /api/users (RegisterReq) returns (LoginResp)
@@ -336,5 +372,16 @@ service user-api {
 	@handler DeleteMenu
 	delete /api/menus/:id (DeleteMenuReq) returns (DeleteMenuResp)
 	// ========== 菜单管理 API End ==========
+
+	// ========== 用户角色管理 API Start ==========
+	@handler AssignUserRole
+	post /api/users/:id/roles (AssignUserRoleReq) returns (AssignUserRoleResp)
+
+	@handler GetUserRoles
+	get /api/users/:id/roles (GetUserRolesReq) returns (GetUserRolesResp)
+
+	@handler RemoveUserRole
+	delete /api/users/:id/roles/:role_id (RemoveUserRoleReq) returns (RemoveUserRoleResp)
+	// ========== 用户角色管理 API End ==========
 }
 
