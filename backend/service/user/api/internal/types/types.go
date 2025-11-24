@@ -265,3 +265,33 @@ type RemoveUserRoleResp struct {
 }
 
 // ========== 用户角色管理 API End ==========
+
+// ========== 角色权限管理 API Start ==========
+
+type AssignRolePermissionReq struct {
+	RoleID       int64 `path:"id"`            // 角色ID(路径参数)
+	PermissionID int64 `json:"permission_id"` // 权限ID(请求体)
+}
+
+type AssignRolePermissionResp struct {
+	Message string `json:"message"`
+}
+
+type GetRolePermissionListReq struct {
+	RoleID int64 `path:"id"` // 角色ID(路径参数)
+}
+
+type GetRolePermissionListResp struct {
+	Permissions []PermissionInfoResp `json:"permissions"`
+}
+
+type RemoveRolePermissionReq struct {
+	RoleID       int64 `path:"id"`            // 角色ID(路径参数)
+	PermissionID int64 `path:"permission_id"` // 权限ID(路径参数)
+}
+
+type RemoveRolePermissionResp struct {
+	Message string `json:"message"`
+}
+
+// ========== 角色权限管理 API End ==========
