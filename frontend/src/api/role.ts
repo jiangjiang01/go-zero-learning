@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 import type { ResponseData } from '@/utils/request'
+import type { PermissionInfo } from './permission'
 
 // 角色信息
 export interface RoleInfo {
@@ -97,6 +98,52 @@ export function updateRole(id: number, data: UpdateRoleRequest): Promise<Respons
 export function deleteRole(id: number): Promise<ResponseData<{ message: string }>> {
   return request({
     url: `/api/roles/${id}`,
+    method: 'delete'
+  })
+}
+
+// ========== 角色权限管理 API ==========
+
+// 角色权限列表响应
+export interface RolePermissionsResponse {
+  permissions: PermissionInfo[]
+}
+
+/**
+ * 给角色分配权限
+ * @param roleId - 角色ID
+ * @param permissionId - 权限ID
+ * @returns Promise
+ */
+export function assignRolePermission(roleId: number, permissionId: number): Promise<ResponseData<{ message: string }>> {
+  return request({
+    url: `/api/roles/${roleId}/permissions`,
+    method: 'post',
+    data: { permission_id: permissionId }
+  })
+}
+
+/**
+ * 获取角色权限列表
+ * @param roleId - 角色ID
+ * @returns Promise
+ */
+export function getRolePermissions(roleId: number): Promise<ResponseData<RolePermissionsResponse>> {
+  return request({
+    url: `/api/roles/${roleId}/permissions`,
+    method: 'get'
+  })
+}
+
+/**
+ * 移除角色权限
+ * @param roleId - 角色ID
+ * @param permissionId - 权限ID
+ * @returns Promise
+ */
+export function removeRolePermission(roleId: number, permissionId: number): Promise<ResponseData<{ message: string }>> {
+  return request({
+    url: `/api/roles/${roleId}/permissions/${permissionId}`,
     method: 'delete'
   })
 }

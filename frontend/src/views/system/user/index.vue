@@ -58,7 +58,7 @@
         />
         <el-table-column
           label="操作"
-          width="180"
+          width="240"
           fixed="right"
         >
           <template #default="{ row }">
@@ -68,6 +68,13 @@
               @click="handleEdit(row)"
             >
               查看
+            </el-button>
+            <el-button
+              type="warning"
+              size="small"
+              @click="handleAssignRole(row)"
+            >
+              角色
             </el-button>
             <el-button
               type="danger"
@@ -100,6 +107,13 @@
       :user-id="currentUserId"
       @success="handleDialogSuccess"
     />
+
+    <!-- 角色分配对话框 -->
+    <user-role-dialog
+      v-model="roleDialogVisible"
+      :user-id="currentUserId"
+      @success="handleDialogSuccess"
+    />
   </div>
 </template>
 
@@ -113,10 +127,12 @@ import {
 } from '@/api/user'
 import { formatDateTime } from '@/utils/format'
 import UserDialog from './components/UserDialog.vue'
+import UserRoleDialog from './components/UserRoleDialog.vue'
 
 const loading = ref(false)
 const tableData = ref<UserInfo[]>([])
 const dialogVisible = ref(false)
+const roleDialogVisible = ref(false)
 const currentUserId = ref<number | null>(null)
 
 const searchForm = reactive({
@@ -170,6 +186,12 @@ const handleAdd = () => {
 const handleEdit = (row: UserInfo) => {
   currentUserId.value = row.id
   dialogVisible.value = true
+}
+
+// 分配角色
+const handleAssignRole = (row: UserInfo) => {
+  currentUserId.value = row.id
+  roleDialogVisible.value = true
 }
 
 // 删除

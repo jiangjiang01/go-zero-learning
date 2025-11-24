@@ -82,7 +82,7 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          width="180"
+          width="240"
           fixed="right"
         >
           <template #default="{ row }">
@@ -92,6 +92,13 @@
               @click="handleEdit(row)"
             >
               编辑
+            </el-button>
+            <el-button
+              type="warning"
+              size="small"
+              @click="handleAssignPermission(row)"
+            >
+              权限
             </el-button>
             <el-button
               type="danger"
@@ -124,6 +131,13 @@
       :role-id="currentRoleId"
       @success="handleDialogSuccess"
     />
+
+    <!-- 权限分配对话框 -->
+    <role-permission-dialog
+      v-model="permissionDialogVisible"
+      :role-id="currentRoleId"
+      @success="handleDialogSuccess"
+    />
   </div>
 </template>
 
@@ -137,10 +151,12 @@ import {
 } from '@/api/role'
 import { formatDateTime } from '@/utils/format'
 import RoleDialog from './components/RoleDialog.vue'
+import RolePermissionDialog from './components/RolePermissionDialog.vue'
 
 const loading = ref(false)
 const tableData = ref<RoleInfo[]>([])
 const dialogVisible = ref(false)
+const permissionDialogVisible = ref(false)
 const currentRoleId = ref<number | null>(null)
 
 const searchForm = reactive({
@@ -194,6 +210,12 @@ const handleAdd = () => {
 const handleEdit = (row: RoleInfo) => {
   currentRoleId.value = row.id
   dialogVisible.value = true
+}
+
+// 分配权限
+const handleAssignPermission = (row: RoleInfo) => {
+  currentRoleId.value = row.id
+  permissionDialogVisible.value = true
 }
 
 // 删除
