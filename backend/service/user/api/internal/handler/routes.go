@@ -173,6 +173,23 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			Path:    "/api/users/:id/roles/:role_id",
 			Handler: RemoveUserRoleHandler(serverCtx),
 		},
+
+		// 角色权限管理
+		rest.Route{
+			Method:  http.MethodPost,
+			Path:    "/api/roles/:id/permissions",
+			Handler: AssignRolePermissionHandler(serverCtx),
+		},
+		rest.Route{
+			Method:  http.MethodGet,
+			Path:    "/api/roles/:id/permissions",
+			Handler: GetRolePermissionListHandler(serverCtx),
+		},
+		rest.Route{
+			Method:  http.MethodDelete,
+			Path:    "/api/roles/:id/permissions/:permission_id",
+			Handler: RemoveRolePermissionHandler(serverCtx),
+		},
 	)
 
 	server.AddRoutes(authRoutes)
