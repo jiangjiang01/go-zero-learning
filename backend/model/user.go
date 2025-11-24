@@ -20,6 +20,10 @@ type User struct {
 	// json:"_"表示不序列化到JSON响应中，避免密码泄露
 	Password string `gorm:"type:varchar(255);not null" json:"_"`
 
+	// Roles 用户拥有的角色列表（多对多关系）
+	// 注意：这里暂时不添加，等关联表创建后再添加
+	// Roles []Role `gorm:"many2many:user_roles;" json:"roles,omitempty"`
+
 	// CreatedAt 用户创建时间，自动记录
 	CreatedAt time.Time `json:"created_at"`
 

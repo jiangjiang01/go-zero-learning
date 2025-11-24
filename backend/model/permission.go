@@ -25,6 +25,9 @@ type Permission struct {
 	// Desc 权限描述，不能为空，最大长度255字符
 	// 用于详细说明权限的作用和范围
 	Desc string `gorm:"type:varchar(255);not null" json:"desc"`
+
+	// Roles 权限拥有的角色列表（多对多关联）
+	// Roles []Role `gorm:"many2many:role_permissions" json:"roles,omitempty"`
 }
 
 func (Permission) TableName() string {
