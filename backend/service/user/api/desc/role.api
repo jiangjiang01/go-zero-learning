@@ -1,0 +1,119 @@
+syntax = "v1"
+
+// 角色管理相关类型定义
+// 创建角色请求
+type CreateRoleReq {
+	Name string `json:"name"`
+	Code string `json:"code"`
+	Desc string `json:"desc,optional"`
+}
+
+// 角色响应信息
+type RoleInfoResp {
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	Desc      string `json:"desc"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
+}
+
+// 获取角色列表请求（带分页和搜索）
+type GetRoleListReq {
+	Page     int64  `form:"page,default=1"`
+	PageSize int64  `form:"page_size,default=10"`
+	Keyword  string `form:"keyword,optional"`
+}
+
+// 获取角色列表响应
+type GetRoleListResp {
+	Roles    []RoleInfoResp `json:"roles"`
+	Total    int64          `json:"total"`
+	Page     int64          `json:"page"`
+	PageSize int64          `json:"page_size"`
+}
+
+// 获取角色详情(路径参数)
+type GetRoleDetailReq {
+	ID int64 `path:"id"`
+}
+
+// 更新角色请求（路径参数 + 请求体）
+type UpdateRoleReq {
+	ID   int64  `path:"id"` // 路径参数：角色ID
+	Name string `json:"name,optional"` // 角色名称（可选）
+	Code string `json:"code,optional"` // 角色代码（可选）
+	Desc string `json:"desc,optional"` // 角色描述（可选）
+}
+
+// 删除角色（路径参数）
+type DeleteRoleReq {
+	ID int64 `path:"id"`
+}
+
+// 删除角色响应
+type DeleteRoleResp {
+	Message string `json:"message"`
+}
+
+// ========== 角色权限管理相关类型定义 ==========
+// 给角色分配权限请求
+type AssignRolePermissionReq {
+	RoleID       int64 `path:"id"` // 角色ID(路径参数)
+	PermissionID int64 `json:"permission_id"` // 权限ID(请求体)
+}
+
+// 给角色分配权限响应
+type AssignRolePermissionResp {
+	Message string `json:"message"`
+}
+
+// 获取角色权限列表请求
+type GetRolePermissionListReq {
+	RoleID int64 `path:"id"` // 角色ID(路径参数)
+}
+
+// 获取角色权限列表响应
+type GetRolePermissionListResp {
+	Permissions []PermissionInfoResp `json:"permissions"`
+}
+
+// 移除角色权限请求
+type RemoveRolePermissionReq {
+	RoleID       int64 `path:"id"` // 角色ID(路径参数)
+	PermissionID int64 `path:"permission_id"` // 权限ID(路径参数)
+}
+
+// 移除角色权限响应
+type RemoveRolePermissionResp {
+	Message string `json:"message"`
+}
+
+service user-api {
+	// ========== 角色管理 ==========
+	@handler CreateRole
+	post /api/roles (CreateRoleReq) returns (RoleInfoResp)
+
+	@handler GetRoleList
+	get /api/roles (GetRoleListReq) returns (GetRoleListResp)
+
+	@handler GetRoleDetail
+	get /api/roles/:id (GetRoleDetailReq) returns (RoleInfoResp)
+
+	@handler UpdateRole
+	put /api/roles/:id (UpdateRoleReq) returns (RoleInfoResp)
+
+	@handler DeleteRole
+	delete /api/roles/:id (DeleteRoleReq) returns (DeleteRoleResp)
+
+	// ========== 角色权限管理 ==========
+	@handler AssignRolePermission
+	post /api/roles/:id/permissions (AssignRolePermissionReq) returns (AssignRolePermissionResp)
+
+	@handler GetRolePermissionList
+	get /api/roles/:id/permissions (GetRolePermissionListReq) returns (GetRolePermissionListResp)
+
+	@handler RemoveRolePermission
+	delete /api/roles/:id/permissions/:permission_id (RemoveRolePermissionReq) returns (RemoveRolePermissionResp)
+}
+

@@ -1,0 +1,94 @@
+syntax = "v1"
+
+// 菜单管理相关类型定义
+// 创建菜单请求
+type CreateMenuReq {
+	Name     string `json:"name"`
+	Code     string `json:"code"`
+	Desc     string `json:"desc,optional"`
+	ParentID int64  `json:"parent_id,optional"`
+	Path     string `json:"path,optional"`
+	Icon     string `json:"icon,optional"`
+	Type     int    `json:"type"`
+	Sort     int    `json:"sort,optional"`
+	Status   int    `json:"status,optional"` // 默认在逻辑层处理
+}
+
+// 菜单响应信息
+type MenuInfoResp {
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	Desc      string `json:"desc"`
+	ParentID  int64  `json:"parent_id"`
+	Path      string `json:"path"`
+	Icon      string `json:"icon"`
+	Type      int    `json:"type"`
+	Sort      int    `json:"sort"`
+	Status    int    `json:"status"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
+}
+
+// 获取菜单列表请求（带分页和搜索）
+type GetMenuListReq {
+	Page     int64  `form:"page,default=1"`
+	PageSize int64  `form:"page_size,default=10"`
+	Keyword  string `form:"keyword,optional"`
+	All      bool   `form:"all,optional"` // 是否获取全部（不分页），用于树形结构
+}
+
+// 获取菜单全部列表响应
+type GetMenuListResp {
+	Menus    []MenuInfoResp `json:"menus"`
+	Total    int64          `json:"total"`
+	Page     int64          `json:"page"`
+	PageSize int64          `json:"page_size"`
+}
+
+// 获取菜单详情
+type GetMenuDetailReq {
+	ID int64 `path:"id"`
+}
+
+// 编辑菜单请求
+type UpdateMenuReq {
+	ID       int64  `path:"id"`
+	Name     string `json:"name"`
+	Code     string `json:"code"`
+	Desc     string `json:"desc"`
+	ParentID int64  `json:"parent_id"`
+	Path     string `json:"path"`
+	Icon     string `json:"icon"`
+	Type     int    `json:"type"`
+	Sort     int    `json:"sort"`
+	Status   int    `json:"status"`
+}
+
+// 删除菜单请求
+type DeleteMenuReq {
+	ID int64 `path:"id"`
+}
+
+// 删除菜单响应
+type DeleteMenuResp {
+	Message string `json:"message"`
+}
+
+service user-api {
+	@handler CreateMenu
+	post /api/menus (CreateMenuReq) returns (MenuInfoResp)
+
+	@handler GetMenuList
+	get /api/menus (GetMenuListReq) returns (GetMenuListResp)
+
+	@handler GetMenuDetail
+	get /api/menus/:id (GetMenuDetailReq) returns (MenuInfoResp)
+
+	@handler UpdateMenu
+	put /api/menus/:id (UpdateMenuReq) returns (MenuInfoResp)
+
+	@handler DeleteMenu
+	delete /api/menus/:id (DeleteMenuReq) returns (DeleteMenuResp)
+}
+

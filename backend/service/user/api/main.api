@@ -1,0 +1,10 @@
+syntax = "v1"
+
+import (
+	"desc/auth.api"
+	"desc/user.api"
+	"desc/role.api"
+	"desc/permission.api"
+	"desc/menu.api"
+)
+

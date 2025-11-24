@@ -3,73 +3,62 @@
 
 package types
 
-type GetUserInfoReq struct {
+type AssignRolePermissionReq struct {
+	RoleID       int64 `path:"id"`            // 角色ID(路径参数)
+	PermissionID int64 `json:"permission_id"` // 权限ID(请求体)
 }
 
-type LoginReq struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-type LoginResp struct {
-	Token    string       `json:"token"`
-	UserInfo UserInfoResp `json:"user_info"`
-}
-
-type RegisterReq struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type UserInfoResp struct {
-	ID       int64  `json:"id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-}
-
-type GetUserListReq struct {
-	Page     int64  `form:"page,default=1"`
-	PageSize int64  `form:"page_size,default=10"`
-	Keyword  string `form:"keyword,optional"`
-}
-
-type GetUserListResp struct {
-	Users    []UserInfoResp `json:"users"`
-	Total    int64          `json:"total"`
-	Page     int64          `json:"page"`
-	PageSize int64          `json:"page_size"`
-}
-
-type UpdateUserReq struct {
-	Email    string `json:"email,omitempty"`
-	Password string `json:"password,omitempty"`
-}
-
-type UpdateUserDetailReq struct {
-	ID       int64  `path:"id"`
-	Email    string `json:"email,omitempty"`
-	Password string `json:"password,omitempty"`
-}
-
-type GetUserDetailReq struct {
-	ID int64 `path:"id"`
-}
-
-type DeleteUserReq struct {
-	ID int64 `path:"id"`
-}
-
-type DeleteUserResp struct {
+type AssignRolePermissionResp struct {
 	Message string `json:"message"`
 }
 
-// ========== 角色管理 API Start ==========
+type AssignUserRoleReq struct {
+	UserID int64 `path:"id"`      // 用户ID(路径参数)
+	RoleID int64 `json:"role_id"` // 角色ID(请求体)
+}
+
+type AssignUserRoleResp struct {
+	Message string `json:"message"`
+}
+
+type CreateMenuReq struct {
+	Name     string `json:"name"`
+	Code     string `json:"code"`
+	Desc     string `json:"desc,omitempty"`
+	ParentID int64  `json:"parent_id,omitempty"`
+	Path     string `json:"path,omitempty"`
+	Icon     string `json:"icon,omitempty"`
+	Type     int    `json:"type"`
+	Sort     int    `json:"sort,omitempty"`
+	Status   int    `json:"status,omitempty"` // 默认在逻辑层处理
+}
+
+type CreatePermissionReq struct {
+	Name string `json:"name"`
+	Code string `json:"code"`
+	Desc string `json:"desc,omitempty"`
+}
 
 type CreateRoleReq struct {
 	Name string `json:"name"`
 	Code string `json:"code"`
 	Desc string `json:"desc,omitempty"`
+}
+
+type DeleteMenuReq struct {
+	ID int64 `path:"id"`
+}
+
+type DeleteMenuResp struct {
+	Message string `json:"message"`
+}
+
+type DeletePermissionReq struct {
+	ID int64 `path:"id"`
+}
+
+type DeletePermissionResp struct {
+	Message string `json:"message"`
 }
 
 type DeleteRoleReq struct {
@@ -80,55 +69,30 @@ type DeleteRoleResp struct {
 	Message string `json:"message"`
 }
 
-type GetRoleDetailReq struct {
+type DeleteUserReq struct {
 	ID int64 `path:"id"`
 }
 
-type GetRoleListReq struct {
+type DeleteUserResp struct {
+	Message string `json:"message"`
+}
+
+type GetMenuDetailReq struct {
+	ID int64 `path:"id"`
+}
+
+type GetMenuListReq struct {
 	Page     int64  `form:"page,default=1"`
 	PageSize int64  `form:"page_size,default=10"`
 	Keyword  string `form:"keyword,optional"`
+	All      bool   `form:"all,optional"` // 是否获取全部（不分页），用于树形结构
 }
 
-type GetRoleListResp struct {
-	Roles    []RoleInfoResp `json:"roles"`
+type GetMenuListResp struct {
+	Menus    []MenuInfoResp `json:"menus"`
 	Total    int64          `json:"total"`
 	Page     int64          `json:"page"`
 	PageSize int64          `json:"page_size"`
-}
-
-type RoleInfoResp struct {
-	ID        int64  `json:"id"`
-	Name      string `json:"name"`
-	Code      string `json:"code"`
-	Desc      string `json:"desc"`
-	CreatedAt int64  `json:"created_at"`
-	UpdatedAt int64  `json:"updated_at"`
-}
-
-type UpdateRoleReq struct {
-	ID   int64  `path:"id"`             // 路径参数：角色ID
-	Name string `json:"name,omitempty"` // 角色名称（可选）
-	Code string `json:"code,omitempty"` // 角色代码（可选）
-	Desc string `json:"desc,omitempty"` // 角色描述（可选）
-}
-
-// ========== 角色管理 API End ==========
-
-// ========== 权限管理 API Start ==========
-
-type CreatePermissionReq struct {
-	Name string `json:"name"`
-	Code string `json:"code"`
-	Desc string `json:"desc,omitempty"`
-}
-
-type DeletePermissionReq struct {
-	ID int64 `path:"id"`
-}
-
-type DeletePermissionResp struct {
-	Message string `json:"message"`
 }
 
 type GetPermissionDetailReq struct {
@@ -148,62 +112,67 @@ type GetPermissionListResp struct {
 	PageSize    int64                `json:"page_size"`
 }
 
-type PermissionInfoResp struct {
-	ID        int64  `json:"id"`
-	Name      string `json:"name"`
-	Code      string `json:"code"`
-	Desc      string `json:"desc"`
-	CreatedAt int64  `json:"created_at"`
-	UpdatedAt int64  `json:"updated_at"`
-}
-
-type UpdatePermissionReq struct {
-	ID   int64  `path:"id"`
-	Name string `json:"name,omitempty"`
-	Code string `json:"code,omitempty"`
-	Desc string `json:"desc,omitempty"`
-}
-
-// ========== 权限管理 API End ==========
-
-// ========== 菜单管理 API Start ==========
-
-type CreateMenuReq struct {
-	Name     string `json:"name"`
-	Code     string `json:"code"`
-	Desc     string `json:"desc,omitempty"`
-	ParentID int64  `json:"parent_id,omitempty"`
-	Path     string `json:"path,omitempty"`
-	Icon     string `json:"icon,omitempty"`
-	Type     int    `json:"type"`
-	Sort     int    `json:"sort,omitempty"`
-	Status   int    `json:"status,omitempty"` // 默认在逻辑层处理
-}
-
-type DeleteMenuReq struct {
+type GetRoleDetailReq struct {
 	ID int64 `path:"id"`
 }
 
-type DeleteMenuResp struct {
-	Message string `json:"message"`
-}
-
-type GetMenuListReq struct {
+type GetRoleListReq struct {
 	Page     int64  `form:"page,default=1"`
 	PageSize int64  `form:"page_size,default=10"`
 	Keyword  string `form:"keyword,optional"`
-	All      bool   `form:"all,optional"` // 是否获取全部（不分页），用于树形结构
 }
 
-type GetMenuListResp struct {
-	Menus    []MenuInfoResp `json:"menus"`
+type GetRoleListResp struct {
+	Roles    []RoleInfoResp `json:"roles"`
 	Total    int64          `json:"total"`
 	Page     int64          `json:"page"`
 	PageSize int64          `json:"page_size"`
 }
 
-type GetMenuDetailReq struct {
-	ID int64 `path:"id"`
+type GetRolePermissionListReq struct {
+	RoleID int64 `path:"id"` // 角色ID(路径参数)
+}
+
+type GetRolePermissionListResp struct {
+	Permissions []PermissionInfoResp `json:"permissions"`
+}
+
+type GetUserDetailReq struct {
+	ID int64 `path:"id"` // 路径参数：用户ID
+}
+
+type GetUserInfoReq struct {
+}
+
+type GetUserListReq struct {
+	Page     int64  `form:"page,default=1"`       // 页码，默认第1页
+	PageSize int64  `form:"page_size,default=10"` // 每页数量，默认10条
+	Keyword  string `form:"keyword,optional"`     // 搜索关键词（用户名或邮箱），可选
+}
+
+type GetUserListResp struct {
+	Users    []UserInfoResp `json:"users"`
+	Total    int64          `json:"total"`     // 总用户数
+	Page     int64          `json:"page"`      // 当前页码
+	PageSize int64          `json:"page_size"` // 每页数量
+}
+
+type GetUserRolesReq struct {
+	UserID int64 `path:"id"` // 用户ID(路径参数)
+}
+
+type GetUserRolesResp struct {
+	Roles []RoleInfoResp `json:"roles"` // 角色列表
+}
+
+type LoginReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginResp struct {
+	Token    string       `json:"token"`
+	UserInfo UserInfoResp `json:"user_info"`
 }
 
 type MenuInfoResp struct {
@@ -221,6 +190,48 @@ type MenuInfoResp struct {
 	UpdatedAt int64  `json:"updated_at"`
 }
 
+type PermissionInfoResp struct {
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	Desc      string `json:"desc"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
+}
+
+type RegisterReq struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type RemoveRolePermissionReq struct {
+	RoleID       int64 `path:"id"`            // 角色ID(路径参数)
+	PermissionID int64 `path:"permission_id"` // 权限ID(路径参数)
+}
+
+type RemoveRolePermissionResp struct {
+	Message string `json:"message"`
+}
+
+type RemoveUserRoleReq struct {
+	UserID int64 `path:"id"`      // 用户ID(路径参数)
+	RoleID int64 `path:"role_id"` // 角色ID(路径参数)
+}
+
+type RemoveUserRoleResp struct {
+	Message string `json:"message"`
+}
+
+type RoleInfoResp struct {
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	Desc      string `json:"desc"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
+}
+
 type UpdateMenuReq struct {
 	ID       int64  `path:"id"`
 	Name     string `json:"name"`
@@ -234,64 +245,33 @@ type UpdateMenuReq struct {
 	Status   int    `json:"status"`
 }
 
-// ========== 菜单管理 API End ==========
-
-// ========== 用户角色管理 API Start ==========
-
-type AssignUserRoleReq struct {
-	UserID int64 `path:"id"`      // 用户ID(路径参数)
-	RoleID int64 `json:"role_id"` // 角色ID(请求体)
+type UpdatePermissionReq struct {
+	ID   int64  `path:"id"`
+	Name string `json:"name,omitempty"`
+	Code string `json:"code,omitempty"`
+	Desc string `json:"desc,omitempty"`
 }
 
-type AssignUserRoleResp struct {
-	Message string `json:"message"`
+type UpdateRoleReq struct {
+	ID   int64  `path:"id"`            // 路径参数：角色ID
+	Name string `json:"name,omitempty"` // 角色名称（可选）
+	Code string `json:"code,omitempty"` // 角色代码（可选）
+	Desc string `json:"desc,omitempty"` // 角色描述（可选）
 }
 
-type GetUserRolesReq struct {
-	UserID int64 `path:"id"` // 用户ID(路径参数)
+type UpdateUserDetailReq struct {
+	ID       int64  `path:"id"`                // 路径参数：用户ID
+	Email    string `json:"email,omitempty"`    // 邮箱（可选）
+	Password string `json:"password,omitempty"` // 密码（可选）
 }
 
-type GetUserRolesResp struct {
-	Roles []RoleInfoResp `json:"roles"` // 角色列表
+type UpdateUserReq struct {
+	Email    string `json:"email,omitempty"`    // 邮箱（可选）
+	Password string `json:"password,omitempty"` // 密码（可选）
 }
 
-type RemoveUserRoleReq struct {
-	UserID int64 `path:"id"`      // 用户ID(路径参数)
-	RoleID int64 `path:"role_id"` // 角色ID(路径参数)
+type UserInfoResp struct {
+	ID       int64  `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
 }
-
-type RemoveUserRoleResp struct {
-	Message string `json:"message"`
-}
-
-// ========== 用户角色管理 API End ==========
-
-// ========== 角色权限管理 API Start ==========
-
-type AssignRolePermissionReq struct {
-	RoleID       int64 `path:"id"`            // 角色ID(路径参数)
-	PermissionID int64 `json:"permission_id"` // 权限ID(请求体)
-}
-
-type AssignRolePermissionResp struct {
-	Message string `json:"message"`
-}
-
-type GetRolePermissionListReq struct {
-	RoleID int64 `path:"id"` // 角色ID(路径参数)
-}
-
-type GetRolePermissionListResp struct {
-	Permissions []PermissionInfoResp `json:"permissions"`
-}
-
-type RemoveRolePermissionReq struct {
-	RoleID       int64 `path:"id"`            // 角色ID(路径参数)
-	PermissionID int64 `path:"permission_id"` // 权限ID(路径参数)
-}
-
-type RemoveRolePermissionResp struct {
-	Message string `json:"message"`
-}
-
-// ========== 角色权限管理 API End ==========

@@ -1,0 +1,107 @@
+syntax = "v1"
+
+// 用户管理相关类型定义
+// 用户列表请求（带分页和搜索）
+type GetUserListReq {
+	Page     int64  `form:"page,default=1"` // 页码，默认第1页
+	PageSize int64  `form:"page_size,default=10"` // 每页数量，默认10条
+	Keyword  string `form:"keyword,optional"` // 搜索关键词（用户名或邮箱），可选
+}
+
+// 用户列表响应
+type GetUserListResp {
+	Users    []UserInfoResp `json:"users"`
+	Total    int64          `json:"total"` // 总用户数
+	Page     int64          `json:"page"` // 当前页码
+	PageSize int64          `json:"page_size"` // 每页数量
+}
+
+// 用户更新请求
+type UpdateUserReq {
+	Email    string `json:"email,optional"` // 邮箱（可选）
+	Password string `json:"password,optional"` // 密码（可选）
+}
+
+// 更新用户详情请求（路径参数 + 请求体）
+type UpdateUserDetailReq {
+	ID       int64  `path:"id"` // 路径参数：用户ID
+	Email    string `json:"email,optional"` // 邮箱（可选）
+	Password string `json:"password,optional"` // 密码（可选）
+}
+
+// 获取用户详情请求（路径参数）
+type GetUserDetailReq {
+	ID int64 `path:"id"` // 路径参数：用户ID
+}
+
+// 删除用户请求（路径参数）
+type DeleteUserReq {
+	ID int64 `path:"id"`
+}
+
+// 删除用户响应
+type DeleteUserResp {
+	Message string `json:"message"`
+}
+
+// ========== 用户角色管理相关类型定义 ==========
+// 给用户分配角色请求
+type AssignUserRoleReq {
+	UserID int64 `path:"id"` // 用户ID(路径参数)
+	RoleID int64 `json:"role_id"` // 角色ID(请求体)
+}
+
+// 给用户分配角色响应
+type AssignUserRoleResp {
+	Message string `json:"message"`
+}
+
+// 获取用户角色列表请求
+type GetUserRolesReq {
+	UserID int64 `path:"id"` // 用户ID(路径参数)
+}
+
+// 获取用户角色列表响应
+type GetUserRolesResp {
+	Roles []RoleInfoResp `json:"roles"` // 角色列表
+}
+
+// 移除用户角色请求
+type RemoveUserRoleReq {
+	UserID int64 `path:"id"` // 用户ID(路径参数)
+	RoleID int64 `path:"role_id"` // 角色ID(路径参数)
+}
+
+// 移除用户角色响应
+type RemoveUserRoleResp {
+	Message string `json:"message"`
+}
+
+service user-api {
+	// ========== 用户管理 ==========
+	@handler GetUserList
+	get /api/users (GetUserListReq) returns (GetUserListResp)
+
+	@handler GetUserDetail
+	get /api/users/:id (GetUserDetailReq) returns (UserInfoResp)
+
+	@handler UpdateUser
+	put /api/users/me (UpdateUserReq) returns (UserInfoResp)
+
+	@handler UpdateUserDetail
+	put /api/users/:id (UpdateUserDetailReq) returns (UserInfoResp)
+
+	@handler DeleteUser
+	delete /api/users/:id (DeleteUserReq) returns (DeleteUserResp)
+
+	// ========== 用户角色管理 ==========
+	@handler AssignUserRole
+	post /api/users/:id/roles (AssignUserRoleReq) returns (AssignUserRoleResp)
+
+	@handler GetUserRoles
+	get /api/users/:id/roles (GetUserRolesReq) returns (GetUserRolesResp)
+
+	@handler RemoveUserRole
+	delete /api/users/:id/roles/:role_id (RemoveUserRoleReq) returns (RemoveUserRoleResp)
+}
+
