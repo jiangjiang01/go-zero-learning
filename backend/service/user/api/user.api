@@ -125,9 +125,7 @@ type DeleteRoleResp {
 }
 
 // ========== 角色管理 API End ==========
-
 // ========== 权限管理 API Start ==========
-
 // 创建权限请求
 type CreatePermissionReq {
 	Name string `json:"name"`
@@ -137,12 +135,12 @@ type CreatePermissionReq {
 
 // 权限响应信息
 type PermissionInfoResp {
-	ID int64 `json:"id"`
-	Name string `json:"name"`
-	Code string `json:"code"`
-	Desc string `json:"desc"`
-	CreatedAt int64 `json:"created_at"`
-	UpdatedAt int64 `json:"updated_at"`
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	Desc      string `json:"desc"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
 }
 
 // 获取权限列表请求（带分页和搜索）
@@ -155,9 +153,9 @@ type GetPermissionListReq {
 // 获取权限列表响应
 type GetPermissionListResp {
 	Permissions []PermissionInfoResp `json:"permissions"`
-	Total int64 `json:"total"`
-	Page int64 `json:"page"`
-	PageSize int64 `json:"page_size"`
+	Total       int64                `json:"total"`
+	Page        int64                `json:"page"`
+	PageSize    int64                `json:"page_size"`
 }
 
 // 获取权限详情（路径参数）
@@ -167,7 +165,7 @@ type GetPermissionDetailReq {
 
 // 更新权限请求（路径参数 + 请求体）
 type UpdatePermissionReq {
-	ID int64 `path:"id"`
+	ID   int64  `path:"id"`
 	Name string `json:"name,optional"`
 	Code string `json:"code,optional"`
 	Desc string `json:"desc,optional"`
@@ -182,36 +180,36 @@ type DeletePermissionReq {
 type DeletePermissionResp {
 	Message string `json:"message"`
 }
-// ========== 权限管理 API End ==========
 
+// ========== 权限管理 API End ==========
 // ========== 菜单管理 API Start ==========
 // 创建菜单请求
 type CreateMenuReq {
-	Name string `json:"name"`
-	Code string `json:"code"`
-	Desc string `json:"desc,optional"`
-	ParentID int64 `json:"parent_id,optional"`
-	Path string `json:"path,optional"`
-	Icon string `json:"icon,optional"`
-	Type int `json:"type"`
-	Sort int `json:"sort,optional"`
-	Status int `json:"status,optional"` // 默认在逻辑层处理
+	Name     string `json:"name"`
+	Code     string `json:"code"`
+	Desc     string `json:"desc,optional"`
+	ParentID int64  `json:"parent_id,optional"`
+	Path     string `json:"path,optional"`
+	Icon     string `json:"icon,optional"`
+	Type     int    `json:"type"`
+	Sort     int    `json:"sort,optional"`
+	Status   int    `json:"status,optional"` // 默认在逻辑层处理
 }
 
 // 菜单响应信息
 type MenuInfoResp {
-	ID int64 `json:"id"`
-	Name string `json:"name"`
-	Code string `json:"code"`
-	Desc string `json:"desc"`
-	ParentID int64 `json:"parent_id"`
-	Path string `json:"path"`
-	Icon string `json:"icon"`
-	Type int `json:"type"`
-	Sort int `json:"sort"`
-	Status int `json:"status"`
-	CreatedAt int64 `json:"created_at"`
-	UpdatedAt int64 `json:"updated_at"`
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	Desc      string `json:"desc"`
+	ParentID  int64  `json:"parent_id"`
+	Path      string `json:"path"`
+	Icon      string `json:"icon"`
+	Type      int    `json:"type"`
+	Sort      int    `json:"sort"`
+	Status    int    `json:"status"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
 }
 
 // 获取菜单列表请求（带分页和搜索）
@@ -219,15 +217,15 @@ type GetMenuListReq {
 	Page     int64  `form:"page,default=1"`
 	PageSize int64  `form:"page_size,default=10"`
 	Keyword  string `form:"keyword,optional"`
-	All      bool   `form:"all,optional"`  // 是否获取全部（不分页），用于树形结构
+	All      bool   `form:"all,optional"` // 是否获取全部（不分页），用于树形结构
 }
 
 // 获取菜单全部列表响应
 type GetMenuListResp {
-	Menus []MenuInfoResp `json:"menus"`
-	Total int64 `json:"total"`
-	Page int64 `json:"page"`
-	PageSize int64 `json:"page_size"`
+	Menus    []MenuInfoResp `json:"menus"`
+	Total    int64          `json:"total"`
+	Page     int64          `json:"page"`
+	PageSize int64          `json:"page_size"`
 }
 
 // 获取菜单详情
@@ -237,16 +235,16 @@ type GetMenuDetailReq {
 
 // 编辑菜单请求
 type UpdateMenuReq {
-	ID int64 `path:"id"`
-	Name string `json:"name"`
-	Code string `json:"code"`
-	Desc string `json:"desc"`
-	ParentID int64 `json:"parent_id"`
-	Path string `json:"path"`
-	Icon string `json:"icon"`
-	Type int `json:"type"`
-	Sort int `json:"sort"`
-	Status int `json:"status"`
+	ID       int64  `path:"id"`
+	Name     string `json:"name"`
+	Code     string `json:"code"`
+	Desc     string `json:"desc"`
+	ParentID int64  `json:"parent_id"`
+	Path     string `json:"path"`
+	Icon     string `json:"icon"`
+	Type     int    `json:"type"`
+	Sort     int    `json:"sort"`
+	Status   int    `json:"status"`
 }
 
 // 删除菜单请求
@@ -260,9 +258,7 @@ type DeleteMenuResp {
 }
 
 // ========== 菜单管理 API End ==========
-
 // ========== 用户角色管理 API Start ==========
-
 // 给用户分配角色请求
 type AssignUserRoleReq {
 	UserID int64 `path:"id"` // 用户ID(路径参数)
@@ -296,7 +292,40 @@ type RemoveUserRoleResp {
 }
 
 // ========== 用户角色管理 API End ==========
+// ========== 角色权限管理 API Start ==========
+// 给角色分配权限请求
+type AssignRolePermissionReq {
+	RoleID       int64 `path:"id"` // 角色ID(路径参数)
+	PermissionID int64 `json:"permission_id"` // 权限ID(请求体)
+}
 
+// 给角色分配权限响应
+type AssignRolePermissionResp {
+	Message string `json:"message"`
+}
+
+// 获取角色权限列表请求
+type GetRolePermissionListReq {
+	RoleID int64 `path:"id"` // 角色ID(路径参数)
+}
+
+// 获取角色权限列表响应
+type GetRolePermissionListResp {
+	Permissions []PermissionInfoResp `json:"permissions"`
+}
+
+// 移除角色权限请求
+type RemoveRolePermissionReq {
+	RoleID       int64 `path:"id"` // 角色ID(路径参数)
+	PermissionID int64 `path:"permission_id"` // 权限ID(路径参数)
+}
+
+// 移除角色权限响应
+type RemoveRolePermissionResp {
+	Message string `json:"message"`
+}
+
+// ========== 角色权限管理 API End ==========
 service user-api {
 	@handler Register
 	post /api/users (RegisterReq) returns (LoginResp)
@@ -337,8 +366,8 @@ service user-api {
 
 	@handler DeleteRole
 	delete /api/roles/:id (DeleteRoleReq) returns (DeleteRoleResp)
-	// ========== 角色管理 API End ==========
 
+	// ========== 角色管理 API End ==========
 	// ========== 权限管理 API Start ==========
 	@handler CreatePermission
 	post /api/permissions (CreatePermissionReq) returns (PermissionInfoResp)
@@ -354,8 +383,8 @@ service user-api {
 
 	@handler DeletePermission
 	delete /api/permissions/:id (DeletePermissionReq) returns (DeletePermissionResp)
-	// ========== 权限管理 API End ==========
 
+	// ========== 权限管理 API End ==========
 	// ========== 菜单管理 API Start ==========
 	@handler CreateMenu
 	post /api/menus (CreateMenuReq) returns (MenuInfoResp)
@@ -371,8 +400,8 @@ service user-api {
 
 	@handler DeleteMenu
 	delete /api/menus/:id (DeleteMenuReq) returns (DeleteMenuResp)
-	// ========== 菜单管理 API End ==========
 
+	// ========== 菜单管理 API End ==========
 	// ========== 用户角色管理 API Start ==========
 	@handler AssignUserRole
 	post /api/users/:id/roles (AssignUserRoleReq) returns (AssignUserRoleResp)
@@ -382,6 +411,17 @@ service user-api {
 
 	@handler RemoveUserRole
 	delete /api/users/:id/roles/:role_id (RemoveUserRoleReq) returns (RemoveUserRoleResp)
+
 	// ========== 用户角色管理 API End ==========
+	// ========== 角色权限管理 API Start ==========
+	@handler AssignRolePermission
+	post /api/roles/:id/permissions (AssignRolePermissionReq) returns (AssignRolePermissionResp)
+
+	@handler GetRolePermissionList
+	get /api/roles/:id/permissions (GetRolePermissionListReq) returns (GetRolePermissionListResp)
+
+	@handler RemoveRolePermission
+	delete /api/roles/:id/permissions/:permission_id (RemoveRolePermissionReq) returns (RemoveRolePermissionResp)
+// ========== 角色权限管理 API End ==========
 }
 
