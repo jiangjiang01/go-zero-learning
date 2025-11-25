@@ -52,6 +52,11 @@ const (
 	CodeMenuHasChildren    = 5005 // 菜单下有子菜单，不能删除
 	CodeMenuCircularRef    = 5006 // 不能将父菜单设置为自己的子菜单
 
+	// 商品相关错误码（6000-6999）
+	CodeProductNotFound      = 6001 // 商品不存在
+	CodeProductAlreadyExists = 6002 // 商品已存在
+	CodeProductPriceInvalid  = 6003 // 商品价格无效
+
 )
 
 // 业务错误（使用统一的 Response 结构）
@@ -101,7 +106,8 @@ func GetHTTPStatus(code int) int {
 		CodeUserNotFound,
 		CodeRoleNotFound,
 		CodePermissionNotFound,
-		CodeMenuNotFound:
+		CodeMenuNotFound,
+		CodeProductNotFound:
 		return http.StatusNotFound
 	case CodeInternalError:
 		return http.StatusInternalServerError
@@ -151,4 +157,9 @@ var (
 	ErrMenuNoUpdateFields = NewBusinessError(CodeMenuNoUpdateFields, "至少需要提供一个更新字段")
 	ErrMenuHasChildren    = NewBusinessError(CodeMenuHasChildren, "菜单下有子菜单，不能删除")
 	ErrMenuCircularRef    = NewBusinessError(CodeMenuCircularRef, "不能将父菜单设置为自己的子菜单")
+
+	// 商品相关错误
+	ErrProductNotFound      = NewBusinessError(CodeProductNotFound, "商品不存在")
+	ErrProductAlreadyExists = NewBusinessError(CodeProductAlreadyExists, "商品已存在")
+	ErrProductPriceInvalid  = NewBusinessError(CodeProductPriceInvalid, "商品价格无效")
 )
