@@ -53,9 +53,13 @@ const (
 	CodeMenuCircularRef    = 5006 // 不能将父菜单设置为自己的子菜单
 
 	// 商品相关错误码（6000-6999）
-	CodeProductNotFound      = 6001 // 商品不存在
-	CodeProductAlreadyExists = 6002 // 商品已存在
-	CodeProductPriceInvalid  = 6003 // 商品价格无效
+	CodeProductNotFound       = 6001 // 商品不存在
+	CodeProductAlreadyExists  = 6002 // 商品已存在(id)
+	CodeProductNameExists     = 6003 // 商品名称已存在
+	CodeProductPriceTooLow    = 6004 // 商品价格太低
+	CodeProductPriceTooHigh   = 6005 // 商品价格太高
+	CodeProductNoUpdateFields = 6006 // 没有需要更新的字段
+	CodeProductStatusInvalid  = 6007 // 商品状态无效
 
 )
 
@@ -159,7 +163,11 @@ var (
 	ErrMenuCircularRef    = NewBusinessError(CodeMenuCircularRef, "不能将父菜单设置为自己的子菜单")
 
 	// 商品相关错误
-	ErrProductNotFound      = NewBusinessError(CodeProductNotFound, "商品不存在")
-	ErrProductAlreadyExists = NewBusinessError(CodeProductAlreadyExists, "商品已存在")
-	ErrProductPriceInvalid  = NewBusinessError(CodeProductPriceInvalid, "商品价格无效")
+	ErrProductNotFound       = NewBusinessError(CodeProductNotFound, "商品不存在")
+	ErrProductAlreadyExists  = NewBusinessError(CodeProductAlreadyExists, "商品已存在")
+	ErrProductNameExists     = NewBusinessError(CodeProductNameExists, "商品名称已存在")
+	ErrProductPriceTooLow    = NewBusinessError(CodeProductPriceTooLow, "商品价格太低")
+	ErrProductPriceTooHigh   = NewBusinessError(CodeProductPriceTooHigh, "商品价格太高")
+	ErrProductNoUpdateFields = NewBusinessError(CodeProductNoUpdateFields, "没有需要更新的字段")
+	ErrProductStatusInvalid  = NewBusinessError(CodeProductStatusInvalid, "商品状态无效")
 )
