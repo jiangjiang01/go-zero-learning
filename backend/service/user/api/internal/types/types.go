@@ -253,14 +253,14 @@ type UpdatePermissionReq struct {
 }
 
 type UpdateRoleReq struct {
-	ID   int64  `path:"id"`            // 路径参数：角色ID
+	ID   int64  `path:"id"`             // 路径参数：角色ID
 	Name string `json:"name,omitempty"` // 角色名称（可选）
 	Code string `json:"code,omitempty"` // 角色代码（可选）
 	Desc string `json:"desc,omitempty"` // 角色描述（可选）
 }
 
 type UpdateUserDetailReq struct {
-	ID       int64  `path:"id"`                // 路径参数：用户ID
+	ID       int64  `path:"id"`                 // 路径参数：用户ID
 	Email    string `json:"email,omitempty"`    // 邮箱（可选）
 	Password string `json:"password,omitempty"` // 密码（可选）
 }
@@ -274,4 +274,63 @@ type UserInfoResp struct {
 	ID       int64  `json:"id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
+}
+
+type CreateProductReq struct {
+	Name        string `json:"name" validate:"required,max=100"`
+	Description string `json:"description,omitempty"`
+	Price       int64  `json:"price" validate:"required,min=1,max=99999900"`
+	Status      int    `json:"status,omitempty"`
+}
+
+type DeleteProductReq struct {
+	ID int64 `path:"id"`
+}
+
+type DeleteProductResp struct {
+	Message string `json:"message"`
+}
+
+type GetProductDetailReq struct {
+	ID int64 `path:"id"`
+}
+
+type GetProductListReq struct {
+	Page     int64  `form:"page,default=1"`
+	PageSize int64  `form:"page_size,default=10"`
+	Keyword  string `form:"keyword,optional"`
+}
+
+type GetProductListResp struct {
+	Products []ProductInfoResp `json:"products"`
+	Page     int64             `json:"page"`
+	PageSize int64             `json:"page_size"`
+	Total    int64             `json:"total"`
+}
+
+type ProductInfoResp struct {
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Price       int64  `json:"price"`
+	Status      int    `json:"status"`
+	CreatedAt   int64  `json:"created_at"`
+	UpdatedAt   int64  `json:"updated_at"`
+}
+
+type UpdateProductReq struct {
+	ID          int64  `path:"id"`
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,optioomitemptynal"`
+	Price       int64  `json:"price,omitempty"`
+	Status      int    `json:"status,omitempty"`
+}
+
+type UpdateProductStatusReq struct {
+	ID     int64 `path:"id"`
+	Status int   `json:"status" validate:"oneof 0 1"`
+}
+
+type UpdateProductStatusResp struct {
+	Message string `json:"message"`
 }

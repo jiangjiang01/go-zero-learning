@@ -407,4 +407,75 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 		),
 	)
+
+	// 需要 product:list 权限的路由（查看商品列表和详情）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("product:list"),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/products",
+				Handler: GetProductListHandler(serverCtx),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/products/:id",
+				Handler: GetProductDetailHandler(serverCtx),
+			},
+		),
+	)
+	// 需要 product:create 权限的路由（创建商品）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("product:create"),
+			},
+			rest.Route{
+				Method:  http.MethodPost,
+				Path:    "/api/products",
+				Handler: CreateProductHandler(serverCtx),
+			},
+		),
+	)
+	// 需要 product:update 权限的路由（更新指定商品）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("product:update"),
+			},
+			rest.Route{
+				Method:  http.MethodPut,
+				Path:    "/api/products/:id",
+				Handler: UpdateProductHandler(serverCtx),
+			},
+			rest.Route{
+				Method:  http.MethodPut,
+				Path:    "/api/products/:id/status",
+				Handler: UpdateProductStatusHandler(serverCtx),
+			},
+		),
+	)
+	// 需要 product:delete 权限的路由（删除指定商品）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("product:delete"),
+			},
+			rest.Route{
+				Method:  http.MethodDelete,
+				Path:    "/api/products/:id",
+				Handler: DeleteProductHandler(serverCtx),
+			},
+		),
+	)
 }
