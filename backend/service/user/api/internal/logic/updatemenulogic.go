@@ -104,7 +104,7 @@ func (l *UpdateMenuLogic) UpdateMenu(req *types.UpdateMenuReq) (resp *types.Menu
 		return nil, errorx.ErrInternalError
 	}
 	if sameLevelCount > 0 {
-		return nil, errorx.ErrMenuAlreadExists
+		return nil, errorx.ErrMenuAlreadyExists
 	}
 
 	// 6. 如果设置为禁用，检查是否有子菜单

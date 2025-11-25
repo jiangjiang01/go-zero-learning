@@ -146,7 +146,7 @@ var (
 
 	// 菜单相关错误
 	ErrMenuNotFound       = NewBusinessError(CodeMenuNotFound, "菜单不存在")
-	ErrMenuAlreadExists   = NewBusinessError(CodeMenuAlreadyExists, "菜单已存在")
+	ErrMenuAlreadyExists  = NewBusinessError(CodeMenuAlreadyExists, "菜单已存在")
 	ErrMenuCodeExists     = NewBusinessError(CodeMenuCodeExists, "菜单代码已存在")
 	ErrMenuNoUpdateFields = NewBusinessError(CodeMenuNoUpdateFields, "至少需要提供一个更新字段")
 	ErrMenuHasChildren    = NewBusinessError(CodeMenuHasChildren, "菜单下有子菜单，不能删除")

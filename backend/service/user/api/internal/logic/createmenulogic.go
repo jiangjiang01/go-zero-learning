@@ -80,7 +80,7 @@ func (l *CreateMenuLogic) CreateMenu(req *types.CreateMenuReq) (resp *types.Menu
 		return nil, errorx.ErrInternalError
 	}
 	if sameLevelCount > 0 {
-		return nil, errorx.ErrMenuAlreadExists
+		return nil, errorx.ErrMenuAlreadyExists
 	}
 
 	// 5. 创建菜单
