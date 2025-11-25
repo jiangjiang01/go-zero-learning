@@ -1,0 +1,96 @@
+syntax = "v1"
+
+// 商品管理相关类型定义
+
+// 创建商品请求
+type CreateProductReq {
+	Name string `json:"name" validate:"required,max=100"`
+	Description string `json:"description,optional"`
+	Price int64 `json:"price" validate:"required,min=1,max=99999900"`
+	Status  int `json:"status,optional"`
+}
+
+// 商品响应信息
+type ProductInfoResp {
+	ID int64 `json:"id"`
+	Name string `json:"name"`
+	Description string `json:"description"`
+	Price int64 `json:"price"`
+	Status int `json:"status"`
+	CreatedAt int64 `json:"created_at"`
+	UpdatedAt int64 `json:"updated_at"`
+}
+
+// 获取商品列表请求
+type GetProductListReq {
+	Page int64 `form:"page,default=1"`
+	PageSize int64 `form:"page_size,default=10"`
+	Keyword string `form:"keyword,optional"`
+}
+
+// 获取商品列表响应
+type GetProductListResp {
+	Products []ProductInfoResp `json:"products"`
+	Page int64 `json:"page"`
+	PageSize int64 `json:"page_size"`
+	Total int64 `json:"total"`
+}
+
+// 获取商品详情请求
+type GetProductDetailReq {
+	ID int64 `path:"id"`
+}
+
+// 商品详情响应为 ProductInfoResp
+
+// 更新商品请求
+type UpdateProductReq {
+	ID int64 `path:"id"`
+	Name string `json:"name,optional"`
+	Description string `json:"description,optional"`
+	Price int64 `json:"price,optional"`
+	Status int `json:"status,optional"`
+}
+
+// 更新商品响应为 ProductInfoResp
+
+// 更新商品状态请求
+type UpdateProductStatusReq {
+	ID int64 `path:"id"`
+	Status int `json:"status" validate:"oneof 0 1"`
+}
+
+// 更新商品状态响应
+type UpdateProductStatusResp {
+	Message string `json:"message"`
+}
+
+// 删除商品请求
+type DeleteProductReq {
+	ID int64 `path:"id"`
+}
+
+// 删除商品响应
+type DeleteProductResp {
+	Message string `json:"message"`
+}
+
+service user-api {
+	@handler CreateProduct
+	post /api/products (CreateProductReq) returns (ProductInfoResp)
+
+	@handler GetProductList
+	get /api/products (GetProductListReq) returns (GetProductListResp)
+
+	@handler GetProductDetail
+	get /api/products/:id (GetProductDetailReq) returns (ProductInfoResp)
+
+	@handler UpdateProduct
+	put /api/products/:id (UpdateProductReq) returns (ProductInfoResp)
+
+	@handler UpdateProductStatus
+	put /api/products/:id/status (UpdateProductStatusReq) returns (UpdateProductStatusResp)
+
+	@handler DeleteProduct
+	delete /api/products/:id (DeleteProductReq) returns (DeleteProductResp)
+}
