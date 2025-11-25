@@ -280,7 +280,7 @@ type CreateProductReq struct {
 	Name        string `json:"name" validate:"required,max=100"`
 	Description string `json:"description,omitempty"`
 	Price       int64  `json:"price" validate:"required,min=1,max=99999900"`
-	Status      int    `json:"status,omitempty"`
+	Status      *int   `json:"status,omitempty" validate:"omitempty,oneof 0 1"`
 }
 
 type DeleteProductReq struct {

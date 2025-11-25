@@ -5,11 +5,16 @@ package logic
 
 import (
 	"context"
+	"errors"
+	"strings"
 
+	"go-zero-learning/common/errorx"
+	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"gorm.io/gorm"
 )
 
 type CreateProductLogic struct {
@@ -27,7 +32,63 @@ func NewCreateProductLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cre
 }
 
 func (l *CreateProductLogic) CreateProduct(req *types.CreateProductReq) (resp *types.ProductInfoResp, err error) {
-	// todo: add your logic here and delete this line
+	// 1. 参数校验
+	name := strings.TrimSpace(req.Name)
+	description := strings.TrimSpace(req.Description)
 
-	return
+	if name == "" {
+		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "商品名称不能为空")
+	}
+
+	if len(name) > 100 {
+		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "商品名称长度不能超过100个字符")
+	}
+
+	if req.Price <= 0 {
+		return nil, errorx.ErrProductPriceTooLow
+	}
+	// if req.Price > 99999900 {
+	// 	return nil, errorx.ErrProductPriceTooHigh
+	// }
+
+	// 2. 查询商品名称是否已存在
+	var existingProduct model.Product
+	err = l.svcCtx.DB.Where("name = ?", name).First(&existingProduct).Error
+	if err == nil {
+		return nil, errorx.ErrProductNameExists
+	}
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		l.Errorf("查询商品名称失败：%v", err)
+		return nil, errorx.ErrInternalError
+	}
+
+	// 3. 创建商品
+	status := 1 // 默认启用
+	if req.Status != nil {
+		status = *req.Status
+	}
+	product := &model.Product{
+		Name:        name,
+		Description: description,
+		Price:       req.Price,
+		Status:      status,
+	}
+	err = l.svcCtx.DB.Create(&product).Error
+	if err != nil {
+		l.Errorf("创建商品失败：%v", err)
+		return nil, errorx.ErrInternalError
+	}
+
+	// 4. 构建响应
+	resp = &types.ProductInfoResp{
+		ID:          product.ID,
+		Name:        product.Name,
+		Description: product.Description,
+		Price:       product.Price,
+		Status:      product.Status,
+		CreatedAt:   product.CreatedAt.Unix(),
+		UpdatedAt:   product.UpdatedAt.Unix(),
+	}
+
+	return resp, nil
 }
