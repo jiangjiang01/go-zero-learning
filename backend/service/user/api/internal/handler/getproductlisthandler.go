@@ -6,26 +6,30 @@ package handler
 import (
 	"net/http"
 
-	"github.com/zeromicro/go-zero/rest/httpx"
+	"go-zero-learning/common/errorx"
+	"go-zero-learning/common/response"
+	"go-zero-learning/common/validator"
 	"go-zero-learning/service/user/api/internal/logic"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
+
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func GetProductListHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.GetProductListReq
 		if err := httpx.Parse(r, &req); err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
+			errorx.HandleError(w, r, validator.ParseError(err))
 			return
 		}
 
 		l := logic.NewGetProductListLogic(r.Context(), svcCtx)
 		resp, err := l.GetProductList(&req)
 		if err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
+			errorx.HandleError(w, r, err)
 		} else {
-			httpx.OkJsonCtx(r.Context(), w, resp)
+			response.OkJson(w, r, resp)
 		}
 	}
 }
