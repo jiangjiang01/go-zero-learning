@@ -6,5 +6,6 @@ import (
 	"desc/role.api"
 	"desc/permission.api"
 	"desc/menu.api"
+	"desc/product.api"
 )
 
