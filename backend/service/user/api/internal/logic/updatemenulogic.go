@@ -137,7 +137,14 @@ func (l *UpdateMenuLogic) UpdateMenu(req *types.UpdateMenuReq) (resp *types.Menu
 		return nil, errorx.ErrInternalError
 	}
 
-	// 8. 构建响应（不需要重新查询，menu 对象已经是最新的）
+	// 8. 重新查询菜单以获取精确的 UpdatedAt 时间戳
+	err = l.svcCtx.DB.First(&menu, req.ID).Error
+	if err != nil {
+		l.Errorf("重新查询菜单失败：%v", err)
+		return nil, errorx.ErrInternalError
+	}
+
+	// 9. 构建响应
 	resp = &types.MenuInfoResp{
 		ID:        menu.ID,
 		Name:      menu.Name,
@@ -153,6 +160,6 @@ func (l *UpdateMenuLogic) UpdateMenu(req *types.UpdateMenuReq) (resp *types.Menu
 		UpdatedAt: menu.UpdatedAt.Unix(),
 	}
 
-	// 9. 返回响应
+	// 10. 返回响应
 	return resp, nil
 }
