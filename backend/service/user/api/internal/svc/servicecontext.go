@@ -33,6 +33,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		&model.Menu{},
 		&model.UserRole{},
 		&model.RolePermission{},
+		&model.Product{},
 	)
 	if err != nil {
 		panic(err)
