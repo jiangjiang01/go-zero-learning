@@ -66,9 +66,13 @@ func (l *UpdateMenuLogic) UpdateMenu(req *types.UpdateMenuReq) (resp *types.Menu
 		return nil, errorx.ErrInternalError
 	}
 
-	// 3. 如果提供了 ParentID，验证父菜单是否存在（到这儿不可能是负数了）
+	// 3. 处理父菜单验证
+	// ParentID=0 表示这是顶级菜单（无父菜单），此时不需要验证父菜单
+	// ParentID>0 表示有父菜单，需要验证父菜单是否存在
+	// ParentID<0 已经在参数验证阶段被拒绝，不会执行到这里
 	parentID := req.ParentID
 	if parentID > 0 {
+		// 验证指定的父菜单是否存在
 		var parentMenu model.Menu
 		err = l.svcCtx.DB.First(&parentMenu, parentID).Error
 		if err != nil {
@@ -78,7 +82,8 @@ func (l *UpdateMenuLogic) UpdateMenu(req *types.UpdateMenuReq) (resp *types.Menu
 			l.Errorf("查询父菜单失败：%v", err)
 			return nil, errorx.ErrInternalError
 		}
-		// 防止循环引用：不能将父菜单设置为自己的子菜单
+		// 防止直接循环引用：不能将自己的ID设置为父菜单ID
+		// 注：只检查直接循环引用(A->A)，间接循环引用(A->B->A)暂不处理
 		if parentID == req.ID {
 			return nil, errorx.ErrMenuCircularRef
 		}
