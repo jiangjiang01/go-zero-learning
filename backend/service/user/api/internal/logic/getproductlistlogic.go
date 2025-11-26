@@ -90,15 +90,7 @@ func convertToProductInfoRespList(products []model.Product) []types.ProductInfoR
 	productList := make([]types.ProductInfoResp, 0, len(products))
 
 	for _, p := range products {
-		productList = append(productList, types.ProductInfoResp{
-			ID:          p.ID,
-			Name:        p.Name,
-			Description: p.Description,
-			Price:       p.Price,
-			Status:      p.Status,
-			CreatedAt:   p.CreatedAt.Unix(),
-			UpdatedAt:   p.UpdatedAt.Unix(),
-		})
+		productList = append(productList, *convertToProductInfoResp(p))
 	}
 
 	return productList
