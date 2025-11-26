@@ -61,6 +61,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '菜单管理', icon: 'Menu' }
       },
       {
+        path: 'product',
+        name: 'SystemProduct',
+        component: () => import('@/views/system/product/index.vue'),
+        meta: { title: '商品管理', icon: 'Goods' }
+      },
+      {
         path: 'settings',
         name: 'SystemSettings',
         component: () => import('@/views/system/settings/index.vue'),
