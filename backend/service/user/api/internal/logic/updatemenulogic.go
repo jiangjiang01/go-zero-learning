@@ -32,24 +32,9 @@ func NewUpdateMenuLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Update
 }
 
 func (l *UpdateMenuLogic) UpdateMenu(req *types.UpdateMenuReq) (resp *types.MenuInfoResp, err error) {
-	name := strings.TrimSpace(req.Name)
-	code := strings.TrimSpace(req.Code)
-
 	// 1. 校验参数
 	if req.ID <= 0 {
 		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "菜单ID不能为空")
-	}
-	if name == "" {
-		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "菜单名称不能为空")
-	}
-	if code == "" {
-		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "菜单代码不能为空")
-	}
-	if req.Type != 1 && req.Type != 2 {
-		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "菜单类型只能是1（菜单）或2（按钮）")
-	}
-	if req.Status != 0 && req.Status != 1 {
-		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "状态只能是0（禁用）或1（启用）")
 	}
 	if req.ParentID < 0 {
 		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "父菜单ID不能为负数")
@@ -89,31 +74,105 @@ func (l *UpdateMenuLogic) UpdateMenu(req *types.UpdateMenuReq) (resp *types.Menu
 		}
 	}
 
-	// 4. 检查菜单代码是否已存在（非自己）
-	var existingMenu model.Menu
-	err = l.svcCtx.DB.Where("code = ? AND id != ?", code, req.ID).First(&existingMenu).Error
-	if err == nil {
-		return nil, errorx.ErrMenuCodeExists
-	}
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		l.Errorf("查询菜单代码失败：%v", err)
-		return nil, errorx.ErrInternalError
+	// 4. 处理字段更新
+	updateFields := make(map[string]interface{})
+
+	// 处理菜单代码
+	if req.Code != nil {
+		code := strings.TrimSpace(*req.Code)
+		if code == "" {
+			return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "菜单代码不能为空")
+		}
+
+		var existingMenu model.Menu
+		err = l.svcCtx.DB.Where("code = ? AND id != ?", code, req.ID).First(&existingMenu).Error
+		if err == nil {
+			return nil, errorx.ErrMenuCodeExists
+		}
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			l.Errorf("查询菜单代码失败：%v", err)
+			return nil, errorx.ErrInternalError
+		}
+
+		if menu.Code != code {
+			updateFields["code"] = code
+		}
 	}
 
-	// 5. 检查同级菜单是否存在同名菜单（非自己）
-	var sameLevelCount int64
-	err = l.svcCtx.DB.Model(&model.Menu{}).Where("parent_id = ? AND name = ? AND id != ?", parentID, name, req.ID).
-		Count(&sameLevelCount).Error
-	if err != nil {
-		l.Errorf("查询同级菜单失败：%v", err)
-		return nil, errorx.ErrInternalError
-	}
-	if sameLevelCount > 0 {
-		return nil, errorx.ErrMenuAlreadyExists
+	// 处理菜单名称更新
+	if req.Name != nil {
+		// 检查同级菜单是否存在同名菜单（非自己）
+		name := strings.TrimSpace(*req.Name)
+		if name == "" {
+			return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "菜单名称不能为空")
+		}
+
+		var sameLevelCount int64
+		err = l.svcCtx.DB.Model(&model.Menu{}).Where("parent_id = ? AND name = ? AND id != ?", parentID, name, req.ID).
+			Count(&sameLevelCount).Error
+		if err != nil {
+			l.Errorf("查询同级菜单失败：%v", err)
+			return nil, errorx.ErrInternalError
+		}
+		if sameLevelCount > 0 {
+			return nil, errorx.ErrMenuAlreadyExists
+		}
+
+		if menu.Name != name {
+			updateFields["name"] = name
+		}
 	}
 
-	// 6. 如果设置为禁用，检查是否有子菜单
-	if req.Status == 0 && menu.Status != 0 {
+	// 处理菜单描述更新, 允许设置为空
+	if req.Desc != nil {
+		desc := *req.Desc
+		if menu.Desc != desc {
+			updateFields["desc"] = desc
+		}
+	}
+
+	// 处理菜单路径更新, 允许设置为空
+	if req.Path != nil {
+		path := *req.Path
+		if menu.Path != path {
+			updateFields["path"] = path
+		}
+	}
+
+	// 处理菜单图标更新, 允许设置为空
+	if req.Icon != nil {
+		icon := *req.Icon
+		if menu.Icon != icon {
+			updateFields["icon"] = icon
+		}
+	}
+
+	// 处理菜单类型更新
+	if req.Type != nil {
+		typeValue := *req.Type
+		if typeValue != 1 && typeValue != 2 {
+			return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "菜单类型只能是1（菜单）或2（按钮）")
+		}
+		if menu.Type != typeValue {
+			updateFields["type"] = typeValue
+		}
+	}
+
+	// 处理菜单排序更新
+	if req.Sort != nil {
+		sortValue := *req.Sort
+		if menu.Sort != sortValue {
+			updateFields["sort"] = sortValue
+		}
+	}
+
+	// 处理菜单状态更新
+	if req.Status != nil {
+		statusValue := *req.Status
+		if statusValue != 1 && statusValue != 0 {
+			return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "菜单状态只能是1（启用）或0（禁用）")
+		}
+		// 如果设置为禁用，检查是否有子菜单
 		var childCount int64
 		err = l.svcCtx.DB.Model(&model.Menu{}).Where("parent_id = ?", req.ID).Count(&childCount).Error
 		if err != nil {
@@ -123,26 +182,25 @@ func (l *UpdateMenuLogic) UpdateMenu(req *types.UpdateMenuReq) (resp *types.Menu
 		if childCount > 0 {
 			return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "菜单下有子菜单，不能禁用")
 		}
+
+		if menu.Status != statusValue {
+			updateFields["status"] = statusValue
+		}
 	}
 
-	// 7. 直接更新所有字段（使用 Save 方法）
-	menu.Name = name
-	menu.Code = code
-	menu.Desc = req.Desc
-	menu.ParentID = parentID
-	menu.Path = req.Path
-	menu.Icon = req.Icon
-	menu.Type = req.Type
-	menu.Sort = req.Sort
-	menu.Status = req.Status
+	// 6. 检查是否有字段需要更新
+	if len(updateFields) == 0 {
+		return nil, errorx.ErrMenuNoUpdateFields
+	}
 
-	err = l.svcCtx.DB.Save(&menu).Error
+	// 7. 执行更新
+	err = l.svcCtx.DB.Model(&menu).Updates(updateFields).Error
 	if err != nil {
 		l.Errorf("更新菜单失败：%v", err)
 		return nil, errorx.ErrInternalError
 	}
 
-	// 8. 重新查询菜单以获取精确的 UpdatedAt 时间戳
+	// 8. 重新查询最新的数据
 	err = l.svcCtx.DB.First(&menu, req.ID).Error
 	if err != nil {
 		l.Errorf("重新查询菜单失败：%v", err)
@@ -165,6 +223,5 @@ func (l *UpdateMenuLogic) UpdateMenu(req *types.UpdateMenuReq) (resp *types.Menu
 		UpdatedAt: menu.UpdatedAt.Unix(),
 	}
 
-	// 10. 返回响应
 	return resp, nil
 }

@@ -233,16 +233,16 @@ type RoleInfoResp struct {
 }
 
 type UpdateMenuReq struct {
-	ID       int64  `path:"id"`
-	Name     string `json:"name"`
-	Code     string `json:"code"`
-	Desc     string `json:"desc"`
-	ParentID int64  `json:"parent_id"`
-	Path     string `json:"path"`
-	Icon     string `json:"icon"`
-	Type     int    `json:"type"`
-	Sort     int    `json:"sort"`
-	Status   int    `json:"status"`
+	ID       int64   `path:"id"`
+	Name     *string `json:"name,omitempty"`
+	Code     *string `json:"code,omitempty"`
+	Desc     *string `json:"desc,omitempty"`
+	ParentID int64   `json:"parent_id"`
+	Path     *string `json:"path,omitempty"`
+	Icon     *string `json:"icon,omitempty"`
+	Type     *int    `json:"type,omitempty"`
+	Sort     *int    `json:"sort,omitempty"`
+	Status   *int    `json:"status,omitempty"`
 }
 
 type UpdatePermissionReq struct {

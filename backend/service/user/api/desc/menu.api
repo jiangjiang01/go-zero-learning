@@ -54,15 +54,15 @@ type GetMenuDetailReq {
 // 编辑菜单请求
 type UpdateMenuReq {
 	ID       int64  `path:"id"`
-	Name     string `json:"name"`
-	Code     string `json:"code"`
-	Desc     string `json:"desc"`
+	Name     *string `json:"name,optional"`
+	Code     *string `json:"code,optional"`
+	Desc     *string `json:"desc,optional"`
 	ParentID int64  `json:"parent_id"`
-	Path     string `json:"path"`
-	Icon     string `json:"icon"`
-	Type     int    `json:"type"`
-	Sort     int    `json:"sort"`
-	Status   int    `json:"status"`
+	Path     *string `json:"path,optional"`
+	Icon     *string `json:"icon,optional"`
+	Type     *int    `json:"type,optional"`
+	Sort     *int    `json:"sort,optional"`
+	Status   *int    `json:"status,optional"`
 }
 
 // 删除菜单请求
