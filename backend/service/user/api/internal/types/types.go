@@ -246,10 +246,10 @@ type UpdateMenuReq struct {
 }
 
 type UpdatePermissionReq struct {
-	ID   int64  `path:"id"`
-	Name string `json:"name,omitempty"`
-	Code string `json:"code,omitempty"`
-	Desc string `json:"desc,omitempty"`
+	ID   int64   `path:"id"`
+	Name *string `json:"name,omitempty"`
+	Code *string `json:"code,omitempty"`
+	Desc *string `json:"desc,omitempty"`
 }
 
 type UpdateRoleReq struct {

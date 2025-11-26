@@ -41,9 +41,9 @@ type GetPermissionDetailReq {
 // 更新权限请求（路径参数 + 请求体）
 type UpdatePermissionReq {
 	ID   int64  `path:"id"`
-	Name string `json:"name,optional"`
-	Code string `json:"code,optional"`
-	Desc string `json:"desc,optional"`
+	Name *string `json:"name,optional"`
+	Code *string `json:"code,optional"`
+	Desc *string `json:"desc,optional"`
 }
 
 // 删除权限（路径参数）
