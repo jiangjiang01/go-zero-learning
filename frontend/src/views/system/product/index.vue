@@ -136,7 +136,7 @@ const fetchProductList = async () => {
       page_size: pagination.pageSize,
       keyword: searchForm.keyword || undefined
     })
-    
+
     if (response.code === 0) {
       productList.value = response.data.products || []
       pagination.total = response.data.total
@@ -147,7 +147,6 @@ const fetchProductList = async () => {
     }
   } catch (error) {
     console.error('获取商品列表失败:', error)
-    ElMessage.error('获取商品列表失败')
   } finally {
     loading.value = false
   }

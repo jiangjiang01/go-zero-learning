@@ -117,6 +117,18 @@ const rules: FormRules = {
   ]
 }
 
+// 重置表单
+const resetForm = () => {
+  form.name = ''
+  form.description = ''
+  form.price = 0
+  form.status = 1
+
+  nextTick(() => {
+    formRef.value?.clearValidate()
+  })
+}
+
 // 监听商品数据变化
 watch(
   () => props.product,
@@ -134,18 +146,6 @@ watch(
   },
   { immediate: true }
 )
-
-// 重置表单
-const resetForm = () => {
-  form.name = ''
-  form.description = ''
-  form.price = 0
-  form.status = 1
-  
-  nextTick(() => {
-    formRef.value?.clearValidate()
-  })
-}
 
 // 关闭对话框
 const handleClose = () => {
