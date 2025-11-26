@@ -46,10 +46,10 @@ type GetProductDetailReq {
 // 更新商品请求
 type UpdateProductReq {
 	ID int64 `path:"id"`
-	Name string `json:"name,optional"`
-	Description string `json:"description,optional"`
-	Price int64 `json:"price,optional"`
-	Status int `json:"status,optional"`
+	Name *string `json:"name,optional"`
+	Description *string `json:"description,optional"`
+	Price *int64 `json:"price,optional"`
+	Status *int `json:"status,optional"`
 }
 
 // 更新商品响应为 ProductInfoResp

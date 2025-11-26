@@ -319,11 +319,11 @@ type ProductInfoResp struct {
 }
 
 type UpdateProductReq struct {
-	ID          int64  `path:"id"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,optioomitemptynal"`
-	Price       int64  `json:"price,omitempty"`
-	Status      int    `json:"status,omitempty"`
+	ID          int64   `path:"id"`
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Price       *int64  `json:"price,omitempty"`
+	Status      *int    `json:"status,omitempty"`
 }
 
 type UpdateProductStatusReq struct {
