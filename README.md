@@ -477,6 +477,29 @@ response.OkJson(w, r, resp)
 - [x] 测试覆盖：未登录访问、无角色访问、有权限访问、无权限访问等场景
 - [x] 所有测试通过（12/12）
 
+#### ✅ 商品管理功能（后端）
+
+- [x] 商品模型定义（backend/model/product）
+- [x] 商品 API 定义（user.api 中添加商品相关类型和路由）
+- [x] 商品错误码定义（6000-6999）
+- [x] 商品 CRUD API（创建、列表、详情、更新、删除）
+- [x] 商品列表分页和搜索功能
+- [x] 商品名称唯一性检查
+- [x] 商品状态管理
+- [x] 所有 API 测试通过
+
+#### ✅ 商品管理功能（前端）
+
+- [x] 商品管理 API 接口（frontend/src/api/product.ts）
+- [x] 商品管理页面（frontend/src/views/system/product/index.vue）
+- [x] 商品新增/编辑对话框（frontend/src/views/system/product/components/ProductDialog.vue）
+- [x] 路由配置（/system/product）
+- [x] 表单验证（名称、价格、状态）
+- [x] 价格单位转换（元 ↔ 分）
+- [x] **修复 bug：ProductDialog.vue resetForm 函数初始化问题**（函数定义必须在 watch 之前）
+- [x] **修复 UI 问题：移除重复错误提示**（只保留一个权限验证错误信息）
+- [x] 所有功能测试通过
+
 ### 待完成功能
 
 #### 阶段三：商品管理
@@ -526,6 +549,7 @@ response.OkJson(w, r, resp)
 
 ### 当前问题/注意事项
 
+#### 常规配置
 - 配置文件字段名：使用 `dataSource`（小写驼峰）
 - 运行方式：`cd backend/service/user/api && go run user-api.go -f etc/user-api.yaml`
 - 数据库：MySQL 3307 端口，数据库名 testdb
@@ -533,13 +557,52 @@ response.OkJson(w, r, resp)
 - 网络配置：如果系统无法解析 `localhost`，配置文件已使用 `127.0.0.1` 替代
 - 测试脚本：所有测试脚本统一存放在 `scripts/` 目录，使用 kebab-case 命名规范
 
+#### ⚠️ 二次提示问题（AI 需要避免）
+**问题描述**：在前端错误处理中，如果 API 返回错误（如权限验证失败），会出现两个错误提示：
+1. 来自服务器的原始错误信息（如 "没有权限访问"）
+2. 前端 catch 块中捕获异常后的重复提示（如 "获取商品列表失败"）
+
+**解决方案**：
+- 在 catch 块中**不应该再显示错误提示**（已通过 ElMessage.error 捕获了 API 返回的错误）
+- 只在 catch 块中输出日志用于调试
+- 让用户只看到来自服务器的原始、清晰的错误信息
+
+**示例代码修改**：
+```typescript
+const fetchProductList = async () => {
+  try {
+    loading.value = true
+    const response = await getProductList(params)
+
+    if (response.code === 0) {
+      // 成功处理
+    } else {
+      ElMessage.error(response.message || '操作失败')  // ✅ 显示服务器错误
+    }
+  } catch (error) {
+    console.error('错误:', error)  // ✅ 只在控制台输出
+    // ❌ 不要再 ElMessage.error('操作失败')
+  } finally {
+    loading.value = false
+  }
+}
+```
+
+**最后出现**：2025-01-22 商品管理功能修复
+**AI 提醒**：下次遇到类似 API 错误处理时，记得检查是否有重复的错误提示
+
 ### 下一步计划
 
 **当前阶段**：阶段三 - 商品管理
 
-**下一步**：开始实现商品管理功能（商品 CRUD）
+**完成情况**：商品管理后端+前端全部完成 ✅
 
-**最后更新**：2025-01-22  
+**下一步**：
+1. 测试商品管理所有功能（分配权限后）
+2. 开始阶段四 - 订单管理
+3. 或根据需求实现其他功能
+
+**最后更新**：2025-01-22
 **当前状态**：
 
 - 阶段一（用户认证和管理）全部完成 ✅
@@ -550,6 +613,10 @@ response.OkJson(w, r, resp)
   - 用户角色管理（后端+前端）✅
   - 角色权限管理（后端+前端）✅
   - 权限中间件（权限验证）✅
+- 阶段三（商品管理）全部完成 ✅：
+  - 商品 CRUD（后端+前端）✅
+  - 商品列表分页搜索✅
+  - UI bug 修复（重复提示）✅
 
 ---
 
