@@ -260,14 +260,14 @@ type UpdateRoleReq struct {
 }
 
 type UpdateUserDetailReq struct {
-	ID       int64  `path:"id"`                 // 路径参数：用户ID
-	Email    string `json:"email,omitempty"`    // 邮箱（可选）
-	Password string `json:"password,omitempty"` // 密码（可选）
+	ID       int64   `path:"id"`                 // 路径参数：用户ID
+	Email    *string `json:"email,omitempty"`    // 邮箱（可选）
+	Password *string `json:"password,omitempty"` // 密码（可选）
 }
 
 type UpdateUserReq struct {
-	Email    string `json:"email,omitempty"`    // 邮箱（可选）
-	Password string `json:"password,omitempty"` // 密码（可选）
+	Email    *string `json:"email,omitempty"`    // 邮箱（可选）
+	Password *string `json:"password,omitempty"` // 密码（可选）
 }
 
 type UserInfoResp struct {

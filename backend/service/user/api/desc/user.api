@@ -18,15 +18,15 @@ type GetUserListResp {
 
 // 用户更新请求
 type UpdateUserReq {
-	Email    string `json:"email,optional"` // 邮箱（可选）
-	Password string `json:"password,optional"` // 密码（可选）
+	Email    *string `json:"email,optional"` // 邮箱（可选）
+	Password *string `json:"password,optional"` // 密码（可选）
 }
 
 // 更新用户详情请求（路径参数 + 请求体）
 type UpdateUserDetailReq {
 	ID       int64  `path:"id"` // 路径参数：用户ID
-	Email    string `json:"email,optional"` // 邮箱（可选）
-	Password string `json:"password,optional"` // 密码（可选）
+	Email    *string `json:"email,optional"` // 邮箱（可选）
+	Password *string `json:"password,optional"` // 密码（可选）
 }
 
 // 获取用户详情请求（路径参数）
