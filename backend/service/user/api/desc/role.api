@@ -41,9 +41,9 @@ type GetRoleDetailReq {
 // 更新角色请求（路径参数 + 请求体）
 type UpdateRoleReq {
 	ID   int64  `path:"id"` // 路径参数：角色ID
-	Name string `json:"name,optional"` // 角色名称（可选）
-	Code string `json:"code,optional"` // 角色代码（可选）
-	Desc string `json:"desc,optional"` // 角色描述（可选）
+	Name *string `json:"name,optional"` // 角色名称（可选）
+	Code *string `json:"code,optional"` // 角色代码（可选）
+	Desc *string `json:"desc,optional"` // 角色描述（可选）
 }
 
 // 删除角色（路径参数）

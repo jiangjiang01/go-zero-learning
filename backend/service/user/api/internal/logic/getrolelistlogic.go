@@ -68,7 +68,7 @@ func (l *GetRoleListLogic) GetRoleList(req *types.GetRoleListReq) (resp *types.G
 	}
 
 	// 5. 构建响应结果
-	roleList := convertToRoleInfoResp(roles)
+	roleList := convertToRoleInfoRespList(roles)
 	resp = &types.GetRoleListResp{
 		Roles:    roleList,
 		Total:    total,
@@ -80,18 +80,11 @@ func (l *GetRoleListLogic) GetRoleList(req *types.GetRoleListReq) (resp *types.G
 	return resp, nil
 }
 
-func convertToRoleInfoResp(roles []model.Role) []types.RoleInfoResp {
+func convertToRoleInfoRespList(roles []model.Role) []types.RoleInfoResp {
 	roleList := make([]types.RoleInfoResp, 0, len(roles))
 
 	for _, role := range roles {
-		roleList = append(roleList, types.RoleInfoResp{
-			ID:        role.ID,
-			Name:      role.Name,
-			Code:      role.Code,
-			Desc:      role.Desc,
-			CreatedAt: role.CreatedAt.Unix(),
-			UpdatedAt: role.UpdatedAt.Unix(),
-		})
+		roleList = append(roleList, *convertToRoleInfoResp(role))
 	}
 
 	return roleList

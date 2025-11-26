@@ -69,7 +69,7 @@ func (l *GetUserRolesLogic) GetUserRoles(req *types.GetUserRolesReq) (resp *type
 
 	// 5. 构建响应
 	resp = &types.GetUserRolesResp{
-		Roles: convertToRoleInfoResp(roles),
+		Roles: convertToRoleInfoRespList(roles),
 	}
 
 	// 6. 返回响应

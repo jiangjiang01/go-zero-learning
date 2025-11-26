@@ -253,10 +253,10 @@ type UpdatePermissionReq struct {
 }
 
 type UpdateRoleReq struct {
-	ID   int64  `path:"id"`             // 路径参数：角色ID
-	Name string `json:"name,omitempty"` // 角色名称（可选）
-	Code string `json:"code,omitempty"` // 角色代码（可选）
-	Desc string `json:"desc,omitempty"` // 角色描述（可选）
+	ID   int64   `path:"id"`             // 路径参数：角色ID
+	Name *string `json:"name,omitempty"` // 角色名称（可选）
+	Code *string `json:"code,omitempty"` // 角色代码（可选）
+	Desc *string `json:"desc,omitempty"` // 角色描述（可选）
 }
 
 type UpdateUserDetailReq struct {
