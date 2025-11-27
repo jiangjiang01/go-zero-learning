@@ -67,8 +67,11 @@ const (
 	CodeOrderCannotCancel    = 7003 // 订单不能取消
 	CodeOrderCannotPay       = 7004 // 订单不能支付
 	CodeOrderQuantityInvalid = 7005 // 订单数量无效
-	CodeOrderPriceChange     = 7006 // 订单价格变化
-	CodeOrderStockNotEnough  = 7007 // 订单库存不足
+	CodeOrderPriceChange     = 7006 // 商品价格已变更
+	CodeOrderStockNotEnough  = 7007 // 库存不足
+	CodeOrderItemsEmpty      = 7008 // 订单商品列表不能为空
+	CodeOrderAmountMismatch  = 7009 // 订单金额不匹配
+	CodeOrderNotBelongToUser = 7010 // 订单不属于当前用户
 
 )
 
@@ -187,6 +190,9 @@ var (
 	ErrOrderCannotCancel    = NewBusinessError(CodeOrderCannotCancel, "订单不能取消")
 	ErrOrderCannotPay       = NewBusinessError(CodeOrderCannotPay, "订单不能支付")
 	ErrOrderQuantityInvalid = NewBusinessError(CodeOrderQuantityInvalid, "订单数量无效")
-	ErrOrderPriceChange     = NewBusinessError(CodeOrderPriceChange, "订单价格变化")
-	ErrOrderStockNotEnough  = NewBusinessError(CodeOrderStockNotEnough, "订单库存不足")
+	ErrOrderPriceChange     = NewBusinessError(CodeOrderPriceChange, "商品价格已变更")
+	ErrOrderStockNotEnough  = NewBusinessError(CodeOrderStockNotEnough, "库存不足")
+	ErrOrderItemsEmpty      = NewBusinessError(CodeOrderItemsEmpty, "订单商品列表不能为空")
+	ErrOrderAmountMismatch  = NewBusinessError(CodeOrderAmountMismatch, "订单金额不匹配")
+	ErrOrderNotBelongToUser = NewBusinessError(CodeOrderNotBelongToUser, "订单不属于当前用户")
 )
