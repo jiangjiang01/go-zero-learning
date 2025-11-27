@@ -478,4 +478,59 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 		),
 	)
+
+	// ========== 订单管理相关路由 ==========
+
+	// 需要 order:list 权限的路由（查看订单列表和详情）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("order:list"),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/orders",
+				Handler: GetOrderListHandler(serverCtx),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/orders/:id",
+				Handler: GetOrderDetailHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 order:create 权限的路由（创建订单）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("order:create"),
+			},
+			rest.Route{
+				Method:  http.MethodPost,
+				Path:    "/api/orders",
+				Handler: CreateOrderHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 order:update 权限的路由（更新指定订单）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("order:update"),
+			},
+			rest.Route{
+				Method:  http.MethodPut,
+				Path:    "/api/orders/:id",
+				Handler: UpdateOrderStatusHandler(serverCtx),
+			},
+		),
+	)
 }

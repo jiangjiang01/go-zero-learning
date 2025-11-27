@@ -334,3 +334,54 @@ type UpdateProductStatusReq struct {
 type UpdateProductStatusResp struct {
 	Message string `json:"message"`
 }
+
+type CreateOrderReq struct {
+	ProductID int64 `json:"product_id"` // 商品ID
+	Quantity  int   `json:"quantity"`   // 购买数量
+}
+
+type CreateOrderResp struct {
+	ID         int64 `json:"id"`          // 订单ID
+	UserID     int64 `json:"user_id"`     // 用户ID
+	ProductID  int64 `json:"product_id"`  // 商品ID
+	Quantity   int   `json:"quantity"`    // 购买数量
+	Price      int64 `json:"price"`       // 商品单价
+	TotalPrice int64 `json:"total_price"` // 总价
+	Status     int   `json:"status"`      // 订单状态
+	CreatedAt  int64 `json:"created_at"`  // 创建时间
+}
+
+type GetOrderDetailReq struct {
+	ID int64 `path:"id"` // 订单ID(路径参数)
+}
+
+type GetOrderListReq struct {
+	Page     int64 `form:"page,default=1"`
+	PageSize int64 `form:"page_size,default=10"`
+	Status   int   `form:"status,optional"` // 按状态筛选
+}
+
+type GetOrderListResp struct {
+	Orders   []OrderInfoResp `json:"orders"`
+	Total    int64           `json:"total"`     // 总订单数
+	Page     int64           `json:"page"`      // 当前页码
+	PageSize int64           `json:"page_size"` // 每页数量
+}
+
+type OrderInfoResp struct {
+	ID         int64  `json:"id"`          // 订单ID
+	UserID     int64  `json:"user_id"`     // 用户ID
+	ProductID  int64  `json:"product_id"`  // 商品ID
+	Quantity   int    `json:"quantity"`    // 购买数量
+	Price      int64  `json:"price"`       // 商品单价
+	TotalPrice int64  `json:"total_price"` // 总价
+	Status     int    `json:"status"`      // 订单状态
+	StatusText string `json:"status_text"` // 订单状态文本
+	CreatedAt  int64  `json:"created_at"`  // 创建时间
+	UpdatedAt  int64  `json:"updated_at"`  // 更新时间
+}
+
+type UpdateOrderStatusReq struct {
+	ID     int64 `path:"id"`     // 订单ID(路径参数)
+	Status int   `json:"status"` // 订单状态
+}

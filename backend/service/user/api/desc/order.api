@@ -1,0 +1,77 @@
+syntax = "v1"
+
+// 创建订单请求
+type CreateOrderReq {
+	ProductID int64 `json:"product_id"` // 商品ID
+	Quantity int `json:"quantity"` // 购买数量
+}
+
+// 创建订单响应
+type CreateOrderResp {
+	ID int64 `json:"id"` // 订单ID
+	UserID int64 `json:"user_id"` // 用户ID
+	ProductID int64 `json:"product_id"` // 商品ID
+	Quantity int `json:"quantity"` // 购买数量
+	Price int64 `json:"price"` // 商品单价
+	TotalPrice int64 `json:"total_price"` // 总价
+	Status int `json:"status"` // 订单状态
+	CreatedAt int64 `json:"created_at"` // 创建时间
+}
+
+// 订单列表请求
+type GetOrderListReq {
+	Page int64 `form:"page,default=1"`
+	PageSize int64 `form:"page_size,default=10"`
+	Status int `form:"status,optional"` // 按状态筛选
+}
+
+// 订单信息响应
+type OrderInfoResp {
+	ID int64 `json:"id"` // 订单ID
+	UserID int64 `json:"user_id"` // 用户ID
+	ProductID int64 `json:"product_id"` // 商品ID
+	Quantity int `json:"quantity"` // 购买数量
+	Price int64 `json:"price"` // 商品单价
+	TotalPrice int64 `json:"total_price"` // 总价
+	Status int `json:"status"` // 订单状态
+	StatusText string `json:"status_text"` // 订单状态文本
+	CreatedAt int64 `json:"created_at"` // 创建时间
+	UpdatedAt int64 `json:"updated_at"` // 更新时间
+}
+
+// 订单列表响应
+type GetOrderListResp {
+	Orders []OrderInfoResp `json:"orders"`
+	Total int64 `json:"total"` // 总订单数
+	Page int64 `json:"page"` // 当前页码
+	PageSize int64 `json:"page_size"` // 每页数量
+}
+
+// 获取订单详情请求
+type GetOrderDetailReq {
+	ID int64 `path:"id"` // 订单ID(路径参数)
+}
+
+// 更新订单状态请求
+type UpdateOrderStatusReq {
+	ID int64 `path:"id"` // 订单ID(路径参数)
+	Status int `json:"status"` // 订单状态
+}
+
+service user-api {
+	// 创建订单
+	@handler CreateOrder
+	post /api/orders (CreateOrderReq) returns (CreateOrderResp)
+
+	// 获取订单列表
+	@handler GetOrderList
+	get /api/orders (GetOrderListReq) returns (GetOrderListResp)
+
+	// 获取订单详情
+	@handler GetOrderDetail
+	get /api/orders/:id (GetOrderDetailReq) returns (OrderInfoResp)
+
+	// 更新订单状态(支付、取消等)
+	@handler UpdateOrderStatus
+	put /api/orders/:id (UpdateOrderStatusReq) returns (OrderInfoResp)
+}

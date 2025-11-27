@@ -1,6 +1,12 @@
 syntax = "v1"
 
 import (
-	"desc/product.api"
+	// "desc/auth.api"
+	// "desc/user.api"
+	// "desc/role.api"
+	// "desc/permission.api"
+	// "desc/menu.api"
+	// "desc/product.api"
+	"desc/order.api"
 )
 

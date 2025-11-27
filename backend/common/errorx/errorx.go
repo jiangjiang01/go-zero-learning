@@ -61,6 +61,15 @@ const (
 	CodeProductNoUpdateFields = 6006 // 没有需要更新的字段
 	CodeProductStatusInvalid  = 6007 // 商品状态无效
 
+	// 订单相关错误码（7000-7999）
+	CodeOrderNotFound        = 7001 // 订单不存在
+	CodeOrderStatusInvalid   = 7002 // 订单状态无效
+	CodeOrderCannotCancel    = 7003 // 订单不能取消
+	CodeOrderCannotPay       = 7004 // 订单不能支付
+	CodeOrderQuantityInvalid = 7005 // 订单数量无效
+	CodeOrderPriceChange     = 7006 // 订单价格变化
+	CodeOrderStockNotEnough  = 7007 // 订单库存不足
+
 )
 
 // 业务错误（使用统一的 Response 结构）
@@ -111,7 +120,8 @@ func GetHTTPStatus(code int) int {
 		CodeRoleNotFound,
 		CodePermissionNotFound,
 		CodeMenuNotFound,
-		CodeProductNotFound:
+		CodeProductNotFound,
+		CodeOrderNotFound:
 		return http.StatusNotFound
 	case CodeInternalError:
 		return http.StatusInternalServerError
@@ -170,4 +180,13 @@ var (
 	ErrProductPriceTooHigh   = NewBusinessError(CodeProductPriceTooHigh, "商品价格太高")
 	ErrProductNoUpdateFields = NewBusinessError(CodeProductNoUpdateFields, "没有需要更新的字段")
 	ErrProductStatusInvalid  = NewBusinessError(CodeProductStatusInvalid, "商品状态无效")
+
+	// 订单相关错误
+	ErrOrderNotFound        = NewBusinessError(CodeOrderNotFound, "订单不存在")
+	ErrOrderStatusInvalid   = NewBusinessError(CodeOrderStatusInvalid, "订单状态无效")
+	ErrOrderCannotCancel    = NewBusinessError(CodeOrderCannotCancel, "订单不能取消")
+	ErrOrderCannotPay       = NewBusinessError(CodeOrderCannotPay, "订单不能支付")
+	ErrOrderQuantityInvalid = NewBusinessError(CodeOrderQuantityInvalid, "订单数量无效")
+	ErrOrderPriceChange     = NewBusinessError(CodeOrderPriceChange, "订单价格变化")
+	ErrOrderStockNotEnough  = NewBusinessError(CodeOrderStockNotEnough, "订单库存不足")
 )
