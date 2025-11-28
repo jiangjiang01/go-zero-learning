@@ -172,29 +172,11 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderReq) (resp *types.C
 		UserID:      order.UserID,
 		TotalAmount: order.TotalAmount,
 		Status:      order.Status,
-		StatusText:  getOrderStatus(order.Status),
+		StatusText:  getOrderStatusText(order.Status),
 		Remark:      order.Remark,
 		Items:       itemsResp,
 		CreatedAt:   order.CreatedAt.Unix(),
 	}
 
 	return resp, nil
-}
-
-// 获取订单状态文本
-func getOrderStatus(status int) string {
-	switch status {
-	case 1:
-		return "待支付"
-	case 2:
-		return "已支付"
-	case 3:
-		return "已发货"
-	case 4:
-		return "已完成"
-	case 5:
-		return "已取消"
-	default:
-		return "未知状态"
-	}
 }
