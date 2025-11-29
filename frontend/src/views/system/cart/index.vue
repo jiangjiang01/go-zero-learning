@@ -34,16 +34,36 @@
           <span class="price-text">¥{{ formatPrice(row.price) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="quantity" label="数量" width="200">
+      <el-table-column prop="quantity" label="数量" width="250">
         <template #default="{ row }">
-          <el-input-number
-            v-model="row.quantity"
-            :min="1"
-            :max="999"
-            :disabled="updatingItemId === row.id"
-            @change="(val) => handleQuantityChange(row, val)"
-            style="width: 120px"
-          />
+          <div class="quantity-control">
+            <el-button
+              :disabled="updatingItemId === row.id || row.quantity <= 1"
+              @click="handleDecreaseQuantity(row)"
+              size="small"
+              circle
+            >
+              <el-icon><Minus /></el-icon>
+            </el-button>
+            <el-input-number
+              v-model="row.quantity"
+              :min="1"
+              :max="999"
+              :disabled="updatingItemId === row.id"
+              @change="(val: number | null) => handleQuantityChange(row, val)"
+              @blur="(e: FocusEvent) => handleQuantityBlur(row, e)"
+              style="width: 100px; margin: 0 8px"
+              controls-position="right"
+            />
+            <el-button
+              :disabled="updatingItemId === row.id || row.quantity >= 999"
+              @click="handleIncreaseQuantity(row)"
+              size="small"
+              circle
+            >
+              <el-icon><Plus /></el-icon>
+            </el-button>
+          </div>
         </template>
       </el-table-column>
       <el-table-column prop="amount" label="小计" width="120">
@@ -73,7 +93,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Delete } from '@element-plus/icons-vue'
+import { Delete, Plus, Minus } from '@element-plus/icons-vue'
 import {
   getCart,
   updateCartItem,
@@ -110,32 +130,18 @@ const fetchCart = async () => {
   }
 }
 
-// 处理数量变化
-const handleQuantityChange = async (item: CartItemInfo, newQuantity: number | null) => {
-  if (newQuantity === null) {
-    return
-  }
-
-  // 保存原始数量
-  const originalQuantity = item.quantity
-
+// 更新数量（通用方法）
+const updateQuantity = async (item: CartItemInfo, newQuantity: number) => {
   // 验证数量
   if (newQuantity < 1) {
     ElMessage.warning('数量不能小于1')
-    // 恢复原值
-    item.quantity = originalQuantity
+    await fetchCart() // 恢复原值
     return
   }
 
   if (newQuantity > 999) {
     ElMessage.warning('数量不能超过999')
-    // 恢复原值
-    item.quantity = originalQuantity
-    return
-  }
-
-  // 如果数量没有变化，不需要更新
-  if (newQuantity === originalQuantity) {
+    await fetchCart() // 恢复原值
     return
   }
 
@@ -149,21 +155,63 @@ const handleQuantityChange = async (item: CartItemInfo, newQuantity: number | nu
       item.amount = response.data.amount
       // 重新获取购物车以更新总金额
       await fetchCart()
-      ElMessage.success('更新成功')
     } else {
       ElMessage.error(response.message || '更新失败')
-      // 恢复原值
-      item.quantity = originalQuantity
-      await fetchCart()
+      await fetchCart() // 恢复原值
     }
   } catch (error) {
     console.error('更新购物车项失败:', error)
-    // 恢复原值
-    item.quantity = originalQuantity
-    await fetchCart()
+    await fetchCart() // 恢复原值
   } finally {
     updatingItemId.value = null
   }
+}
+
+// 处理数量变化（输入框 change 事件）
+const handleQuantityChange = async (item: CartItemInfo, newQuantity: number | null) => {
+  if (newQuantity === null) {
+    return
+  }
+
+  // 如果数量没有变化，不需要更新
+  if (newQuantity === item.quantity) {
+    return
+  }
+
+  await updateQuantity(item, newQuantity)
+}
+
+// 处理数量输入框失焦事件
+const handleQuantityBlur = async (item: CartItemInfo, e: FocusEvent) => {
+  const input = e.target as HTMLInputElement
+  const value = parseInt(input.value)
+  
+  if (isNaN(value) || value < 1) {
+    await fetchCart() // 恢复原值
+    return
+  }
+
+  if (value !== item.quantity) {
+    await updateQuantity(item, value)
+  }
+}
+
+// 增加数量
+const handleIncreaseQuantity = async (item: CartItemInfo) => {
+  if (item.quantity >= 999) {
+    ElMessage.warning('数量不能超过999')
+    return
+  }
+  await updateQuantity(item, item.quantity + 1)
+}
+
+// 减少数量
+const handleDecreaseQuantity = async (item: CartItemInfo) => {
+  if (item.quantity <= 1) {
+    ElMessage.warning('数量不能小于1')
+    return
+  }
+  await updateQuantity(item, item.quantity - 1)
 }
 
 // 删除购物车项
@@ -262,6 +310,12 @@ onMounted(() => {
 .price-text {
   color: #f56c6c;
   font-weight: 500;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
 

@@ -60,8 +60,18 @@
           {{ formatDateTime(row.created_at) }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200" fixed="right">
+      <el-table-column label="操作" width="280" fixed="right">
         <template #default="{ row }">
+          <el-button
+            v-if="row.status === 1"
+            type="success"
+            size="small"
+            @click="handleAddToCart(row)"
+            :loading="addingToCartId === row.id"
+          >
+            <el-icon><ShoppingCart /></el-icon>
+            加入购物车
+          </el-button>
           <el-button type="primary" size="small" @click="handleEdit(row)">
             编辑
           </el-button>
@@ -91,13 +101,48 @@
       :product="currentProduct"
       @success="handleDialogSuccess"
     />
+
+    <!-- 加入购物车对话框 -->
+    <el-dialog
+      v-model="addToCartDialogVisible"
+      title="加入购物车"
+      width="400px"
+    >
+      <el-form :model="addToCartForm" label-width="80px">
+        <el-form-item label="商品名称">
+          <el-input :value="currentCartProduct?.name || ''" disabled />
+        </el-form-item>
+        <el-form-item label="单价">
+          <el-input
+            :value="currentCartProduct ? formatPrice(currentCartProduct.price) : ''"
+            disabled
+          >
+            <template #prefix>¥</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="数量" required>
+          <el-input-number
+            v-model="addToCartForm.quantity"
+            :min="1"
+            :max="999"
+            style="width: 100%"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="addToCartDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="confirmAddToCart" :loading="addingToCartId !== null">
+          确定
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, Refresh, Plus } from '@element-plus/icons-vue'
+import { Search, Refresh, Plus, ShoppingCart } from '@element-plus/icons-vue'
 import ProductDialog from './components/ProductDialog.vue'
 import { 
   getProductList, 
@@ -108,12 +153,19 @@ import {
   type ProductInfo 
 } from '@/api/product'
 import { formatDateTime } from '@/utils/format'
+import { addCartItem } from '@/api/cart'
 
 // 响应式数据
 const loading = ref(false)
 const productList = ref<ProductInfo[]>([])
 const dialogVisible = ref(false)
 const currentProduct = ref<ProductInfo | null>(null)
+const addingToCartId = ref<number | null>(null)
+const addToCartDialogVisible = ref(false)
+const currentCartProduct = ref<ProductInfo | null>(null)
+const addToCartForm = reactive({
+  quantity: 1
+})
 
 // 搜索表单
 const searchForm = reactive({
@@ -221,6 +273,52 @@ const handleCurrentChange = (page: number) => {
 // 对话框成功回调
 const handleDialogSuccess = () => {
   fetchProductList()
+}
+
+// 加入购物车（打开对话框）
+const handleAddToCart = (product: ProductInfo) => {
+  // 检查商品是否上架
+  if (product.status !== 1) {
+    ElMessage.warning('该商品已下架，无法加入购物车')
+    return
+  }
+
+  currentCartProduct.value = product
+  addToCartForm.quantity = 1
+  addToCartDialogVisible.value = true
+}
+
+// 确认加入购物车
+const confirmAddToCart = async () => {
+  if (!currentCartProduct.value) {
+    return
+  }
+
+  if (addToCartForm.quantity < 1 || addToCartForm.quantity > 999) {
+    ElMessage.warning('数量必须在1-999之间')
+    return
+  }
+
+  try {
+    addingToCartId.value = currentCartProduct.value.id
+    const response = await addCartItem({
+      product_id: currentCartProduct.value.id,
+      quantity: addToCartForm.quantity
+    })
+
+    if (response.code === 0) {
+      ElMessage.success(`"${currentCartProduct.value.name}" 已加入购物车`)
+      addToCartDialogVisible.value = false
+      currentCartProduct.value = null
+      addToCartForm.quantity = 1
+    } else {
+      ElMessage.error(response.message || '加入购物车失败')
+    }
+  } catch (error) {
+    console.error('加入购物车失败:', error)
+  } finally {
+    addingToCartId.value = null
+  }
 }
 
 // 初始化
