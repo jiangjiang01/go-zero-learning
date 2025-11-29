@@ -87,14 +87,16 @@ func (l *UpdateCategoryLogic) UpdateCategory(req *types.UpdateCategoryReq) (resp
 		parentID := *req.ParentID
 
 		// 判断父分类是否存在
-		var parentCategory model.Category
-		err = l.svcCtx.DB.Where("id = ?", parentID).First(&parentCategory).Error
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, errorx.ErrCategoryParentInvalid
+		if parentID > 0 {
+			var parentCategory model.Category
+			err = l.svcCtx.DB.Where("id = ?", parentID).First(&parentCategory).Error
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					return nil, errorx.ErrCategoryParentInvalid
+				}
+				l.Errorf("查询父分类失败：%v", err)
+				return nil, errorx.ErrInternalError
 			}
-			l.Errorf("查询父分类失败：%v", err)
-			return nil, errorx.ErrInternalError
 		}
 
 		// 循环引用检查函数(不能将父分类设置为自己的子分类)
