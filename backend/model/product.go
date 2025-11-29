@@ -29,6 +29,9 @@ type Product struct {
 
 	CategoryID int64 `gorm:"index" json:"category_id"` // 分类ID，可选
 
+	// Stock 商品库存，不能为负数，默认为0
+	Stock int64 `gorm:"not null;default:0" json:"stock"`
+
 	// 3. 时间字段放最后（约定俗成）
 	// CreatedAt 商品创建时间，自动记录
 	CreatedAt time.Time `json:"created_at"`
