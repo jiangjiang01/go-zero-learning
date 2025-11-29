@@ -31,11 +31,7 @@ func NewAddCartItemLogic(ctx context.Context, svcCtx *svc.ServiceContext) *AddCa
 	}
 }
 
-// TODO
-// 1. 没有验证商品是否上架
-// 2. 没有验证数量是否大于0
-// 3. 没有验证数量是否合理（可能过大）
-
+// 添加购物车项逻辑
 func (l *AddCartItemLogic) AddCartItem(req *types.AddCartItemReq) (resp *types.CartItemResp, err error) {
 	// 1. 获取当前用户
 	userID, ok := ctxdata.GetUserID(l.ctx)
@@ -43,18 +39,29 @@ func (l *AddCartItemLogic) AddCartItem(req *types.AddCartItemReq) (resp *types.C
 		return nil, errorx.ErrUnauthorized
 	}
 
-	// 2. 验证商品是否存在
+	// 2. 参数验证：数量必须大于0
+	if req.Quantity <= 0 {
+		return nil, errorx.ErrCartItemQuantityInvalid
+	}
+
+	// 3. 参数验证：数量不能过大（防止恶意刷单）
+	maxQuantity := 999
+	if req.Quantity > maxQuantity {
+		return nil, errorx.ErrCartItemQuantityTooLarge
+	}
+
+	// 4. 验证商品是否存在
 	var product model.Product
-	err = l.svcCtx.DB.Where("id = ?", req.ProductID).First(&product).Error
+	err = l.svcCtx.DB.Where("id = ? AND status = 1", req.ProductID).First(&product).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errorx.ErrProductNotFound
+			return nil, errorx.ErrCartProductNotAvailable
 		}
 		l.Errorf("查询商品失败：%v", err)
 		return nil, errorx.ErrInternalError
 	}
 
-	// 3. 查询或创建购物车
+	// 5. 查询或创建购物车
 	var cart model.Cart
 	err = l.svcCtx.DB.Where("user_id = ?", userID).First(&cart).Error
 	if err != nil {
@@ -72,7 +79,7 @@ func (l *AddCartItemLogic) AddCartItem(req *types.AddCartItemReq) (resp *types.C
 		}
 	}
 
-	// 4. 查找购物车项
+	// 6. 查找购物车项
 	var cartItem model.CartItem
 	err = l.svcCtx.DB.Where("cart_id = ? AND product_id = ?", cart.ID, req.ProductID).First(&cartItem).Error
 	if err != nil {
@@ -93,8 +100,13 @@ func (l *AddCartItemLogic) AddCartItem(req *types.AddCartItemReq) (resp *types.C
 			return nil, errorx.ErrInternalError
 		}
 	} else {
-		// 更新数量
-		cartItem.Quantity += req.Quantity
+		// 更新数量（累加购买数量）
+		newQuantity := cartItem.Quantity + req.Quantity
+		// 再次验证总数量
+		if newQuantity > maxQuantity {
+			return nil, errorx.ErrCartItemQuantityTooLarge
+		}
+		cartItem.Quantity = newQuantity
 		err = l.svcCtx.DB.Save(&cartItem).Error
 		if err != nil {
 			l.Errorf("更新购物车项失败：%v", err)
@@ -102,7 +114,7 @@ func (l *AddCartItemLogic) AddCartItem(req *types.AddCartItemReq) (resp *types.C
 		}
 	}
 
-	// 5. 构建响应
+	// 7. 构建响应
 	resp = &types.CartItemResp{
 		ID:          cartItem.ID,
 		ProductID:   cartItem.ProductID,
