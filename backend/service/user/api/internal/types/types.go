@@ -402,3 +402,57 @@ type UpdateOrderStatusReq struct {
 	ID     int64 `path:"id"`
 	Status int   `json:"status"`
 }
+
+type CategoryInfoResp struct {
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Desc      string `json:"desc"`
+	ParentID  int64  `json:"parent_id"`
+	Sort      int    `json:"sort"`
+	Status    int    `json:"status"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
+}
+
+type CreateCategoryReq struct {
+	Name     string `json:"name"`
+	Desc     string `json:"desc,optional"`
+	ParentID int64  `json:"parent_id,optional"`
+	Sort     int    `json:"sort,optional"`
+	Status   int    `json:"status,optional"`
+}
+
+type DeleteCategoryReq struct {
+	ID int64 `path:"id"`
+}
+
+type DeleteCategoryResp struct {
+	Message string `json:"message"`
+}
+
+type GetCategoryDetailReq struct {
+	ID int64 `path:"id"`
+}
+
+type GetCategoryListReq struct {
+	Page     int64  `form:"page,default=1"`
+	PageSize int64  `form:"page_size,default=10"`
+	Keyword  string `form:"keyword,optional"`
+	All      bool   `form:"all,optional"` // 是否获取全部（不分页），用于树形结构
+}
+
+type GetCategoryListResp struct {
+	Categories []CategoryInfoResp `json:"categories"`
+	Total      int64              `json:"total"`
+	Page       int64              `json:"page"`
+	PageSize   int64              `json:"page_size"`
+}
+
+type UpdateCategoryReq struct {
+	ID       int64   `path:"id"`
+	Name     *string `json:"name,optional"`
+	Desc     *string `json:"desc,optional"`
+	ParentID *int64  `json:"parent_id,optional"`
+	Sort     *int    `json:"sort,optional"`
+	Status   *int    `json:"status,optional"`
+}

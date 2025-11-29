@@ -533,4 +533,75 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 		),
 	)
+
+	// ========== 商品分类管理相关路由 ==========
+
+	// 需要 category:list 权限的路由（查看商品分类列表）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("category:list"),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/categories",
+				Handler: GetCategoryListHandler(serverCtx),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/categories/:id",
+				Handler: GetCategoryDetailHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 category:create 权限的路由（创建商品分类）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("category:create"),
+			},
+			rest.Route{
+				Method:  http.MethodPost,
+				Path:    "/api/categories",
+				Handler: CreateCategoryHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 category:update 权限的路由（更新指定商品分类）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("category:update"),
+			},
+			rest.Route{
+				Method:  http.MethodPut,
+				Path:    "/api/categories/:id",
+				Handler: UpdateCategoryHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 category:delete 权限的路由（删除指定商品分类）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("category:delete"),
+			},
+			rest.Route{
+				Method:  http.MethodDelete,
+				Path:    "/api/categories/:id",
+				Handler: DeleteCategoryHandler(serverCtx),
+			},
+		),
+	)
 }
