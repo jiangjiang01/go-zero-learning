@@ -27,6 +27,8 @@ type Product struct {
 	// 1: 启用（上架）, 0: 禁用（下架）
 	Status int `gorm:"type:tinyint;default:1" json:"status"`
 
+	CategoryID int64 `gorm:"index" json:"category_id"` // 分类ID，可选
+
 	// 3. 时间字段放最后（约定俗成）
 	// CreatedAt 商品创建时间，自动记录
 	CreatedAt time.Time `json:"created_at"`
