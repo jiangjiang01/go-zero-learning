@@ -11,5 +11,6 @@ import (
 	"desc/category.api"
 	"desc/cart.api"
 	"desc/dashboard.api"
+	"desc/upload.api"
 )
 
