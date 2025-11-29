@@ -73,6 +73,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '订单管理', icon: 'ShoppingCart' }
       },
       {
+        path: 'cart',
+        name: 'SystemCart',
+        component: () => import('@/views/system/cart/index.vue'),
+        meta: { title: '购物车管理', icon: 'ShoppingBag' }
+      },
+      {
         path: 'category',
         name: 'SystemCategory',
         component: () => import('@/views/system/category/index.vue'),
