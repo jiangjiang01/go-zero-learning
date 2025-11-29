@@ -504,3 +504,39 @@ type UpdateCartItemReq struct {
 	ItemID   int64 `path:"item_id"`  // 购物车项ID（路径参数）
 	Quantity int   `json:"quantity"` // 新数量
 }
+
+type DashboardStatsResp struct {
+	OrderStats   OrderStats   `json:"order_stats"`   // 订单统计
+	ProductStats ProductStats `json:"product_stats"` // 商品统计
+	UserStats    UserStats    `json:"user_stats"`    // 用户统计
+}
+
+type OrderStats struct {
+	TotalOrders int64            `json:"total_orders"` // 订单总数
+	TodayOrders int64            `json:"today_orders"` // 今日订单数
+	TotalAmount int64            `json:"total_amount"` // 订单总金额
+	TodayAmount int64            `json:"today_amount"` // 今日订单金额
+	StatusCount OrderStatusCount `json:"status_count"` // 订单状态分布
+}
+
+type OrderStatusCount struct {
+	Pending   int64 `json:"pending"`   // 待支付
+	Paid      int64 `json:"paid"`      // 已支付
+	Shipped   int64 `json:"shipped"`   // 已发货
+	Completed int64 `json:"completed"` // 已完成
+	Canceled  int64 `json:"canceled"`  // 已取消
+}
+
+type ProductStats struct {
+	TotalProducts    int64 `json:"total_products"`     // 商品总数
+	OnsaleProducts   int64 `json:"onsale_products"`    // 上架商品数
+	OffsaleProducts  int64 `json:"offsale_products"`   // 下架商品数
+	LowStockProducts int64 `json:"low_stock_products"` // 库存不足商品数 < 10
+	TotalStock       int64 `json:"total_stock"`        // 总库存量
+}
+
+type UserStats struct {
+	TotalUsers  int64 `json:"total_users"`  // 总用户数
+	TodayUsers  int64 `json:"today_users"`  // 今日新增用户数
+	ActiveUsers int64 `json:"active_users"` // 活跃用户数（有订单的用户）
+}

@@ -36,7 +36,7 @@ type UserStats {
 
 // Dashboard 统计响应
 type DashboardStatsResp {
-	OrderStatus  OrderStats   `json:"order_status"` // 订单统计
+	OrderStats  OrderStats   `json:"order_stats"` // 订单统计
 	ProductStats ProductStats `json:"product_stats"` // 商品统计
 	UserStats    UserStats    `json:"user_stats"` // 用户统计
 }

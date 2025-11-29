@@ -675,4 +675,19 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 		),
 	)
+
+	// ========== 数据统计相关路由 不需要菜单权限认证 ==========
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/dashboard/stats",
+				Handler: GetDashboardStatsHandler(serverCtx),
+			},
+		),
+	)
 }
