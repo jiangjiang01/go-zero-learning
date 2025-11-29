@@ -100,6 +100,13 @@ INSERT INTO `permissions` (`id`, `name`, `code`, `desc`, `created_at`, `updated_
 (18, '创建订单', 'order:create', '创建新订单的权限', NOW(), NOW()),
 (19, '更新订单', 'order:update', '更新订单状态的权限', NOW(), NOW());
 
+-- 【扩展】商品分类管理权限
+INSERT INTO `permissions` (`id`, `name`, `code`, `desc`, `created_at`, `updated_at`) VALUES
+(20, '查看分类列表', 'category:list', '查看商品分类列表和分类详情的权限', NOW(), NOW()),
+(21, '创建分类', 'category:create', '创建新商品分类的权限', NOW(), NOW()),
+(22, '更新分类', 'category:update', '更新商品分类信息的权限', NOW(), NOW()),
+(23, '删除分类', 'category:delete', '删除商品分类的权限', NOW(), NOW());
+
 -- ============================================
 -- 4. 菜单数据
 -- ============================================
@@ -159,11 +166,16 @@ INSERT INTO `role_permissions` (`id`, `role_id`, `permission_id`, `created_at`, 
 -- 【扩展】订单管理权限
 (17, 1, 17, NOW(), NOW()), -- order:list
 (18, 1, 18, NOW(), NOW()), -- order:create
-(19, 1, 19, NOW(), NOW()); -- order:update
+(19, 1, 19, NOW(), NOW()), -- order:update
+-- 【扩展】商品分类管理权限
+(20, 1, 20, NOW(), NOW()), -- category:list
+(21, 1, 21, NOW(), NOW()), -- category:create
+(22, 1, 22, NOW(), NOW()), -- category:update
+(23, 1, 23, NOW(), NOW()); -- category:delete
 
 -- 普通用户角色拥有基本权限（可根据需要调整）
 INSERT INTO `role_permissions` (`id`, `role_id`, `permission_id`, `created_at`, `updated_at`) VALUES
-(20, 2, 1, NOW(), NOW()); -- user:list（仅查看）
+(24, 2, 1, NOW(), NOW()); -- user:list（仅查看）
 
 -- ============================================
 -- 【扩展】7. 商品测试数据
@@ -237,6 +249,33 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `prod
 (8, 6, 3, 'AirPods Pro', '主动降噪无线耳机，支持空间音频', 189900, 1, 189900, NOW());
 
 -- ============================================
+-- 【扩展】9. 商品分类测试数据
+-- ============================================
+
+-- 顶级分类
+INSERT INTO `categories` (`id`, `name`, `desc`, `parent_id`, `sort`, `status`, `created_at`, `updated_at`) VALUES
+(1, '电子产品', '各类电子设备及配件', 0, 1, 1, NOW(), NOW()),
+(2, '服装配饰', '服装、鞋帽、配饰等', 0, 2, 1, NOW(), NOW()),
+(3, '家居用品', '家居装饰、生活用品等', 0, 3, 1, NOW(), NOW());
+
+-- 电子产品子分类
+INSERT INTO `categories` (`id`, `name`, `desc`, `parent_id`, `sort`, `status`, `created_at`, `updated_at`) VALUES
+(4, '手机', '智能手机及相关配件', 1, 1, 1, NOW(), NOW()),
+(5, '电脑', '笔记本电脑、台式机等', 1, 2, 1, NOW(), NOW()),
+(6, '耳机音响', '耳机、音响设备', 1, 3, 1, NOW(), NOW()),
+(7, '平板电脑', 'iPad等平板设备', 1, 4, 1, NOW(), NOW());
+
+-- 服装配饰子分类
+INSERT INTO `categories` (`id`, `name`, `desc`, `parent_id`, `sort`, `status`, `created_at`, `updated_at`) VALUES
+(8, '男装', '男士服装', 2, 1, 1, NOW(), NOW()),
+(9, '女装', '女士服装', 2, 2, 1, NOW(), NOW()),
+(10, '鞋帽', '鞋子、帽子等', 2, 3, 1, NOW(), NOW());
+
+-- 已禁用分类示例
+INSERT INTO `categories` (`id`, `name`, `desc`, `parent_id`, `sort`, `status`, `created_at`, `updated_at`) VALUES
+(11, '已禁用分类', '这是一个已禁用的分类示例', 0, 99, 0, NOW(), NOW());
+
+-- ============================================
 -- 说明
 -- ============================================
 -- 1. 管理员账号：admin / 123456
@@ -247,6 +286,8 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `prod
 -- 【扩展】6. 商品测试数据：8个商品（7个上架，1个下架）
 -- 【扩展】7. 订单测试数据：6个订单，覆盖所有订单状态（待支付、已支付、已发货、已完成、已取消）
 -- 【扩展】8. 订单项测试数据：8个订单项，包含单商品和多商品订单
--- 【扩展】9. 商品和订单权限已分配给管理员角色
--- 【扩展】10. 商品管理和订单管理菜单已添加到系统管理菜单下
+-- 【扩展】9. 商品分类测试数据：11个分类（10个启用，1个禁用），包含树形结构
+-- 【扩展】10. 商品和订单权限已分配给管理员角色
+-- 【扩展】11. 商品分类权限已分配给管理员角色
+-- 【扩展】12. 商品管理、订单管理和分类管理菜单已添加到系统管理菜单下
 
