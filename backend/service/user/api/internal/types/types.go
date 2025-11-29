@@ -456,3 +456,48 @@ type UpdateCategoryReq struct {
 	Sort     *int    `json:"sort,omitempty"`
 	Status   *int    `json:"status,omitempty"`
 }
+
+type AddCartItemReq struct {
+	ProductID int64 `json:"product_id"` // 商品ID
+	Quantity  int   `json:"quantity"`   // 购买数量
+}
+
+type CartItemResp struct {
+	ID          int64  `json:"id"`
+	ProductID   int64  `json:"product_id"`
+	ProductName string `json:"product_name"`
+	Price       int64  `json:"price"`    // 单价（分）
+	Quantity    int    `json:"quantity"` // 数量
+	Amount      int64  `json:"amount"`   // 小计（分）
+}
+
+type ClearCartReq struct {
+}
+
+type ClearCartResp struct {
+	Message string `json:"message"`
+}
+
+type DeleteCartItemReq struct {
+	ItemID int64 `path:"item_id"` // 购物车项ID（路径参数）
+}
+
+type DeleteCartItemResp struct {
+	Message string `json:"message"`
+}
+
+type GetCartReq struct {
+}
+
+type GetCartResp struct {
+	ID          int64          `json:"id"`
+	UserID      int64          `json:"user_id"`
+	Items       []CartItemResp `json:"items"`        // 购物车项列表
+	TotalAmount int64          `json:"total_amount"` // 总金额（分）
+	ItemCount   int            `json:"item_count"`   // 商品种类数量
+}
+
+type UpdateCartItemReq struct {
+	ItemID   int64 `path:"item_id"`  // 购物车项ID（路径参数）
+	Quantity int   `json:"quantity"` // 新数量
+}
