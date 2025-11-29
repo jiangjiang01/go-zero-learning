@@ -180,17 +180,23 @@ const handleSubmit = async () => {
       response = await createProduct(submitData)
     }
 
+    // 【修复】如果代码执行到这里，说明 response.code === 0（成功）
+    // 如果 response.code !== 0，响应拦截器会 reject Promise，代码会进入 catch 块
+    // 响应拦截器已经自动显示了错误信息，所以不需要在这里再显示
     if (response.code === 0) {
       ElMessage.success(isEdit.value ? '更新成功' : '创建成功')
       emit('success')
       handleClose()
-    } else {
-      ElMessage.error(response.message || (isEdit.value ? '更新失败' : '创建失败'))
     }
   } catch (error) {
-    if (error !== false) { // 表单验证失败时会返回 false
+    // 【修复】表单验证失败时会返回 false，此时不需要处理
+    // 如果是 API 错误，响应拦截器已经自动显示了错误信息（如"没有需要更新的字段"）
+    // 所以这里不再显示错误提示，避免重复提示
+    // 只在控制台输出日志用于调试
+    if (error !== false) {
       console.error('提交失败:', error)
-      ElMessage.error(isEdit.value ? '更新失败' : '创建失败')
+      // ❌ 已移除：响应拦截器已经显示了错误信息，这里不再重复显示
+      // ElMessage.error(isEdit.value ? '更新失败' : '创建失败')
     }
   } finally {
     loading.value = false
