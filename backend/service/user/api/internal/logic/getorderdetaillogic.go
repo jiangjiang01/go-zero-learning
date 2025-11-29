@@ -63,7 +63,13 @@ func (l *GetOrderDetailLogic) GetOrderDetail(req *types.GetOrderDetailReq) (resp
 	}
 
 	// 5. 构建响应结果
-	resp = &types.OrderInfoResp{
+	resp = convertToOrderInfoResp(order, orderItems)
+
+	return resp, nil
+}
+
+func convertToOrderInfoResp(order model.Order, orderItems []model.OrderItem) *types.OrderInfoResp {
+	return &types.OrderInfoResp{
 		ID:          order.ID,
 		OrderNo:     order.OrderNo,
 		UserID:      order.UserID,
@@ -75,8 +81,6 @@ func (l *GetOrderDetailLogic) GetOrderDetail(req *types.GetOrderDetailReq) (resp
 		CreatedAt:   order.CreatedAt.Unix(),
 		UpdatedAt:   order.UpdatedAt.Unix(),
 	}
-
-	return resp, nil
 }
 
 func convertToOrderItemRespList(orderItems []model.OrderItem) []types.OrderItemResp {
