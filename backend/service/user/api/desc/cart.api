@@ -1,0 +1,79 @@
+syntax = "v1"
+
+// ========== 购物车相关类型 ==========
+
+// 添加商品到购物车请求
+type AddCartItemReq {
+	ProductID int64 `json:"product_id"` // 商品ID
+	Quantity int `json:"quantity"` // 购买数量
+}
+
+// 购物车项响应信息
+type CartItemResp {
+	ID int64 `json:"id"`
+	ProductID int64 `json:"product_id"`
+	ProductName string `json:"product_name"`
+	Price int64 `json:"price"` // 单价（分）
+	Quantity int `json:"quantity"` // 数量
+	Amount int64 `json:"amount"` // 小计（分）
+}
+
+// ========== 购物车相关类型 ==========
+// 获取购物车请求
+type GetCartReq {}
+
+// 获取购物车响应
+type GetCartResp {
+	ID int64 `json:"id"`
+	UserID int64 `json:"user_id"`
+	Items []CartItemResp `json:"items"` // 购物车项列表
+	TotalAmount int64 `json:"total_amount"` // 总金额（分）
+	ItemCount int `json:"item_count"` // 商品种类数量
+}
+
+// 更新购物车项数量请求
+type UpdateCartItemReq {
+	ItemID int64 `path:"item_id"` // 购物车项ID（路径参数）
+	Quantity int `json:"quantity"` // 新数量
+}
+
+// 删除购物车项请求
+type DeleteCartItemReq {
+	ItemID int64 `path:"item_id"` // 购物车项ID（路径参数）
+}
+
+// 删除购物车项响应
+type DeleteCartItemResp {
+	Message string `json:"message"`
+}
+
+// 清空购物车请求
+type ClearCartReq {}
+
+// 清空购物车响应
+type ClearCartResp {
+	Message string `json:"message"`
+}
+
+service user-api {
+	// ========== 购物车管理 ==========
+	// 添加商品到购物车
+	@handler AddCartItem
+	post /api/cart/items (AddCartItemReq) returns (CartItemResp)
+
+	// 获取购物车
+	@handler GetCart
+	get /api/cart (GetCartReq) returns (GetCartResp)
+
+	// 更新购物车项数量
+	@handler UpdateCartItem
+	put /api/cart/items/:item_id (UpdateCartItemReq) returns (CartItemResp)
+
+	// 删除购物车项
+	@handler DeleteCartItem
+	delete /api/cart/items/:item_id (DeleteCartItemReq) returns (DeleteCartItemResp)
+
+	// 清空购物车
+	@handler ClearCart
+	delete /api/cart (ClearCartReq) returns (ClearCartResp)
+}
