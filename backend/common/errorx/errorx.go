@@ -80,6 +80,12 @@ const (
 	CodeCategoryHasProducts    = 8005 // 商品分类下有商品，不能删除
 	CodeCategoryParentInvalid  = 8006 // 父分类无效
 	CodeCategoryNoUpdateFields = 8007 // 没有需要更新的字段
+
+	// 购物车相关错误码（9000-9999）
+	CodeCartItemNotFound         = 9001 // 购物车项不存在
+	CodeCartItemQuantityInvalid  = 9002 // 购物车项数量无效
+	CodeCartItemQuantityTooLarge = 9003 // 购物车项数量过大
+	CodeCartProductNotAvailable  = 9004 // 商品不可用（已下架或不存在）
 )
 
 // 业务错误（使用统一的 Response 结构）
@@ -132,7 +138,8 @@ func GetHTTPStatus(code int) int {
 		CodeMenuNotFound,
 		CodeProductNotFound,
 		CodeOrderNotFound,
-		CodeCategoryNotFound:
+		CodeCategoryNotFound,
+		CodeCartItemNotFound:
 		return http.StatusNotFound
 	case CodeInternalError:
 		return http.StatusInternalServerError
@@ -211,4 +218,10 @@ var (
 	ErrCategoryHasProducts    = NewBusinessError(CodeCategoryHasProducts, "商品分类下有商品，不能删除")
 	ErrCategoryParentInvalid  = NewBusinessError(CodeCategoryParentInvalid, "父分类无效")
 	ErrCategoryNoUpdateFields = NewBusinessError(CodeCategoryNoUpdateFields, "没有需要更新的字段")
+
+	// 购物车相关错误
+	ErrCartItemNotFound         = NewBusinessError(CodeCartItemNotFound, "购物车项不存在")
+	ErrCartItemQuantityInvalid  = NewBusinessError(CodeCartItemQuantityInvalid, "购物车项数量无效")
+	ErrCartItemQuantityTooLarge = NewBusinessError(CodeCartItemQuantityTooLarge, "购物车项数量过大")
+	ErrCartProductNotAvailable  = NewBusinessError(CodeCartProductNotAvailable, "商品不可用（已下架或不存在）")
 )
