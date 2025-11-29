@@ -19,3 +19,14 @@ Log:
   Compress: true                  # 是否压缩历史日志文件
   KeepDays: 7                     # 保留日志天数
   StackCooldownMillis: 100        # 堆栈跟踪冷却时间（毫秒）
+
+# 文件上传配置
+Upload:
+  Path: uploads/
+  MaxSize: 10240000 # 最大文件大小（10MB，单位：字节）
+  AllowedTypes:
+    - image/jpeg
+    - image/png
+    - image/gif
+    - image/webp
+  BaseURL: http://127.0.0.1:8888/static # 静态资源访问地址
