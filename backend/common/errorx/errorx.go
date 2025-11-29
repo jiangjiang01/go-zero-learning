@@ -74,11 +74,12 @@ const (
 	CodeOrderNotBelongToUser = 7010 // 订单不属于当前用户
 
 	// 商品分类相关错误码（8000-8999）
-	CodeCategoryNotFound      = 8001 // 商品分类不存在
-	CodeCategoryNameExists    = 8003 // 商品分类名称已存在
-	CodeCategoryHasChildren   = 8004 // 商品分类下有子分类，不能删除
-	CodeCategoryHasProducts   = 8005 // 商品分类下有商品，不能删除
-	CodeCategoryParentInvalid = 8006 // 父分类无效
+	CodeCategoryNotFound       = 8001 // 商品分类不存在
+	CodeCategoryNameExists     = 8003 // 商品分类名称已存在
+	CodeCategoryHasChildren    = 8004 // 商品分类下有子分类，不能删除
+	CodeCategoryHasProducts    = 8005 // 商品分类下有商品，不能删除
+	CodeCategoryParentInvalid  = 8006 // 父分类无效
+	CodeCategoryNoUpdateFields = 8007 // 没有需要更新的字段
 )
 
 // 业务错误（使用统一的 Response 结构）
@@ -204,9 +205,10 @@ var (
 	ErrOrderNotBelongToUser = NewBusinessError(CodeOrderNotBelongToUser, "订单不属于当前用户")
 
 	// 商品分类相关错误
-	ErrCategoryNotFound      = NewBusinessError(CodeCategoryNotFound, "商品分类不存在")
-	ErrCategoryNameExists    = NewBusinessError(CodeCategoryNameExists, "商品分类名称已存在")
-	ErrCategoryHasChildren   = NewBusinessError(CodeCategoryHasChildren, "商品分类下有子分类，不能删除")
-	ErrCategoryHasProducts   = NewBusinessError(CodeCategoryHasProducts, "商品分类下有商品，不能删除")
-	ErrCategoryParentInvalid = NewBusinessError(CodeCategoryParentInvalid, "父分类无效")
+	ErrCategoryNotFound       = NewBusinessError(CodeCategoryNotFound, "商品分类不存在")
+	ErrCategoryNameExists     = NewBusinessError(CodeCategoryNameExists, "商品分类名称已存在")
+	ErrCategoryHasChildren    = NewBusinessError(CodeCategoryHasChildren, "商品分类下有子分类，不能删除")
+	ErrCategoryHasProducts    = NewBusinessError(CodeCategoryHasProducts, "商品分类下有商品，不能删除")
+	ErrCategoryParentInvalid  = NewBusinessError(CodeCategoryParentInvalid, "父分类无效")
+	ErrCategoryNoUpdateFields = NewBusinessError(CodeCategoryNoUpdateFields, "没有需要更新的字段")
 )
