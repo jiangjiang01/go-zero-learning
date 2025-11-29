@@ -200,16 +200,17 @@ INSERT INTO `role_permissions` (`id`, `role_id`, `permission_id`, `created_at`, 
 -- 【扩展】7. 商品测试数据
 -- ============================================
 -- 注意：价格以分为单位存储（1元 = 100分）
+-- 注意：库存以件为单位存储
 
-INSERT INTO `products` (`id`, `name`, `description`, `price`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'iPhone 15 Pro', '苹果最新款手机，配备A17 Pro芯片，支持5G网络', 799900, 1, NOW(), NOW()),
-(2, 'MacBook Pro 14寸', 'M3芯片，14英寸 Liquid Retina XDR 显示屏', 1499900, 1, NOW(), NOW()),
-(3, 'AirPods Pro', '主动降噪无线耳机，支持空间音频', 189900, 1, NOW(), NOW()),
-(4, 'iPad Air', 'M2芯片，10.9英寸 Liquid Retina 显示屏', 439900, 1, NOW(), NOW()),
-(5, 'Apple Watch Series 9', '智能手表，支持健康监测和运动追踪', 299900, 1, NOW(), NOW()),
-(6, 'Magic Keyboard', '适用于 iPad 的键盘，带触控板', 239900, 1, NOW(), NOW()),
-(7, 'AirTag 4件装', '物品追踪器，帮助找回丢失的物品', 99000, 1, NOW(), NOW()),
-(8, '下架商品示例', '这是一个已下架的商品示例', 99900, 0, NOW(), NOW());
+INSERT INTO `products` (`id`, `name`, `description`, `price`, `stock`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'iPhone 15 Pro', '苹果最新款手机，配备A17 Pro芯片，支持5G网络', 799900, 50, 1, NOW(), NOW()),
+(2, 'MacBook Pro 14寸', 'M3芯片，14英寸 Liquid Retina XDR 显示屏', 1499900, 20, 1, NOW(), NOW()),
+(3, 'AirPods Pro', '主动降噪无线耳机，支持空间音频', 189900, 100, 1, NOW(), NOW()),
+(4, 'iPad Air', 'M2芯片，10.9英寸 Liquid Retina 显示屏', 439900, 30, 1, NOW(), NOW()),
+(5, 'Apple Watch Series 9', '智能手表，支持健康监测和运动追踪', 299900, 80, 1, NOW(), NOW()),
+(6, 'Magic Keyboard', '适用于 iPad 的键盘，带触控板', 239900, 15, 1, NOW(), NOW()),
+(7, 'AirTag 4件装', '物品追踪器，帮助找回丢失的物品', 99000, 200, 1, NOW(), NOW()),
+(8, '下架商品示例', '这是一个已下架的商品示例', 99900, 0, 0, NOW(), NOW());
 
 -- ============================================
 -- 【扩展】8. 订单测试数据

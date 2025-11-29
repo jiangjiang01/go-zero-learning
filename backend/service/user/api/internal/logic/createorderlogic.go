@@ -114,12 +114,12 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderReq) (resp *types.C
 			result := tx.Model(&model.Product{}).
 				Where("id = ? AND stock >= ?", item.ProductID, item.Quantity).
 				Update("stock", gorm.Expr("stock - ?", item.Quantity))
-			
+
 			if result.Error != nil {
 				l.Errorf("扣减库存失败：%v", result.Error)
 				return errorx.ErrInternalError
 			}
-			
+
 			// 检查是否成功扣减（受影响行数为0说明库存不足）
 			if result.RowsAffected == 0 {
 				return errorx.ErrOrderStockNotEnough
