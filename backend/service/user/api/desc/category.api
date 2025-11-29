@@ -1,0 +1,86 @@
+syntax = "v1"
+
+// 商品分类管理相关类型定义
+
+// 创建分类请求
+type CreateCategoryReq {
+	Name string `json:"name"`
+	Desc string `json:"desc,optional"`
+	ParentID int64 `json:"parent_id,optional"`
+	Sort int `json:"sort,optional"`
+	Status int `json:"status,optional"`
+}
+
+// 分类响应信息
+type CategoryInfoResp {
+	ID int64 `json:"id"`
+	Name string `json:"name"`
+	Desc string `json:"desc"`
+	ParentID int64 `json:"parent_id"`
+	Sort int `json:"sort"`
+	Status int `json:"status"`
+	CreatedAt int64 `json:"created_at"`
+	UpdatedAt int64 `json:"updated_at"`
+}
+
+// 获取分类列表请求（支持全部模式和分页模式）
+type GetCategoryListReq {
+	Page int64 `form:"page,default=1"`
+	PageSize int64 `form:"page_size,default=10"`
+	Keyword string `form:"keyword,optional"`
+	All bool `form:"all,optional"` // 是否获取全部（不分页），用于树形结构
+}
+
+// 获取分类列表响应
+type GetCategoryListResp {
+	Categories []CategoryInfoResp `json:"categories"`
+	Total int64 `json:"total"`
+	Page int64 `json:"page"`
+	PageSize int64 `json:"page_size"`
+}
+
+// 获取分类详情请求
+type GetCategoryDetailReq {
+	ID int64 `path:"id"`
+}
+
+// 分类详情响应（为 CategoryInfoResp）
+
+// 更新分类请求
+type UpdateCategoryReq {
+	ID int64 `path:"id"`
+	Name *string `json:"name,optional"`
+	Desc *string `json:"desc,optional"`
+	ParentID *int64 `json:"parent_id,optional"`
+	Sort *int `json:"sort,optional"`
+	Status *int `json:"status,optional"`
+}
+
+// 更新分类响应（为 CategoryInfoResp）
+
+// 删除分类请求
+type DeleteCategoryReq {
+	ID int64 `path:"id"`
+}
+
+// 删除分类响应
+type DeleteCategoryResp {
+	Message string `json:"message"`
+}
+
+service user-api {
+	@handler CreateCategory
+	post /api/categories (CreateCategoryReq) returns (CategoryInfoResp)
+
+	@handler GetCategoryList
+	get /api/categories (GetCategoryListReq) returns (GetCategoryListResp)
+
+	@handler GetCategoryDetail
+	get /api/categories/:id (GetCategoryDetailReq) returns (CategoryInfoResp)
+
+	@handler UpdateCategory
+	put /api/categories/:id (UpdateCategoryReq) returns (CategoryInfoResp)
+
+	@handler DeleteCategory
+	delete /api/categories/:id (DeleteCategoryReq) returns (DeleteCategoryResp)
+}
