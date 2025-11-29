@@ -16,6 +16,10 @@ SET time_zone = '+08:00';
 
 SET SQL_SAFE_UPDATES = 0;
 
+-- 【扩展】删除顺序：先删除关联表，再删除主表
+DELETE FROM `order_items`;
+DELETE FROM `orders`;
+DELETE FROM `products`;
 DELETE FROM `role_permissions`;
 DELETE FROM `user_roles`;
 DELETE FROM `menus`;
@@ -33,6 +37,9 @@ ALTER TABLE `permissions` AUTO_INCREMENT = 1;
 ALTER TABLE `menus` AUTO_INCREMENT = 1;
 ALTER TABLE `user_roles` AUTO_INCREMENT = 1;
 ALTER TABLE `role_permissions` AUTO_INCREMENT = 1;
+ALTER TABLE `products` AUTO_INCREMENT = 1;
+ALTER TABLE `orders` AUTO_INCREMENT = 1;
+ALTER TABLE `order_items` AUTO_INCREMENT = 1;
 
 -- ============================================
 -- 1. 用户数据
@@ -80,6 +87,19 @@ INSERT INTO `permissions` (`id`, `name`, `code`, `desc`, `created_at`, `updated_
 (11, '更新权限', 'permission:update', '更新权限信息、菜单信息和分配角色权限的权限', NOW(), NOW()),
 (12, '删除权限', 'permission:delete', '删除权限和菜单的权限', NOW(), NOW());
 
+-- 【扩展】商品管理权限
+INSERT INTO `permissions` (`id`, `name`, `code`, `desc`, `created_at`, `updated_at`) VALUES
+(13, '查看商品列表', 'product:list', '查看商品列表和商品详情的权限', NOW(), NOW()),
+(14, '创建商品', 'product:create', '创建新商品的权限', NOW(), NOW()),
+(15, '更新商品', 'product:update', '更新商品信息的权限', NOW(), NOW()),
+(16, '删除商品', 'product:delete', '删除商品的权限', NOW(), NOW());
+
+-- 【扩展】订单管理权限
+INSERT INTO `permissions` (`id`, `name`, `code`, `desc`, `created_at`, `updated_at`) VALUES
+(17, '查看订单列表', 'order:list', '查看订单列表和订单详情的权限', NOW(), NOW()),
+(18, '创建订单', 'order:create', '创建新订单的权限', NOW(), NOW()),
+(19, '更新订单', 'order:update', '更新订单状态的权限', NOW(), NOW());
+
 -- ============================================
 -- 4. 菜单数据
 -- ============================================
@@ -95,7 +115,9 @@ INSERT INTO `menus` (`id`, `name`, `code`, `desc`, `parent_id`, `path`, `icon`, 
 (4, '角色管理', 'system:role', '角色管理', 1, '/system/role', 'UserGroup', 1, 2, 1, NOW(), NOW()),
 (5, '权限管理', 'system:permission', '权限管理', 1, '/system/permission', 'Lock', 1, 3, 1, NOW(), NOW()),
 (6, '菜单管理', 'system:menu', '菜单管理', 1, '/system/menu', 'Menu', 1, 4, 1, NOW(), NOW()),
-(7, '系统设置', 'system:settings', '系统设置', 1, '/system/settings', 'Setting', 1, 5, 1, NOW(), NOW());
+(7, '商品管理', 'system:product', '商品管理', 1, '/system/product', 'Goods', 1, 6, 1, NOW(), NOW()),
+(8, '订单管理', 'system:order', '订单管理', 1, '/system/order', 'ShoppingCart', 1, 7, 1, NOW(), NOW()),
+(9, '系统设置', 'system:settings', '系统设置', 1, '/system/settings', 'Setting', 1, 8, 1, NOW(), NOW());
 
 -- ============================================
 -- 5. 用户角色关联
@@ -128,11 +150,91 @@ INSERT INTO `role_permissions` (`id`, `role_id`, `permission_id`, `created_at`, 
 (9, 1, 9, NOW(), NOW()),  -- permission:list
 (10, 1, 10, NOW(), NOW()), -- permission:create
 (11, 1, 11, NOW(), NOW()), -- permission:update
-(12, 1, 12, NOW(), NOW()); -- permission:delete
+(12, 1, 12, NOW(), NOW()), -- permission:delete
+-- 【扩展】商品管理权限
+(13, 1, 13, NOW(), NOW()), -- product:list
+(14, 1, 14, NOW(), NOW()), -- product:create
+(15, 1, 15, NOW(), NOW()), -- product:update
+(16, 1, 16, NOW(), NOW()), -- product:delete
+-- 【扩展】订单管理权限
+(17, 1, 17, NOW(), NOW()), -- order:list
+(18, 1, 18, NOW(), NOW()), -- order:create
+(19, 1, 19, NOW(), NOW()); -- order:update
 
 -- 普通用户角色拥有基本权限（可根据需要调整）
 INSERT INTO `role_permissions` (`id`, `role_id`, `permission_id`, `created_at`, `updated_at`) VALUES
-(13, 2, 1, NOW(), NOW()); -- user:list（仅查看）
+(20, 2, 1, NOW(), NOW()); -- user:list（仅查看）
+
+-- ============================================
+-- 【扩展】7. 商品测试数据
+-- ============================================
+-- 注意：价格以分为单位存储（1元 = 100分）
+
+INSERT INTO `products` (`id`, `name`, `description`, `price`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'iPhone 15 Pro', '苹果最新款手机，配备A17 Pro芯片，支持5G网络', 799900, 1, NOW(), NOW()),
+(2, 'MacBook Pro 14寸', 'M3芯片，14英寸 Liquid Retina XDR 显示屏', 1499900, 1, NOW(), NOW()),
+(3, 'AirPods Pro', '主动降噪无线耳机，支持空间音频', 189900, 1, NOW(), NOW()),
+(4, 'iPad Air', 'M2芯片，10.9英寸 Liquid Retina 显示屏', 439900, 1, NOW(), NOW()),
+(5, 'Apple Watch Series 9', '智能手表，支持健康监测和运动追踪', 299900, 1, NOW(), NOW()),
+(6, 'Magic Keyboard', '适用于 iPad 的键盘，带触控板', 239900, 1, NOW(), NOW()),
+(7, 'AirTag 4件装', '物品追踪器，帮助找回丢失的物品', 99000, 1, NOW(), NOW()),
+(8, '下架商品示例', '这是一个已下架的商品示例', 99900, 0, NOW(), NOW());
+
+-- ============================================
+-- 【扩展】8. 订单测试数据
+-- ============================================
+-- 注意：订单金额以分为单位存储
+
+-- 订单1：admin用户的订单（待支付）
+INSERT INTO `orders` (`id`, `order_no`, `user_id`, `total_amount`, `status`, `remark`, `created_at`, `updated_at`) VALUES
+(1, 'ORD20241129000001', 1, 799900, 1, '测试订单1', NOW(), NOW());
+
+-- 订单1的订单项
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `product_desc`, `price`, `quantity`, `amount`, `created_at`) VALUES
+(1, 1, 1, 'iPhone 15 Pro', '苹果最新款手机，配备A17 Pro芯片，支持5G网络', 799900, 1, 799900, NOW());
+
+-- 订单2：admin用户的订单（已支付）
+INSERT INTO `orders` (`id`, `order_no`, `user_id`, `total_amount`, `status`, `remark`, `created_at`, `updated_at`) VALUES
+(2, 'ORD20241129000002', 1, 1689800, 2, '测试订单2', NOW(), NOW());
+
+-- 订单2的订单项
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `product_desc`, `price`, `quantity`, `amount`, `created_at`) VALUES
+(2, 2, 2, 'MacBook Pro 14寸', 'M3芯片，14英寸 Liquid Retina XDR 显示屏', 1499900, 1, 1499900, NOW()),
+(3, 2, 3, 'AirPods Pro', '主动降噪无线耳机，支持空间音频', 189900, 1, 189900, NOW());
+
+-- 订单3：admin用户的订单（已发货）
+INSERT INTO `orders` (`id`, `order_no`, `user_id`, `total_amount`, `status`, `remark`, `created_at`, `updated_at`) VALUES
+(3, 'ORD20241129000003', 1, 439900, 3, '测试订单3', NOW(), NOW());
+
+-- 订单3的订单项
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `product_desc`, `price`, `quantity`, `amount`, `created_at`) VALUES
+(4, 3, 4, 'iPad Air', 'M2芯片，10.9英寸 Liquid Retina 显示屏', 439900, 1, 439900, NOW());
+
+-- 订单4：admin用户的订单（已完成）
+INSERT INTO `orders` (`id`, `order_no`, `user_id`, `total_amount`, `status`, `remark`, `created_at`, `updated_at`) VALUES
+(4, 'ORD20241129000004', 1, 299900, 4, '测试订单4', NOW(), NOW());
+
+-- 订单4的订单项
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `product_desc`, `price`, `quantity`, `amount`, `created_at`) VALUES
+(5, 4, 5, 'Apple Watch Series 9', '智能手表，支持健康监测和运动追踪', 299900, 1, 299900, NOW());
+
+-- 订单5：admin用户的订单（已取消）
+INSERT INTO `orders` (`id`, `order_no`, `user_id`, `total_amount`, `status`, `remark`, `created_at`, `updated_at`) VALUES
+(5, 'ORD20241129000005', 1, 239900, 5, '测试订单5（已取消）', NOW(), NOW());
+
+-- 订单5的订单项
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `product_desc`, `price`, `quantity`, `amount`, `created_at`) VALUES
+(6, 5, 6, 'Magic Keyboard', '适用于 iPad 的键盘，带触控板', 239900, 1, 239900, NOW());
+
+-- 订单6：testuser用户的订单（多商品订单）
+-- 【修复】总金额 = 99000 + 189900 = 288900
+INSERT INTO `orders` (`id`, `order_no`, `user_id`, `total_amount`, `status`, `remark`, `created_at`, `updated_at`) VALUES
+(6, 'ORD20241129000006', 2, 288900, 1, 'testuser的测试订单', NOW(), NOW());
+
+-- 订单6的订单项（多商品）
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `product_desc`, `price`, `quantity`, `amount`, `created_at`) VALUES
+(7, 6, 7, 'AirTag 4件装', '物品追踪器，帮助找回丢失的物品', 99000, 1, 99000, NOW()),
+(8, 6, 3, 'AirPods Pro', '主动降噪无线耳机，支持空间音频', 189900, 1, 189900, NOW());
 
 -- ============================================
 -- 说明
@@ -142,4 +244,9 @@ INSERT INTO `role_permissions` (`id`, `role_id`, `permission_id`, `created_at`, 
 -- 3. 普通用户：normaluser / Normal123（无角色，测试脚本需要）
 -- 4. 所有密码已使用 bcrypt 加密
 -- 5. 测试脚本 test-permission-middleware.sh 会使用 testuser 和 normaluser 进行测试
+-- 【扩展】6. 商品测试数据：8个商品（7个上架，1个下架）
+-- 【扩展】7. 订单测试数据：6个订单，覆盖所有订单状态（待支付、已支付、已发货、已完成、已取消）
+-- 【扩展】8. 订单项测试数据：8个订单项，包含单商品和多商品订单
+-- 【扩展】9. 商品和订单权限已分配给管理员角色
+-- 【扩展】10. 商品管理和订单管理菜单已添加到系统管理菜单下
 
