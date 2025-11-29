@@ -6,8 +6,8 @@ package logic
 import (
 	"context"
 
-	"go-zero-learning/service/user/api/tmp/internal/svc"
-	"go-zero-learning/service/user/api/tmp/internal/types"
+	"go-zero-learning/service/user/api/internal/svc"
+	"go-zero-learning/service/user/api/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

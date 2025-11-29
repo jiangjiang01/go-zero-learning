@@ -6,26 +6,30 @@ package handler
 import (
 	"net/http"
 
+	"go-zero-learning/common/errorx"
+	"go-zero-learning/common/response"
+	"go-zero-learning/common/validator"
+	"go-zero-learning/service/user/api/internal/logic"
+	"go-zero-learning/service/user/api/internal/svc"
+	"go-zero-learning/service/user/api/internal/types"
+
 	"github.com/zeromicro/go-zero/rest/httpx"
-	"go-zero-learning/service/user/api/tmp/internal/logic"
-	"go-zero-learning/service/user/api/tmp/internal/svc"
-	"go-zero-learning/service/user/api/tmp/internal/types"
 )
 
 func GetCategoryListHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.GetCategoryListReq
 		if err := httpx.Parse(r, &req); err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
+			errorx.HandleError(w, r, validator.ParseError(err))
 			return
 		}
 
 		l := logic.NewGetCategoryListLogic(r.Context(), svcCtx)
 		resp, err := l.GetCategoryList(&req)
 		if err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
+			errorx.HandleError(w, r, err)
 		} else {
-			httpx.OkJsonCtx(r.Context(), w, resp)
+			response.OkJson(w, r, resp)
 		}
 	}
 }
