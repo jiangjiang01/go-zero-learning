@@ -63,7 +63,7 @@ func (l *UpdateCartItemLogic) UpdateCartItem(req *types.UpdateCartItemReq) (resp
 			return nil, errorx.NewBusinessError(errorx.CodeNotFound, "购物车不存在")
 		}
 		l.Errorf("查询购物车失败：%v", err)
-		return nil, err
+		return nil, errorx.ErrInternalError
 	}
 
 	// 4. 更新数量

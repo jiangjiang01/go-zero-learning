@@ -109,7 +109,7 @@ func (l *AddCartItemLogic) AddCartItem(req *types.AddCartItemReq) (resp *types.C
 		ProductName: product.Name,
 		Price:       product.Price,
 		Quantity:    cartItem.Quantity,
-		Amount:      int64(req.Quantity) * product.Price,
+		Amount:      int64(cartItem.Quantity) * product.Price,
 	}
 
 	return resp, nil
