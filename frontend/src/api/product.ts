@@ -8,6 +8,7 @@ export interface ProductInfo {
   description: string
   price: number
   status: number
+  stock: number
   created_at: number
   updated_at: number
 }
@@ -26,6 +27,7 @@ export interface CreateProductRequest {
   description?: string
   price: number
   status?: number
+  stock?: number
 }
 
 // 更新商品请求
@@ -34,6 +36,7 @@ export interface UpdateProductRequest {
   description?: string
   price?: number
   status?: number
+  stock?: number
 }
 
 // 商品列表查询参数

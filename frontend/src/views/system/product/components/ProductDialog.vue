@@ -45,6 +45,17 @@
         <span class="price-hint">元</span>
       </el-form-item>
 
+      <el-form-item label="商品库存" prop="stock">
+        <el-input-number
+          v-model="form.stock"
+          :min="0"
+          :max="999999"
+          placeholder="请输入商品库存"
+          style="width: 200px"
+        />
+        <span class="price-hint">件</span>
+      </el-form-item>
+
       <el-form-item label="商品状态" prop="status">
         <el-radio-group v-model="form.status">
           <el-radio :label="1">上架</el-radio>
@@ -96,6 +107,7 @@ const form = reactive({
   name: '',
   description: '',
   price: 0,
+  stock: 0,
   status: 1
 })
 
@@ -112,6 +124,10 @@ const rules: FormRules = {
     { required: true, message: '请输入商品价格', trigger: 'blur' },
     { type: 'number', min: 0.01, max: 999999, message: '价格范围在 0.01 到 999999 元之间', trigger: 'blur' }
   ],
+  stock: [
+    { required: true, message: '请输入商品库存', trigger: 'blur' },
+    { type: 'number', min: 0, max: 999999, message: '库存范围在 0 到 999999 件之间', trigger: 'blur' }
+  ],
   status: [
     { required: true, message: '请选择商品状态', trigger: 'change' }
   ]
@@ -122,6 +138,7 @@ const resetForm = () => {
   form.name = ''
   form.description = ''
   form.price = 0
+  form.stock = 0
   form.status = 1
 
   nextTick(() => {
@@ -138,6 +155,7 @@ watch(
       form.name = newProduct.name
       form.description = newProduct.description
       form.price = newProduct.price / 100 // 分转元
+      form.stock = newProduct.stock || 0
       form.status = newProduct.status
     } else {
       // 新增模式，重置表单
@@ -164,11 +182,16 @@ const handleSubmit = async () => {
     loading.value = true
 
     // 准备提交数据
-    const submitData = {
+    const submitData: any = {
       name: form.name.trim(),
       description: form.description.trim(),
       price: priceToFen(form.price), // 元转分
       status: form.status
+    }
+    
+    // 库存字段：新增时如果为0可以不传，编辑时必须传（即使是0）
+    if (isEdit.value || form.stock > 0) {
+      submitData.stock = form.stock
     }
 
     let response

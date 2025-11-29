@@ -48,6 +48,11 @@
           <span class="price-text">¥{{ formatPrice(row.price) }}</span>
         </template>
       </el-table-column>
+      <el-table-column prop="stock" label="库存" width="100">
+        <template #default="{ row }">
+          <span :class="getStockClass(row.stock)">{{ row.stock }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
           <el-tag :type="getProductStatusType(row.status)">
@@ -321,6 +326,16 @@ const confirmAddToCart = async () => {
   }
 }
 
+// 获取库存样式类
+const getStockClass = (stock: number) => {
+  if (stock === 0) {
+    return 'stock-zero'
+  } else if (stock < 10) {
+    return 'stock-low'
+  }
+  return ''
+}
+
 // 初始化
 onMounted(() => {
   fetchProductList()
@@ -347,6 +362,16 @@ onMounted(() => {
 .price-text {
   font-weight: 600;
   color: #e6a23c;
+}
+
+.stock-zero {
+  color: #f56c6c;
+  font-weight: 600;
+}
+
+.stock-low {
+  color: #e6a23c;
+  font-weight: 500;
 }
 
 .pagination {
