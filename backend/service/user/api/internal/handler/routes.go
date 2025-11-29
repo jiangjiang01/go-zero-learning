@@ -528,7 +528,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			rest.Route{
 				Method:  http.MethodPut,
-				Path:    "/api/orders/:id",
+				Path:    "/api/orders/:id/status",
 				Handler: UpdateOrderStatusHandler(serverCtx),
 			},
 		),
