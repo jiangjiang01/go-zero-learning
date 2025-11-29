@@ -105,6 +105,18 @@ func (l *UpdateProductLogic) UpdateProduct(req *types.UpdateProductReq) (resp *t
 		}
 	}
 
+	// 处理库存更新
+	if req.Stock != nil {
+		stock := *req.Stock
+		// 验证库存不能为负数
+		if stock < 0 {
+			return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "库存不能为负数")
+		}
+		if stock != product.Stock {
+			updateFields["stock"] = stock
+		}
+	}
+
 	// 4. 检查是否有字段需要更新
 	if len(updateFields) == 0 {
 		return nil, errorx.ErrProductNoUpdateFields

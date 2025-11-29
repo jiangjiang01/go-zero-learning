@@ -71,6 +71,11 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderReq) (resp *types.C
 				return errorx.ErrInternalError
 			}
 
+			// 检查库存是否充足
+			if product.Stock < int64(item.Quantity) {
+				return errorx.ErrOrderStockNotEnough
+			}
+
 			// 计算小计金额
 			amount := product.Price * int64(item.Quantity)
 			totalAmount += amount
@@ -103,7 +108,25 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderReq) (resp *types.C
 			return errorx.ErrInternalError
 		}
 
-		// 3.3 保存订单项（逐个创建以确保 ID 被正确填充）
+		// 3.3 扣减库存（在创建订单项之前，确保库存充足）
+		for _, item := range req.Items {
+			// 使用数据库原子操作扣减库存，防止并发问题
+			result := tx.Model(&model.Product{}).
+				Where("id = ? AND stock >= ?", item.ProductID, item.Quantity).
+				Update("stock", gorm.Expr("stock - ?", item.Quantity))
+			
+			if result.Error != nil {
+				l.Errorf("扣减库存失败：%v", result.Error)
+				return errorx.ErrInternalError
+			}
+			
+			// 检查是否成功扣减（受影响行数为0说明库存不足）
+			if result.RowsAffected == 0 {
+				return errorx.ErrOrderStockNotEnough
+			}
+		}
+
+		// 3.4 保存订单项（逐个创建以确保 ID 被正确填充）
 		for i := range orderItems {
 			orderItems[i].OrderID = order.ID
 			// 添加 ProductID 验证 - 防止 product_id 为 0 导致数据库错误
