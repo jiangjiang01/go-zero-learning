@@ -31,10 +31,7 @@ func NewGetCartLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetCartLo
 	}
 }
 
-// TODO
-// 性能问题（N+1 查询）：第90行在循环中查询商品，购物车项多时性能差
-// 商品状态未检查：未检查商品是否上架（status = 1）
-
+// 获取购物车逻辑
 func (l *GetCartLogic) GetCart(req *types.GetCartReq) (resp *types.GetCartResp, err error) {
 	// 1. 获取当前用户
 	userID, ok := ctxdata.GetUserID(l.ctx)
@@ -84,21 +81,51 @@ func (l *GetCartLogic) GetCart(req *types.GetCartReq) (resp *types.GetCartResp, 
 	return resp, nil
 }
 
+// 获取购物车项中的所有商品ID
+func (l *GetCartLogic) getProductIDs(cartItems []model.CartItem) []int64 {
+	productIDs := make([]int64, 0, len(cartItems))
+
+	for _, cartItem := range cartItems {
+		productIDs = append(productIDs, cartItem.ProductID)
+	}
+
+	return productIDs
+}
+
+// 获取购物车项列表和总金额
 func (l *GetCartLogic) getCartItemListAndTotalAmount(cartItems []model.CartItem) ([]types.CartItemResp, int64, error) {
+	// 空列表提前返回
+	if len(cartItems) == 0 {
+		return []types.CartItemResp{}, 0, nil
+	}
+
+	// 收集所有的商品ID
+	productIDs := l.getProductIDs(cartItems)
+
+	// 一次性批量查询所有商品（解决 N+1 查询问题）
+	var products []model.Product
+	err := l.svcCtx.DB.Where("id IN ? AND status = 1", productIDs).Find(&products).Error
+	if err != nil {
+		l.Errorf("查询商品信息失败：%v", err)
+		return nil, 0, errorx.ErrInternalError
+	}
+
+	// 构建商品ID到商品的映射
+	productMap := make(map[int64]model.Product)
+	for _, product := range products {
+		productMap[product.ID] = product
+	}
+
+	// 构建响应
 	var cartItemList []types.CartItemResp
 	var totalAmount int64
 
 	for _, cartItem := range cartItems {
 		// 查询商品信息
-		var product model.Product
-		err := l.svcCtx.DB.Where("id = ?", cartItem.ProductID).First(&product).Error
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				// 商品可能已删除，跳过
-				continue
-			}
-			l.Errorf("查询商品信息失败：%v", err)
-			return nil, 0, errorx.ErrInternalError
+		product, exists := productMap[cartItem.ProductID]
+		if !exists {
+			// 商品可能已经下架，跨过
+			continue
 		}
 
 		amount := int64(cartItem.Quantity) * product.Price
