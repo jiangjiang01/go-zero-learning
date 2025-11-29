@@ -1,7 +1,6 @@
 syntax = "v1"
 
 // 文件上传相关类型定义
-
 // 文件上传请求
 // 注意：实际文件内容通过 multipart/form-data 传递，字段我为”file“
 // 这里的类型定义主要用于 API 文档和代码生成，实际处理在 handler 中手动执行
@@ -12,12 +11,13 @@ type UploadFileReq {
 
 // 文件上传响应
 type UploadFileResp {
-	URL string `json:"url"` // 文件访问URL
+	URL      string `json:"url"` // 文件访问URL
 	Filename string `json:"filename"` // 文件名
-	Size int64 `json:"size"` // 文件大小（字节）
+	Size     int64  `json:"size"` // 文件大小（字节）
 }
 
 service user-api {
 	@handler UploadFile
 	post /api/upload (UploadFileReq) returns (UploadFileResp)
 }
+

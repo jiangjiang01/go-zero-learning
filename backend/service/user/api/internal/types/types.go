@@ -540,3 +540,13 @@ type UserStats struct {
 	TodayUsers  int64 `json:"today_users"`  // 今日新增用户数
 	ActiveUsers int64 `json:"active_users"` // 活跃用户数（有订单的用户）
 }
+
+type UploadFileReq struct {
+	Category string `form:"category,optional"` // 文件分类
+}
+
+type UploadFileResp struct {
+	URL      string `json:"url"`      // 文件访问URL
+	Filename string `json:"filename"` // 文件名
+	Size     int64  `json:"size"`     // 文件大小（字节）
+}

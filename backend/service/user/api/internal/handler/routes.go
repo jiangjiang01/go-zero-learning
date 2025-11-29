@@ -690,4 +690,19 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 		),
 	)
+
+	// ========== 文件上传相关路由 ==========
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+			},
+			rest.Route{
+				Method:  http.MethodPost,
+				Path:    "/api/upload",
+				Handler: UploadFileHandler(serverCtx),
+			},
+		),
+	)
 }
