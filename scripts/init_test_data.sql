@@ -17,9 +17,12 @@ SET time_zone = '+08:00';
 SET SQL_SAFE_UPDATES = 0;
 
 -- 【扩展】删除顺序：先删除关联表，再删除主表
+DELETE FROM `cart_items`;
+DELETE FROM `carts`;
 DELETE FROM `order_items`;
 DELETE FROM `orders`;
 DELETE FROM `products`;
+DELETE FROM `categories`;
 DELETE FROM `role_permissions`;
 DELETE FROM `user_roles`;
 DELETE FROM `menus`;
@@ -40,6 +43,9 @@ ALTER TABLE `role_permissions` AUTO_INCREMENT = 1;
 ALTER TABLE `products` AUTO_INCREMENT = 1;
 ALTER TABLE `orders` AUTO_INCREMENT = 1;
 ALTER TABLE `order_items` AUTO_INCREMENT = 1;
+ALTER TABLE `categories` AUTO_INCREMENT = 1;
+ALTER TABLE `carts` AUTO_INCREMENT = 1;
+ALTER TABLE `cart_items` AUTO_INCREMENT = 1;
 
 -- ============================================
 -- 1. 用户数据
@@ -107,6 +113,13 @@ INSERT INTO `permissions` (`id`, `name`, `code`, `desc`, `created_at`, `updated_
 (22, '更新分类', 'category:update', '更新商品分类信息的权限', NOW(), NOW()),
 (23, '删除分类', 'category:delete', '删除商品分类的权限', NOW(), NOW());
 
+-- 【扩展】购物车管理权限
+INSERT INTO `permissions` (`id`, `name`, `code`, `desc`, `created_at`, `updated_at`) VALUES
+(24, '查看购物车', 'cart:get', '查看购物车列表和详情的权限', NOW(), NOW()),
+(25, '添加商品到购物车', 'cart:add', '添加商品到购物车的权限', NOW(), NOW()),
+(26, '更新购物车项', 'cart:update', '更新购物车项数量的权限', NOW(), NOW()),
+(27, '删除购物车项', 'cart:delete', '删除购物车项和清空购物车的权限', NOW(), NOW());
+
 -- ============================================
 -- 4. 菜单数据
 -- ============================================
@@ -124,7 +137,8 @@ INSERT INTO `menus` (`id`, `name`, `code`, `desc`, `parent_id`, `path`, `icon`, 
 (6, '菜单管理', 'system:menu', '菜单管理', 1, '/system/menu', 'Menu', 1, 4, 1, NOW(), NOW()),
 (7, '商品管理', 'system:product', '商品管理', 1, '/system/product', 'Goods', 1, 6, 1, NOW(), NOW()),
 (8, '订单管理', 'system:order', '订单管理', 1, '/system/order', 'ShoppingCart', 1, 7, 1, NOW(), NOW()),
-(9, '系统设置', 'system:settings', '系统设置', 1, '/system/settings', 'Setting', 1, 8, 1, NOW(), NOW());
+(9, '购物车管理', 'system:cart', '购物车管理', 1, '/system/cart', 'ShoppingBag', 1, 5, 1, NOW(), NOW()),
+(10, '系统设置', 'system:settings', '系统设置', 1, '/system/settings', 'Setting', 1, 8, 1, NOW(), NOW());
 
 -- ============================================
 -- 5. 用户角色关联
@@ -171,11 +185,16 @@ INSERT INTO `role_permissions` (`id`, `role_id`, `permission_id`, `created_at`, 
 (20, 1, 20, NOW(), NOW()), -- category:list
 (21, 1, 21, NOW(), NOW()), -- category:create
 (22, 1, 22, NOW(), NOW()), -- category:update
-(23, 1, 23, NOW(), NOW()); -- category:delete
+(23, 1, 23, NOW(), NOW()), -- category:delete
+-- 【扩展】购物车管理权限
+(24, 1, 24, NOW(), NOW()), -- cart:get
+(25, 1, 25, NOW(), NOW()), -- cart:add
+(26, 1, 26, NOW(), NOW()), -- cart:update
+(27, 1, 27, NOW(), NOW()); -- cart:delete
 
 -- 普通用户角色拥有基本权限（可根据需要调整）
 INSERT INTO `role_permissions` (`id`, `role_id`, `permission_id`, `created_at`, `updated_at`) VALUES
-(24, 2, 1, NOW(), NOW()); -- user:list（仅查看）
+(28, 2, 1, NOW(), NOW()); -- user:list（仅查看）
 
 -- ============================================
 -- 【扩展】7. 商品测试数据
@@ -276,6 +295,29 @@ INSERT INTO `categories` (`id`, `name`, `desc`, `parent_id`, `sort`, `status`, `
 (11, '已禁用分类', '这是一个已禁用的分类示例', 0, 99, 0, NOW(), NOW());
 
 -- ============================================
+-- 【扩展】10. 购物车测试数据
+-- ============================================
+
+-- admin用户的购物车
+INSERT INTO `carts` (`id`, `user_id`, `created_at`, `updated_at`) VALUES
+(1, 1, NOW(), NOW());
+
+-- admin用户购物车中的商品项
+INSERT INTO `cart_items` (`id`, `cart_id`, `product_id`, `quantity`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 2, NOW(), NOW()),  -- iPhone 15 Pro x2
+(2, 1, 3, 1, NOW(), NOW()),  -- AirPods Pro x1
+(3, 1, 5, 1, NOW(), NOW());  -- Apple Watch Series 9 x1
+
+-- testuser用户的购物车
+INSERT INTO `carts` (`id`, `user_id`, `created_at`, `updated_at`) VALUES
+(2, 2, NOW(), NOW());
+
+-- testuser用户购物车中的商品项
+INSERT INTO `cart_items` (`id`, `cart_id`, `product_id`, `quantity`, `created_at`, `updated_at`) VALUES
+(4, 2, 2, 1, NOW(), NOW()),  -- MacBook Pro 14寸 x1
+(5, 2, 4, 2, NOW(), NOW());  -- iPad Air x2
+
+-- ============================================
 -- 说明
 -- ============================================
 -- 1. 管理员账号：admin / 123456
@@ -287,7 +329,9 @@ INSERT INTO `categories` (`id`, `name`, `desc`, `parent_id`, `sort`, `status`, `
 -- 【扩展】7. 订单测试数据：6个订单，覆盖所有订单状态（待支付、已支付、已发货、已完成、已取消）
 -- 【扩展】8. 订单项测试数据：8个订单项，包含单商品和多商品订单
 -- 【扩展】9. 商品分类测试数据：11个分类（10个启用，1个禁用），包含树形结构
--- 【扩展】10. 商品和订单权限已分配给管理员角色
--- 【扩展】11. 商品分类权限已分配给管理员角色
--- 【扩展】12. 商品管理、订单管理和分类管理菜单已添加到系统管理菜单下
+-- 【扩展】10. 购物车测试数据：2个购物车（admin和testuser各一个），5个购物车项
+-- 【扩展】11. 商品和订单权限已分配给管理员角色
+-- 【扩展】12. 商品分类权限已分配给管理员角色
+-- 【扩展】13. 购物车权限已分配给管理员角色
+-- 【扩展】14. 商品管理、订单管理、购物车管理和分类管理菜单已添加到系统管理菜单下
 
