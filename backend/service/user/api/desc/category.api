@@ -8,7 +8,7 @@ type CreateCategoryReq {
 	Desc string `json:"desc,optional"`
 	ParentID int64 `json:"parent_id,optional"`
 	Sort int `json:"sort,optional"`
-	Status int `json:"status,optional"`
+	Status *int `json:"status,optional"`
 }
 
 // 分类响应信息

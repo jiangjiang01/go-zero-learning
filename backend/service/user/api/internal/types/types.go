@@ -416,10 +416,10 @@ type CategoryInfoResp struct {
 
 type CreateCategoryReq struct {
 	Name     string `json:"name"`
-	Desc     string `json:"desc,optional"`
-	ParentID int64  `json:"parent_id,optional"`
-	Sort     int    `json:"sort,optional"`
-	Status   int    `json:"status,optional"`
+	Desc     string `json:"desc,omitempty"`
+	ParentID int64  `json:"parent_id,omitempty"`
+	Sort     int    `json:"sort,omitempty"`
+	Status   *int   `json:"status,omitempty"`
 }
 
 type DeleteCategoryReq struct {
@@ -450,9 +450,9 @@ type GetCategoryListResp struct {
 
 type UpdateCategoryReq struct {
 	ID       int64   `path:"id"`
-	Name     *string `json:"name,optional"`
-	Desc     *string `json:"desc,optional"`
-	ParentID *int64  `json:"parent_id,optional"`
-	Sort     *int    `json:"sort,optional"`
-	Status   *int    `json:"status,optional"`
+	Name     *string `json:"name,omitempty"`
+	Desc     *string `json:"desc,omitempty"`
+	ParentID *int64  `json:"parent_id,omitempty"`
+	Sort     *int    `json:"sort,omitempty"`
+	Status   *int    `json:"status,omitempty"`
 }
