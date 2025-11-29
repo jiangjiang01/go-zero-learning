@@ -60,6 +60,7 @@ func convertToProductInfoResp(product model.Product) *types.ProductInfoResp {
 		Description: product.Description,
 		Price:       product.Price,
 		Status:      product.Status,
+		Stock:       product.Stock,
 		CreatedAt:   product.CreatedAt.Unix(),
 		UpdatedAt:   product.UpdatedAt.Unix(),
 	}

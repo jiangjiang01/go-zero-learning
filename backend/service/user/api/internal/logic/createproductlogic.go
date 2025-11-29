@@ -67,11 +67,20 @@ func (l *CreateProductLogic) CreateProduct(req *types.CreateProductReq) (resp *t
 	if req.Status != nil {
 		status = *req.Status
 	}
+	stock := int64(0) // 默认库存为0
+	if req.Stock != nil {
+		// 不能为负数
+		if *req.Stock < 0 {
+			return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "库存不能为负数")
+		}
+		stock = *req.Stock
+	}
 	product := &model.Product{
 		Name:        name,
 		Description: description,
 		Price:       req.Price,
 		Status:      status,
+		Stock:       stock,
 	}
 	err = l.svcCtx.DB.Create(&product).Error
 	if err != nil {
@@ -86,6 +95,7 @@ func (l *CreateProductLogic) CreateProduct(req *types.CreateProductReq) (resp *t
 		Description: product.Description,
 		Price:       product.Price,
 		Status:      product.Status,
+		Stock:       product.Stock,
 		CreatedAt:   product.CreatedAt.Unix(),
 		UpdatedAt:   product.UpdatedAt.Unix(),
 	}
