@@ -37,6 +37,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		&model.Order{},
 		&model.OrderItem{},
 		&model.Category{},
+		&model.Cart{},
+		&model.CartItem{},
 	)
 	if err != nil {
 		panic(err)
