@@ -281,6 +281,7 @@ type CreateProductReq struct {
 	Description string `json:"description,omitempty"`
 	Price       int64  `json:"price" validate:"required,min=1,max=99999900"`
 	Status      *int   `json:"status,omitempty" validate:"omitempty,oneof 0 1"`
+	Stock       *int64 `json:"stock,omitempty" validate:"omitempty,min=0"`
 }
 
 type DeleteProductReq struct {
@@ -314,6 +315,7 @@ type ProductInfoResp struct {
 	Description string `json:"description"`
 	Price       int64  `json:"price"`
 	Status      int    `json:"status"`
+	Stock       int64  `json:"stock"`
 	CreatedAt   int64  `json:"created_at"`
 	UpdatedAt   int64  `json:"updated_at"`
 }
@@ -324,6 +326,7 @@ type UpdateProductReq struct {
 	Description *string `json:"description,omitempty"`
 	Price       *int64  `json:"price,omitempty"`
 	Status      *int    `json:"status,omitempty"`
+	Stock       *int64  `json:"stock,omitempty"`
 }
 
 type UpdateProductStatusReq struct {
