@@ -604,4 +604,75 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 		),
 	)
+
+	// ========== 购物车管理相关路由 ==========
+
+	// 需要 cart:get 权限的路由（查看购物车列表和详情）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("cart:get"),
+			},
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    "/api/cart",
+				Handler: GetCartHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 cart:add 权限的路由（添加商品到购物车）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("cart:add"),
+			},
+			rest.Route{
+				Method:  http.MethodPost,
+				Path:    "/api/cart/items",
+				Handler: AddCartItemHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 cart:update 权限的路由（更新购物车项数量）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("cart:update"),
+			},
+			rest.Route{
+				Method:  http.MethodPut,
+				Path:    "/api/cart/items/:item_id",
+				Handler: UpdateCartItemHandler(serverCtx),
+			},
+		),
+	)
+
+	// 需要 cart:delete 权限的路由（删除购物车项）
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{
+				authMiddleware.Handle,
+				loggingMiddleware.Handle,
+				permissionMiddleware.Handle("cart:delete"),
+			},
+			rest.Route{
+				Method:  http.MethodDelete,
+				Path:    "/api/cart/items/:item_id",
+				Handler: DeleteCartItemHandler(serverCtx),
+			},
+			rest.Route{
+				Method:  http.MethodDelete,
+				Path:    "/api/cart",
+				Handler: ClearCartHandler(serverCtx),
+			},
+		),
+	)
 }
