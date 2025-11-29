@@ -21,7 +21,7 @@ func (Cart) TableName() string {
 }
 
 // CartItem 购物车项模型
-// 购物车的的商品项
+// 购物车的商品项
 type CartItem struct {
 	ID int64 `gorm:"primaryKey;autoIncrement" json:"id"`
 
