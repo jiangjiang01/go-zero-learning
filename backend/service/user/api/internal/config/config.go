@@ -3,13 +3,17 @@
 
 package config
 
-import "github.com/zeromicro/go-zero/rest"
+import (
+	"github.com/zeromicro/go-zero/core/stores/redis"
+	"github.com/zeromicro/go-zero/rest"
+)
 
 type Config struct {
 	rest.RestConf
-	DataSource string       `json:"dataSource"` // 数据库连接字符串dsn
-	JWT        JWTConfig    `json:"jwt"`        // JWT 配置
-	Upload     UploadConfig `json:"upload"`     // 文件上传配置
+	DataSource string          `json:"dataSource"` // 数据库连接字符串dsn
+	JWT        JWTConfig       `json:"jwt"`        // JWT 配置
+	Upload     UploadConfig    `json:"upload"`     // 文件上传配置
+	Redis      redis.RedisConf `json:"redis"`      // Redis 配置
 }
 
 type JWTConfig struct {
