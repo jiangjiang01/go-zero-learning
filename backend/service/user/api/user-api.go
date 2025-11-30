@@ -9,6 +9,7 @@ import (
 	"go-zero-learning/service/user/api/internal/config"
 	"go-zero-learning/service/user/api/internal/handler"
 	"go-zero-learning/service/user/api/internal/svc"
+	"net/http"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
@@ -22,7 +23,10 @@ func main() {
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
 
-	server := rest.MustNewServer(c.RestConf)
+	server := rest.MustNewServer(
+		c.RestConf,
+		rest.WithFileServer("/static", http.Dir(c.Upload.Path)),
+	)
 	defer server.Stop()
 
 	ctx := svc.NewServiceContext(c)

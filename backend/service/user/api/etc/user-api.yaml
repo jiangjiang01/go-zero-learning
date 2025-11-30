@@ -2,6 +2,9 @@ Name: user-api
 Host: 0.0.0.0
 Port: 8888
 
+# 请求体大小限制（10M, 用于支持文件上传）
+MaxBytes: 10485760 # 10MB
+
 # 数据库配置
 DataSource: root:123456@tcp(127.0.0.1:3307)/testdb?charset=utf8mb4&parseTime=True&loc=Local
 

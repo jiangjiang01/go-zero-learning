@@ -13,16 +13,6 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
-	// 静态资源服务（文件访问）
-	// 注意：这个路由要放在最前面，避免被其他路由拦截
-	server.AddRoute(
-		rest.Route{
-			Method:  http.MethodGet,
-			Path:    "/static/*",
-			Handler: http.StripPrefix("/static/", http.FileServer(http.Dir(serverCtx.Config.Upload.Path))).ServeHTTP,
-		},
-	)
-
 	// 创建权限中间件
 	authMiddleware := middleware.NewAuthMiddleware(serverCtx.JWT)
 	// 创建日志中间件
