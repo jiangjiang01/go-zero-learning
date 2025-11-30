@@ -9,6 +9,7 @@ export interface ProductInfo {
   price: number
   status: number
   stock: number
+  images: string[]  // 图片URL列表
   created_at: number
   updated_at: number
 }
@@ -28,6 +29,7 @@ export interface CreateProductRequest {
   price: number
   status?: number
   stock?: number
+  images?: string[]  // 图片URL列表
 }
 
 // 更新商品请求
@@ -37,6 +39,7 @@ export interface UpdateProductRequest {
   price?: number
   status?: number
   stock?: number
+  images?: string[]  // 图片URL列表
 }
 
 // 商品列表查询参数
