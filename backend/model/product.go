@@ -32,6 +32,10 @@ type Product struct {
 	// Stock 商品库存，不能为负数，默认为0
 	Stock int64 `gorm:"not null;default:0" json:"stock"`
 
+	// Images 商品图片URL列表，JSON格式存储
+	// 例如：["/static/product/2025/11/30/image1.jpg", "/static/product/2025/11/30/image2.jpg"]
+	Images string `gorm:"type:text" json:"images"` // 暂时用字符串存储JSON
+
 	// 3. 时间字段放最后（约定俗成）
 	// CreatedAt 商品创建时间，自动记录
 	CreatedAt time.Time `json:"created_at"`

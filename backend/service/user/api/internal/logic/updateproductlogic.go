@@ -5,6 +5,7 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"strings"
 
@@ -117,6 +118,20 @@ func (l *UpdateProductLogic) UpdateProduct(req *types.UpdateProductReq) (resp *t
 		}
 	}
 
+	// 处理图片更新
+	if req.Images != nil {
+		imagesJSON := "[]" // 默认空数组
+		if len(*req.Images) > 0 {
+			imagesBytes, err := json.Marshal(*req.Images)
+			if err != nil {
+				l.Errorf("序列化图片列表失败：%v", err)
+				return nil, errorx.ErrInternalError
+			}
+			imagesJSON = string(imagesBytes)
+		}
+		updateFields["images"] = imagesJSON
+	}
+
 	// 4. 检查是否有字段需要更新
 	if len(updateFields) == 0 {
 		return nil, errorx.ErrProductNoUpdateFields
@@ -136,7 +151,7 @@ func (l *UpdateProductLogic) UpdateProduct(req *types.UpdateProductReq) (resp *t
 		return nil, errorx.ErrInternalError
 	}
 
-	// 7. 构建响应结果
+	// 7. 构建响应结果（需要解析图片JSON）
 	resp = convertToProductInfoResp(product)
 
 	return resp, nil

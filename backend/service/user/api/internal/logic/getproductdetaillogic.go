@@ -5,6 +5,7 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 
 	"go-zero-learning/common/errorx"
@@ -54,6 +55,14 @@ func (l *GetProductDetailLogic) GetProductDetail(req *types.GetProductDetailReq)
 }
 
 func convertToProductInfoResp(product model.Product) *types.ProductInfoResp {
+	var images []string
+	if product.Images != "" {
+		json.Unmarshal([]byte(product.Images), &images)
+	}
+	if images == nil {
+		images = []string{}
+	}
+
 	return &types.ProductInfoResp{
 		ID:          product.ID,
 		Name:        product.Name,
@@ -61,6 +70,7 @@ func convertToProductInfoResp(product model.Product) *types.ProductInfoResp {
 		Price:       product.Price,
 		Status:      product.Status,
 		Stock:       product.Stock,
+		Images:      images,
 		CreatedAt:   product.CreatedAt.Unix(),
 		UpdatedAt:   product.UpdatedAt.Unix(),
 	}
