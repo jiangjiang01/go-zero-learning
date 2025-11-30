@@ -79,7 +79,7 @@ func (l *CreateProductLogic) CreateProduct(req *types.CreateProductReq) (resp *t
 
 	// 处理图片: 将 []string 转换为 JSON 字符串
 	imagesJSON := "[]" // 默认空数据
-	if req.Images != nil && len(*req.Images) > 0 {
+	if len(req.Images) > 0 {
 		imagesBytes, err := json.Marshal(req.Images)
 		if err != nil {
 			l.Errorf("序列化图片列表失败：%v", err)

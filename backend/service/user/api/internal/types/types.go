@@ -277,12 +277,12 @@ type UserInfoResp struct {
 }
 
 type CreateProductReq struct {
-	Name        string    `json:"name" validate:"required,max=100"`
-	Description string    `json:"description,omitempty"`
-	Price       int64     `json:"price" validate:"required,min=1,max=99999900"`
-	Status      *int      `json:"status,omitempty" validate:"omitempty,oneof 0 1"`
-	Stock       *int64    `json:"stock,omitempty" validate:"omitempty,min=0"`
-	Images      *[]string `json:"images,omitempty"`
+	Name        string   `json:"name" validate:"required,max=100"`
+	Description string   `json:"description,omitempty"`
+	Price       int64    `json:"price" validate:"required,min=1,max=99999900"`
+	Status      *int     `json:"status,omitempty" validate:"omitempty,oneof 0 1"`
+	Stock       *int64   `json:"stock,omitempty" validate:"omitempty,min=0"`
+	Images      []string `json:"images,omitempty"`
 }
 
 type DeleteProductReq struct {
@@ -323,13 +323,13 @@ type ProductInfoResp struct {
 }
 
 type UpdateProductReq struct {
-	ID          int64     `path:"id"`
-	Name        *string   `json:"name,omitempty"`
-	Description *string   `json:"description,omitempty"`
-	Price       *int64    `json:"price,omitempty"`
-	Status      *int      `json:"status,omitempty"`
-	Stock       *int64    `json:"stock,omitempty"`
-	Images      *[]string `json:"images,omitempty"`
+	ID          int64    `path:"id"`
+	Name        *string  `json:"name,omitempty"`
+	Description *string  `json:"description,omitempty"`
+	Price       *int64   `json:"price,omitempty"`
+	Status      *int     `json:"status,omitempty"`
+	Stock       *int64   `json:"stock,omitempty"`
+	Images      []string `json:"images,omitempty"`
 }
 
 type UpdateProductStatusReq struct {

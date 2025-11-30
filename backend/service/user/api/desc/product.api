@@ -9,7 +9,7 @@ type CreateProductReq {
 	Price int64 `json:"price" validate:"required,min=1,max=99999900"`
 	Status  *int `json:"status,optional" validate:"omitempty,oneof 0 1"`
 	Stock *int64 `json:"stock,optional" validate:"omitempty,min=0"`
-	Images *[]string `json:"images,optional"` // 图片URL列表
+	Images []string `json:"images,optional"` // 图片URL列表
 }
 
 // 商品响应信息
@@ -55,7 +55,7 @@ type UpdateProductReq {
 	Price *int64 `json:"price,optional"`
 	Status *int `json:"status,optional"`
 	Stock *int64 `json:"stock,optional"`
-	Images *[]string `json:"images,optional"`
+	Images []string `json:"images,optional"`
 }
 
 // 更新商品响应为 ProductInfoResp

@@ -119,16 +119,22 @@ func (l *UpdateProductLogic) UpdateProduct(req *types.UpdateProductReq) (resp *t
 	}
 
 	// 处理图片更新
-	if req.Images != nil {
-		imagesJSON := "[]" // 默认空数组
-		if len(*req.Images) > 0 {
-			imagesBytes, err := json.Marshal(*req.Images)
-			if err != nil {
-				l.Errorf("序列化图片列表失败：%v", err)
-				return nil, errorx.ErrInternalError
-			}
-			imagesJSON = string(imagesBytes)
+	// 注意：由于 Images 现在是 []string 而不是 *[]string
+	// 我们需要通过检查请求中是否包含 images 字段来判断
+	// 但 go-zero 无法区分"未传递"和"传递了空数组"
+	// 所以这里我们使用一个技巧：如果 images 不为 nil 且长度大于0，或者 images 为空数组但明确要清空
+	// 实际上，由于是 []string，空数组就表示没有图片，这是合理的
+	imagesJSON := "[]" // 默认空数组
+	if len(req.Images) > 0 {
+		imagesBytes, err := json.Marshal(req.Images)
+		if err != nil {
+			l.Errorf("序列化图片列表失败：%v", err)
+			return nil, errorx.ErrInternalError
 		}
+		imagesJSON = string(imagesBytes)
+	}
+	if product.Images != imagesJSON {
+		// 只有图片有变化时才更新
 		updateFields["images"] = imagesJSON
 	}
 
