@@ -22,7 +22,15 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8888',
-        changeOrigin: true
+        changeOrigin: true,
+        // 支持大文件上传
+        timeout: 60000, // 60秒超时
+        // 不限制请求体大小
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('proxy error', err)
+          })
+        }
       }
     }
   },

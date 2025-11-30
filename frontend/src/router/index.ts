@@ -93,6 +93,19 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/test',
+    component: () => import('@/layout/index.vue'),
+    meta: { title: '测试', hidden: true },
+    children: [
+      {
+        path: 'upload',
+        name: 'TestUpload',
+        component: () => import('@/views/test/upload.vue'),
+        meta: { title: '文件上传测试', hidden: true }
+      }
+    ]
+  },
+  {
     path: '/404',
     name: '404',
     component: () => import('@/views/error/404.vue'),
