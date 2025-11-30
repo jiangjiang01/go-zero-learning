@@ -5,6 +5,9 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"log"
 
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
@@ -41,14 +44,32 @@ func (l *GetProductListLogic) GetProductList(req *types.GetProductListReq) (resp
 		req.PageSize = 100
 	}
 
-	// 2. 构建查询模型
+	// 2. 构建缓存键
+	cacheKey := fmt.Sprintf("product:list:page:%d:size:%d:keyword:%s", req.Page, req.PageSize, req.Keyword)
+
+	// 3. 尝试从缓存获取
+	cacheData, err := l.svcCtx.Redis.GetCtx(l.ctx, cacheKey)
+	if err == nil && cacheData != "" {
+		// 缓存命中，反序列化数据
+		var cacheResp types.GetProductListResp
+		err = json.Unmarshal([]byte(cacheData), &cacheResp)
+		if err == nil {
+			l.Infof("从缓存中获取商品列表：%s", cacheKey)
+			return &cacheResp, nil
+		}
+		// 如果反序列化失败，继续查询数据库
+		l.Errorf("缓存数据反序列化失败，继续查询数据库：%v", err)
+	}
+
+	// 4. 缓存未命中，查询数据库
+	// 4.1 构建查询模型
 	query := l.svcCtx.DB.Model(&model.Product{})
 	if req.Keyword != "" {
 		likeStr := "%" + req.Keyword + "%"
 		query = query.Where("name LIKE ? AND description LIKE ?", likeStr, likeStr)
 	}
 
-	// 3. 查询总数
+	// 4.2 查询总数
 	var total int64
 	err = query.Count(&total).Error
 	if err != nil {
@@ -56,17 +77,23 @@ func (l *GetProductListLogic) GetProductList(req *types.GetProductListReq) (resp
 		return nil, errorx.ErrInternalError
 	}
 
-	// 空结果提前处理
+	// 4.3 空结果提前处理
 	if total == 0 {
-		return &types.GetProductListResp{
+		emptyResp := &types.GetProductListResp{
 			Products: []types.ProductInfoResp{},
 			Total:    0,
 			Page:     req.Page,
 			PageSize: req.PageSize,
-		}, nil
+		}
+
+		// 即使是空结果也缓存（防止缓存穿透）
+		data, _ := json.Marshal(emptyResp)
+		_ = l.svcCtx.Redis.SetexCtx(l.ctx, cacheKey, string(data), 60) // 空结果缓存1分钟
+
+		return emptyResp, nil
 	}
 
-	// 4. 分页查询数据
+	// 4.4 分页查询数据
 	offset := (req.Page - 1) * req.PageSize
 	var products []model.Product
 	err = query.Order("created_at DESC").Offset(int(offset)).Limit(int(req.PageSize)).Find(&products).Error
@@ -81,6 +108,19 @@ func (l *GetProductListLogic) GetProductList(req *types.GetProductListReq) (resp
 		Total:    total,
 		Page:     req.Page,
 		PageSize: req.PageSize,
+	}
+
+	// 6. 存入缓存（过期时间5分钟）
+	data, err := json.Marshal(resp)
+	log.Println("data", len(data))
+	if err == nil {
+		err = l.svcCtx.Redis.SetexCtx(l.ctx, cacheKey, string(data), 300) // 缓存5分钟
+		if err != nil {
+			l.Errorf("缓存商品列表失败：%v", err)
+			// 注意：缓存失败不影响返回数据
+		} else {
+			l.Infof("商品列表已缓存：%s", cacheKey)
+		}
 	}
 
 	return resp, nil
