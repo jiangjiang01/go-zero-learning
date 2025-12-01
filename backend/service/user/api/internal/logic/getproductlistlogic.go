@@ -5,6 +5,8 @@ package logic
 
 import (
 	"context"
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"math/rand"
@@ -45,7 +47,21 @@ func (l *GetProductListLogic) GetProductList(req *types.GetProductListReq) (resp
 	}
 
 	// 2. 构建缓存键
-	cacheKey := fmt.Sprintf("product:list:page:%d:size:%d:keyword:%s", req.Page, req.PageSize, req.Keyword)
+	// 缓存键规范化（防止键冲突和特殊字符问题）
+	// 问题：
+	// 特殊字符（空格、冒号、换行等）可能导致键无法正确匹配
+	// 长关键词导致键过长，浪费内存
+	// 不同编码的关键词可能生成相同的键（少见但可能）
+	// 解决：使用 MD5 哈希对关键词进行处理，生成固定长度，安全的值
+	var keywordHash string
+	if req.Keyword != "" {
+		// 使用 MD5 哈希处理关键词，生成固定长度的安全键
+		hash := md5.Sum([]byte(req.Keyword))
+		keywordHash = hex.EncodeToString(hash[:])[:8] // 取前8位，足够唯一
+	} else {
+		keywordHash = "empty"
+	}
+	cacheKey := fmt.Sprintf("product:list:page:%d:size:%d:keyword:%s", req.Page, req.PageSize, keywordHash)
 
 	// 3. 尝试从缓存获取
 	cacheData, err := l.svcCtx.Redis.GetCtx(l.ctx, cacheKey)
