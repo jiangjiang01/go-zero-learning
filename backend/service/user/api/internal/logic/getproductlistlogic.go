@@ -7,7 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"math/rand"
 
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
@@ -88,7 +88,10 @@ func (l *GetProductListLogic) GetProductList(req *types.GetProductListReq) (resp
 
 		// 即使是空结果也缓存（防止缓存穿透）
 		data, _ := json.Marshal(emptyResp)
-		_ = l.svcCtx.Redis.SetexCtx(l.ctx, cacheKey, string(data), 60) // 空结果缓存1分钟
+		// 防止缓存雪崩：避免大量缓存同时过期，给过期时间加入随机偏移
+		// 随机过期时间范围：60-90秒，避免同时过期
+		randomExpire := 60 + rand.Intn(30)
+		_ = l.svcCtx.Redis.SetexCtx(l.ctx, cacheKey, string(data), randomExpire)
 
 		return emptyResp, nil
 	}
@@ -112,14 +115,15 @@ func (l *GetProductListLogic) GetProductList(req *types.GetProductListReq) (resp
 
 	// 6. 存入缓存（过期时间5分钟）
 	data, err := json.Marshal(resp)
-	log.Println("data", len(data))
 	if err == nil {
-		err = l.svcCtx.Redis.SetexCtx(l.ctx, cacheKey, string(data), 300) // 缓存5分钟
+		// 基础时间 300 秒 + 随机 0-60 秒，避免同时过期
+		randomExpire := 300 + rand.Intn(60)
+		err = l.svcCtx.Redis.SetexCtx(l.ctx, cacheKey, string(data), randomExpire)
 		if err != nil {
 			l.Errorf("缓存商品列表失败：%v", err)
 			// 注意：缓存失败不影响返回数据
 		} else {
-			l.Infof("商品列表已缓存：%s", cacheKey)
+			l.Infof("商品列表已缓存：%s（过期时间：%d秒）", cacheKey, randomExpire)
 		}
 	}
 
