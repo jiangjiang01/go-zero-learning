@@ -54,10 +54,30 @@ func (l *DeleteProductLogic) DeleteProduct(req *types.DeleteProductReq) (resp *t
 		return nil, errorx.ErrInternalError
 	}
 
+	// 清除商品列表缓存（删除商品后， 列表需要更新）
+	l.clearProductListCache()
+
 	// 4. 构建响应结果
 	resp = &types.DeleteProductResp{
 		Message: "商品删除成功",
 	}
 
 	return resp, nil
+}
+
+// clearProductListCache 清除所有商品列表缓存
+func (l *DeleteProductLogic) clearProductListCache() {
+	pattern := "product:list:*"
+	keys, err := l.svcCtx.Redis.KeysCtx(l.ctx, pattern)
+	if err != nil {
+		l.Infof("获取缓存键失败：%v", err)
+		return
+	}
+
+	if len(keys) > 0 {
+		for _, key := range keys {
+			l.svcCtx.Redis.DelCtx(l.ctx, key)
+		}
+		l.Infof("已清除 %d 个商品列表缓存", len(keys))
+	}
 }

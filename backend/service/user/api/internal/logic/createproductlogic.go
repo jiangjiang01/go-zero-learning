@@ -102,6 +102,9 @@ func (l *CreateProductLogic) CreateProduct(req *types.CreateProductReq) (resp *t
 		return nil, errorx.ErrInternalError
 	}
 
+	// 清除商品列表缓存（新增商品后，列表需要更新）
+	l.clearProductListCache()
+
 	// 4. 构建响应（需要将JSON字符串解析回数组）
 	var images []string
 	if product.Images != "" {
@@ -124,4 +127,21 @@ func (l *CreateProductLogic) CreateProduct(req *types.CreateProductReq) (resp *t
 	}
 
 	return resp, nil
+}
+
+// clearProductListCache 清除所有商品列表缓存
+func (l *CreateProductLogic) clearProductListCache() {
+	pattern := "product:list:*"
+	keys, err := l.svcCtx.Redis.KeysCtx(l.ctx, pattern)
+	if err != nil {
+		l.Infof("获取缓存键失败：%v", err)
+		return
+	}
+
+	if len(keys) > 0 {
+		for _, key := range keys {
+			l.svcCtx.Redis.DelCtx(l.ctx, key)
+		}
+		l.Infof("已清除 %d 个商品列表缓存", len(keys))
+	}
 }

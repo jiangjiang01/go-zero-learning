@@ -150,6 +150,9 @@ func (l *UpdateProductLogic) UpdateProduct(req *types.UpdateProductReq) (resp *t
 		return nil, errorx.ErrInternalError
 	}
 
+	// 清除商品列表缓存（数据已更新，需要清除缓存）
+	l.clearProductListCache()
+
 	// 6. 重新查询最新数据
 	err = l.svcCtx.DB.First(&product, req.ID).Error
 	if err != nil {
@@ -161,4 +164,21 @@ func (l *UpdateProductLogic) UpdateProduct(req *types.UpdateProductReq) (resp *t
 	resp = convertToProductInfoResp(product)
 
 	return resp, nil
+}
+
+func (l *UpdateProductLogic) clearProductListCache() {
+	pattern := "product:list:*"
+	keys, err := l.svcCtx.Redis.KeysCtx(l.ctx, pattern)
+	if err != nil {
+		l.Infof("获取缓存键失败：%v", err)
+		return
+	}
+
+	// 批量删除缓存键
+	if len(keys) > 0 {
+		for _, key := range keys {
+			l.svcCtx.Redis.DelCtx(l.ctx, key)
+		}
+		l.Infof("已清除 %d 个商品列表缓存", len(keys))
+	}
 }
