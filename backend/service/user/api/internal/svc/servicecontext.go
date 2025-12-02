@@ -64,6 +64,20 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	cronManager := cron.NewCronManager(db.GetDB())
 
 	// 添加订单取消任务（每5分钟执行一次）
+	// cron表达式详解: "0 */5 * * * *"
+	// ──────────────
+	// 位置:    1  2   3 4 5 6
+	// 字段:   秒 分 时 日 月 星期
+	// 释义:   0  */5 * * * *
+	//        ─ ──── ─ ─ ─ ─
+	//        │  │   │ │ │ │
+	//        │  │   │ │ │ └── 星期（每周的星期几，*代表每天）
+	//        │  │   │ │ └──── 月（*代表每月）
+	//        │  │   │ └────── 日（*代表每天）
+	//        │  │   └──────── 时（*代表每小时）
+	//        │  └──────────── 分（每5分钟一次）
+	//        └─────────────── 秒（在每个周期的第0秒执行）
+	// 即：每5分钟的第0秒触发一次
 	_, err = cronManager.AddJob("0 */5 * * * *", func() {
 		job := cron.NewOrderCancelJob(db.GetDB())
 		job.Run()
