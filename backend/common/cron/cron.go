@@ -32,7 +32,8 @@ func (m *CronManager) Start() {
 
 // 停止定时任务
 func (m *CronManager) Stop() {
-	m.cron.Stop()
+	ctx := m.cron.Stop()
+	<-ctx.Done() // 等待所有正在执行的任务完成
 	m.logger.Infof("定时任务管理器已停止")
 }
 
