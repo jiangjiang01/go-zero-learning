@@ -32,7 +32,7 @@ func (j *OrderCancelJob) Run() {
 
 	// 查询待支付且超过30分钟的订单
 	var orders []model.Order
-	err := j.db.Model(&model.Order{}).Where("status = ? AND created_at < ?", 1, timeoutTime).Find(&orders).Error
+	err := j.db.Where("status = ? AND created_at < ?", 1, timeoutTime).Find(&orders).Error
 	if err != nil {
 		j.logger.Errorf("查询超时订单失败：%v", err)
 		return
