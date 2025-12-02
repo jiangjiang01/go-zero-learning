@@ -41,14 +41,44 @@ func (j *OrderCancelJob) Run() {
 	// 批量取消订单
 	cancelCount := 0
 	for _, order := range orders {
-		// 更新订单状态为已取消（5）
-		err := j.db.Model(&order).Update("status", 5).Error
+		// 使用事务确保订单取消和库存恢复的原子性
+		err := j.db.Transaction(func(tx *gorm.DB) error {
+			// 1. 更新订单状态为已取消（5）
+			err := tx.Model(&order).Update("status", 5).Error
+			if err != nil {
+				return err
+			}
+
+			// 2. 查询订单所有的订单项
+			var orderItems []model.OrderItem
+			err = tx.Where("order_id = ?", order.ID).Find(&orderItems).Error
+			if err != nil {
+				return err
+			}
+
+			// 3. 恢复每个商品的库存
+			for _, item := range orderItems {
+				// 使用数据库原子操作恢复库存
+				result := tx.Model(&model.Product{}).Where("id = ?", item.ProductID).
+					Update("stock", gorm.Expr("stock + ?", item.Quantity))
+				if result.Error != nil {
+					j.logger.Errorf("恢复库存失败，商品ID：%d, 错误：%v", item.ProductID, result.Error)
+					return result.Error
+				}
+
+				if result.RowsAffected == 0 {
+					j.logger.Infof("商品不存在或已删除，商品ID：%d", item.ProductID)
+					// 商品不存在不影响订单取消，继续处理
+				}
+			}
+
+			return nil
+		})
 		if err != nil {
 			j.logger.Errorf("订单取消失败：订单ID：%d，错误：%v", order.ID, err)
 			continue
 		}
 
-		// TODO: 恢复库存（后续实现）
 		cancelCount++
 		j.logger.Infof("订单已自动取消：订单号=%s， 订单ID=%d", order.OrderNo, order.ID)
 	}
