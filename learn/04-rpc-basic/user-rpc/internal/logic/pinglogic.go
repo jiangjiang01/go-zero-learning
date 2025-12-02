@@ -24,7 +24,10 @@ func NewPingLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PingLogic {
 }
 
 func (l *PingLogic) Ping(in *userrpc.Request) (*userrpc.Response, error) {
-	// todo: add your logic here and delete this line
+	// 简单实现：返回一个固定的 pong 消息
+	return &userrpc.Response{
+		Pong: "pong",
+	}, nil
 
 	return &userrpc.Response{}, nil
 }
