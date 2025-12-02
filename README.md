@@ -734,6 +734,18 @@ response.OkJson(w, r, resp)
 - [x] 空结果缓存（防止缓存穿透）
 - [x] 所有功能测试通过
 
+#### ✅ 定时任务功能（后端）
+
+- [x] Cron 管理模块（backend/common/cron/cron.go）
+- [x] 订单自动取消任务（OrderCancelJob）
+- [x] 超时未支付订单自动取消（默认30分钟超时，测试环境1分钟）
+- [x] 事务处理确保数据一致性（订单状态更新+库存恢复）
+- [x] 详细的 cron 表达式注释
+- [x] 数据库查询优化（只查询超时订单）
+- [x] 任务完成等待机制（优雅关闭）
+- [x] 定时任务测试脚本（scripts/test-order-cancel-job.sh）
+- [x] 所有功能测试通过
+
 ### 待完成功能
 
 #### 阶段三：商品管理扩展
@@ -753,7 +765,7 @@ response.OkJson(w, r, resp)
 - [x] 文件上传下载 ✅
 - [x] 数据统计 Dashboard ✅
 - [x] Redis 缓存集成 ✅
-- [ ] 定时任务
+- [x] 定时任务 ✅
 
 #### 阶段六：RPC 服务
 
@@ -772,6 +784,11 @@ response.OkJson(w, r, resp)
 ### 测试脚本
 
 测试脚本统一存放在 `scripts/` 目录下，使用 kebab-case 命名规范。
+
+- **订单自动取消测试**：`scripts/test-order-cancel-job.sh`
+  - 测试定时任务的订单自动取消功能
+  - 验证超时未支付订单自动取消、库存恢复
+  - 使用方法：`./scripts/test-order-cancel-job.sh`
 
 - **权限验证测试**：`scripts/test-permission-middleware.sh`
   - 测试权限中间件的功能
@@ -845,7 +862,7 @@ const fetchProductList = async () => {
 
 **教学方法论已总结**：基于商品管理的成功实践，已将核心教学策略整理到文档中
 
-**最后更新**：2025-11-30（完成 Redis 缓存集成）
+**最后更新**：2025-12-02（完成定时任务功能）
 **当前状态**：
 
 - 阶段一（用户认证和管理）全部完成 ✅
@@ -888,6 +905,12 @@ const fetchProductList = async () => {
     - 缓存键规范化（MD5 哈希处理）✅
     - 缓存清除机制（数据更新时自动清除）✅
     - 空结果缓存（防止缓存穿透）✅
+  - 定时任务（后端）✅
+    - Cron 管理模块（common/cron）✅
+    - 订单自动取消任务（超时未支付订单自动取消）✅
+    - 事务处理确保数据一致性（订单状态更新+库存恢复）✅
+    - 详细的 cron 表达式注释✅
+    - 定时任务测试脚本（scripts/test-order-cancel-job.sh）✅
 
 ---
 
