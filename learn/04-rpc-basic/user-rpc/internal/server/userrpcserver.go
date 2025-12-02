@@ -27,3 +27,13 @@ func (s *UserRpcServer) Ping(ctx context.Context, in *userrpc.Request) (*userrpc
 	l := logic.NewPingLogic(ctx, s.svcCtx)
 	return l.Ping(in)
 }
+
+func (s *UserRpcServer) GetUser(ctx context.Context, in *userrpc.GetUserReq) (*userrpc.GetUserResp, error) {
+	l := logic.NewGetUserLogic(ctx, s.svcCtx)
+	return l.GetUser(in)
+}
+
+func (s *UserRpcServer) CreateUser(ctx context.Context, in *userrpc.CreateUserReq) (*userrpc.CreateUserResp, error) {
+	l := logic.NewCreateUserLogic(ctx, s.svcCtx)
+	return l.CreateUser(in)
+}

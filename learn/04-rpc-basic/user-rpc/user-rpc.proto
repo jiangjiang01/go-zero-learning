@@ -3,6 +3,7 @@ syntax = "proto3";
 package userrpc;
 option go_package="./userrpc";
 
+// Ping 相关消息
 message Request {
   string ping = 1;
 }
@@ -11,6 +12,32 @@ message Response {
   string pong = 1;
 }
 
+// 用户相关消息
+message User {
+  int64 id = 1;
+  string username = 2;
+  string email = 3;
+}
+
+message GetUserReq {
+  int64 id = 1;
+}
+
+message GetUserResp {
+  User user = 1;
+}
+
+message CreateUserReq {
+  string username = 1;
+  string email = 2;
+}
+
+message CreateUserResp {
+  User user = 1;
+}
+
 service UserRpc {
   rpc Ping(Request) returns(Response);
+  rpc GetUser(GetUserReq) returns(GetUserResp);
+  rpc CreateUser(CreateUserReq) returns(CreateUserResp);
 }

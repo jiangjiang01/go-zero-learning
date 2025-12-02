@@ -19,7 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserRpc_Ping_FullMethodName = "/userrpc.UserRpc/Ping"
+	UserRpc_Ping_FullMethodName       = "/userrpc.UserRpc/Ping"
+	UserRpc_GetUser_FullMethodName    = "/userrpc.UserRpc/GetUser"
+	UserRpc_CreateUser_FullMethodName = "/userrpc.UserRpc/CreateUser"
 )
 
 // UserRpcClient is the client API for UserRpc service.
@@ -27,6 +29,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserRpcClient interface {
 	Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+	GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error)
+	CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error)
 }
 
 type userRpcClient struct {
@@ -47,11 +51,33 @@ func (c *userRpcClient) Ping(ctx context.Context, in *Request, opts ...grpc.Call
 	return out, nil
 }
 
+func (c *userRpcClient) GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserResp)
+	err := c.cc.Invoke(ctx, UserRpc_GetUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userRpcClient) CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateUserResp)
+	err := c.cc.Invoke(ctx, UserRpc_CreateUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserRpcServer is the server API for UserRpc service.
 // All implementations must embed UnimplementedUserRpcServer
 // for forward compatibility.
 type UserRpcServer interface {
 	Ping(context.Context, *Request) (*Response, error)
+	GetUser(context.Context, *GetUserReq) (*GetUserResp, error)
+	CreateUser(context.Context, *CreateUserReq) (*CreateUserResp, error)
 	mustEmbedUnimplementedUserRpcServer()
 }
 
@@ -64,6 +90,12 @@ type UnimplementedUserRpcServer struct{}
 
 func (UnimplementedUserRpcServer) Ping(context.Context, *Request) (*Response, error) {
 	return nil, status.Error(codes.Unimplemented, "method Ping not implemented")
+}
+func (UnimplementedUserRpcServer) GetUser(context.Context, *GetUserReq) (*GetUserResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetUser not implemented")
+}
+func (UnimplementedUserRpcServer) CreateUser(context.Context, *CreateUserReq) (*CreateUserResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateUser not implemented")
 }
 func (UnimplementedUserRpcServer) mustEmbedUnimplementedUserRpcServer() {}
 func (UnimplementedUserRpcServer) testEmbeddedByValue()                 {}
@@ -104,6 +136,42 @@ func _UserRpc_Ping_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserRpc_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserRpcServer).GetUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserRpc_GetUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserRpcServer).GetUser(ctx, req.(*GetUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserRpc_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserRpcServer).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserRpc_CreateUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserRpcServer).CreateUser(ctx, req.(*CreateUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserRpc_ServiceDesc is the grpc.ServiceDesc for UserRpc service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +182,14 @@ var UserRpc_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Ping",
 			Handler:    _UserRpc_Ping_Handler,
+		},
+		{
+			MethodName: "GetUser",
+			Handler:    _UserRpc_GetUser_Handler,
+		},
+		{
+			MethodName: "CreateUser",
+			Handler:    _UserRpc_CreateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

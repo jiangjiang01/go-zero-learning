@@ -14,11 +14,18 @@ import (
 )
 
 type (
-	Request  = userrpc.Request
-	Response = userrpc.Response
+	CreateUserReq  = userrpc.CreateUserReq
+	CreateUserResp = userrpc.CreateUserResp
+	GetUserReq     = userrpc.GetUserReq
+	GetUserResp    = userrpc.GetUserResp
+	Request        = userrpc.Request
+	Response       = userrpc.Response
+	User           = userrpc.User
 
 	UserRpc interface {
 		Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+		GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error)
+		CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error)
 	}
 
 	defaultUserRpc struct {
@@ -35,4 +42,14 @@ func NewUserRpc(cli zrpc.Client) UserRpc {
 func (m *defaultUserRpc) Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
 	client := userrpc.NewUserRpcClient(m.cli.Conn())
 	return client.Ping(ctx, in, opts...)
+}
+
+func (m *defaultUserRpc) GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error) {
+	client := userrpc.NewUserRpcClient(m.cli.Conn())
+	return client.GetUser(ctx, in, opts...)
+}
+
+func (m *defaultUserRpc) CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error) {
+	client := userrpc.NewUserRpcClient(m.cli.Conn())
+	return client.CreateUser(ctx, in, opts...)
 }

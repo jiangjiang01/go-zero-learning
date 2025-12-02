@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 
 	"user-rpc/internal/svc"
 	"user-rpc/userrpc"
@@ -24,10 +25,16 @@ func NewPingLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PingLogic {
 }
 
 func (l *PingLogic) Ping(in *userrpc.Request) (*userrpc.Response, error) {
-	// 简单实现：返回一个固定的 pong 消息
-	return &userrpc.Response{
-		Pong: "pong",
-	}, nil
+	// 记录请求日志
+	l.Infof("收到 Ping 请求：%s", in.Ping)
 
-	return &userrpc.Response{}, nil
+	// 使用输入参数，返回带时间戳的响应
+	pongMsg := fmt.Sprintf("pong from server, received: %s", in.Ping)
+
+	// 记录响应日志
+	l.Infof("返回 Ping 响应：%s", pongMsg)
+
+	return &userrpc.Response{
+		Pong: pongMsg,
+	}, nil
 }
