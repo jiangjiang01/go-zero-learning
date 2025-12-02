@@ -28,6 +28,7 @@ func main() {
 	})
 	if err != nil {
 		fmt.Println("创建用户失败:", err)
+		return
 	} else {
 		fmt.Printf("创建成功: ID=%d, Username=%s, Email=%s\n",
 			createResp.User.Id, createResp.User.Username, createResp.User.Email)

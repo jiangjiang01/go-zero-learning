@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"user-rpc/internal/svc"
@@ -30,15 +29,15 @@ func NewCreateUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Create
 func (l *CreateUserLogic) CreateUser(in *userrpc.CreateUserReq) (*userrpc.CreateUserResp, error) {
 	// 1. 参数验证
 	if strings.TrimSpace(in.Username) == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "用户名不能为空")
+		return nil, status.Error(codes.InvalidArgument, "用户名不能为空")
 	}
 
 	if strings.TrimSpace(in.Email) == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "邮箱不能为空")
+		return nil, status.Error(codes.InvalidArgument, "邮箱不能为空")
 	}
 
 	if !strings.Contains(in.Email, "@") {
-		return nil, status.Errorf(codes.InvalidArgument, "邮箱格式不正确")
+		return nil, status.Error(codes.InvalidArgument, "邮箱格式不正确")
 	}
 
 	// 2. 唯一性检查（检查用户名和邮箱是否已存在）
@@ -46,11 +45,11 @@ func (l *CreateUserLogic) CreateUser(in *userrpc.CreateUserReq) (*userrpc.Create
 	for _, user := range l.svcCtx.UserStore {
 		if user.Username == in.Username {
 			l.svcCtx.UserMutex.RUnlock()
-			return nil, status.Errorf(codes.AlreadyExists, fmt.Sprintf("用户名已存在：%s", in.Username))
+			return nil, status.Errorf(codes.AlreadyExists, "用户名已存在：%s", in.Username)
 		}
 		if user.Email == in.Email {
 			l.svcCtx.UserMutex.RUnlock()
-			return nil, status.Errorf(codes.AlreadyExists, fmt.Sprintf("邮箱已存在：%s", in.Email))
+			return nil, status.Errorf(codes.AlreadyExists, "邮箱已存在：%s", in.Email)
 		}
 	}
 	l.svcCtx.UserMutex.RUnlock()
