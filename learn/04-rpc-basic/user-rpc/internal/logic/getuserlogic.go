@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 
 	"user-rpc/internal/svc"
 	"user-rpc/userrpc"
@@ -24,7 +25,18 @@ func NewGetUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUserLo
 }
 
 func (l *GetUserLogic) GetUser(in *userrpc.GetUserReq) (*userrpc.GetUserResp, error) {
-	// todo: add your logic here and delete this line
+	// 从内存中查找用户
+	l.svcCtx.UserMutex.RLock()
+	user, exists := l.svcCtx.UserStore[in.Id]
+	l.svcCtx.UserMutex.RUnlock()
 
-	return &userrpc.GetUserResp{}, nil
+	if !exists {
+		return nil, fmt.Errorf("用户不存在：ID=%d", in.Id)
+	}
+
+	l.Infof("查询用户成功：ID=%d, Username=%s, Email=%s", in.Id, user.Username, user.Email)
+
+	return &userrpc.GetUserResp{
+		User: user,
+	}, nil
 }
