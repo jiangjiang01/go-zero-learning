@@ -1,7 +1,8 @@
 {
   "editor.tabSize": 4,
   "files.associations": {
-    "*.api": "go"
+    "*.api": "go",
+    "*.proto": "go"
   },
   "editor.formatOnSave": false,
   "[go]": {
