@@ -4,6 +4,8 @@
 package svc
 
 import (
+	"fmt"
+	"go-zero-learning/common/cron"
 	"go-zero-learning/common/db"
 	"go-zero-learning/common/jwt"
 	"go-zero-learning/model"
@@ -18,8 +20,9 @@ import (
 type ServiceContext struct {
 	Config config.Config
 	DB     *gorm.DB
-	JWT    *jwt.JWTManager // JWT 管理器
-	Redis  *redis.Redis    // Redis 客户端
+	JWT    *jwt.JWTManager   // JWT 管理器
+	Redis  *redis.Redis      // Redis 客户端
+	Cron   *cron.CronManager // 定时任务管理器
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -57,10 +60,26 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		panic(err)
 	}
 
+	// 初始化定时任务管理器
+	cronManager := cron.NewCronManager(db.GetDB())
+
+	// 添加订单取消任务（每5分钟执行一次）
+	_, err = cronManager.AddJob("0 */5 * * * *", func() {
+		job := cron.NewOrderCancelJob(db.GetDB())
+		job.Run()
+	})
+	if err != nil {
+		panic(fmt.Errorf("添加订单取消任务失败：%w", err))
+	}
+
+	// 启动定时任务
+	cronManager.Start()
+
 	return &ServiceContext{
 		Config: c,
 		DB:     db.GetDB(),
 		JWT:    jwtManager,
 		Redis:  rediscache.GetRedis(),
+		Cron:   cronManager,
 	}
 }
