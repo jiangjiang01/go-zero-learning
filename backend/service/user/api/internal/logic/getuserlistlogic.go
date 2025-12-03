@@ -6,9 +6,12 @@ import (
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
+	"go-zero-learning/service/user/user-rpc/userrpc"
 	"strings"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type GetUserListLogic struct {
@@ -26,6 +29,65 @@ func NewGetUserListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 }
 
 func (l *GetUserListLogic) GetUserList(req *types.GetUserListReq) (resp *types.GetUserListResp, err error) {
+	// 1. 参数校验和默认值设置
+	if req.Page < 1 {
+		req.Page = 1
+	}
+	if req.PageSize < 1 {
+		req.PageSize = 10
+	}
+	// 限制每页最大数量，防止过大查询
+	if req.PageSize > 100 {
+		req.PageSize = 100
+	}
+
+	// ⚠️ low 版：暂时忽略 Keyword，不支持搜索（后续在 RPC 层加搜索能力再补上）
+	if req.Keyword != "" {
+		l.Infof("当前 RPC 版本暂不支持用户列表搜索，忽略 keyword=%s", req.Keyword)
+	}
+
+	// 2. 调用 UserRpc.ListUsers（替代直接访问DB）
+	rpcResp, err := l.svcCtx.UserRpc.ListUsers(l.ctx, &userrpc.ListUsersReq{
+		Page:     req.Page,
+		PageSize: req.PageSize,
+	})
+	if err != nil {
+		// gRPC 错误到业务错误的简单映射（这里主要是参数错误，其他都视为内部错误）
+		if st, ok := status.FromError(err); ok {
+			switch st.Code() {
+			case codes.InvalidArgument:
+				return nil, errorx.ErrInvalidParam
+			default:
+				l.Errorf("调用 UserRpc.ListUsers 失败：code=%v, msg=%s", st.Code(), st.Message())
+				return nil, errorx.ErrInternalError
+			}
+		}
+		l.Errorf("调用 UserRpc.ListUsers 失败：%v", err)
+		return nil, errorx.ErrInternalError
+	}
+
+	// 3. 转换为 API 的响应类型
+	userList := make([]types.UserInfoResp, 0, len(rpcResp.Users))
+	for _, user := range rpcResp.Users {
+		userList = append(userList, types.UserInfoResp{
+			ID:       user.Id,
+			Username: user.Username,
+			Email:    user.Email,
+		})
+	}
+
+	// 4. 返回响应
+	resp = &types.GetUserListResp{
+		Users:    userList,
+		Total:    rpcResp.Total,
+		Page:     req.Page,
+		PageSize: req.PageSize,
+	}
+	return resp, nil
+}
+
+// 备份旧的写法
+func (l *GetUserListLogic) GetUserListOld(req *types.GetUserListReq) (resp *types.GetUserListResp, err error) {
 	// 1. 参数校验和默认值设置
 	if req.Page < 1 {
 		req.Page = 1
