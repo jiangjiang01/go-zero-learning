@@ -43,7 +43,7 @@ func (l *UpdateUserLogic) UpdateUser(in *userrpc.UpdateUserReq) (*userrpc.Update
 
 	// 2. 查询用户是否存在
 	var user model.User
-	if err := l.svcCtx.DB.First(&user, in.Id).Error; err != nil {
+	if err := l.svcCtx.DB.WithContext(l.ctx).First(&user, in.Id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, status.Error(codes.NotFound, "用户不存在")
 		}
