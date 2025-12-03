@@ -7,8 +7,11 @@ import (
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
+	"go-zero-learning/service/user/user-rpc/userrpc"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 )
 
@@ -27,6 +30,45 @@ func NewGetUserDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Get
 }
 
 func (l *GetUserDetailLogic) GetUserDetail(req *types.GetUserDetailReq) (resp *types.UserInfoResp, err error) {
+	// 1. 参数校验
+	if req.ID <= 0 {
+		return nil, errorx.ErrInvalidParam
+	}
+
+	// 2. 调用 UserRpc.GetUser （替换直接访问 DB）
+	rpcResp, err := l.svcCtx.UserRpc.GetUser(l.ctx, &userrpc.GetUserReq{
+		Id: req.ID,
+	})
+	if err != nil {
+		// gRPC 错误到业务错误的简单映射
+		if st, ok := status.FromError(err); ok {
+			switch st.Code() {
+			case codes.InvalidArgument:
+				return nil, errorx.ErrInvalidParam
+			case codes.NotFound:
+				return nil, errorx.ErrUserNotFound
+			default:
+				l.Errorf("调用 UserRpc.GetUser 失败：code=%v, msg=%s", st.Code(), st.Message())
+				return nil, errorx.ErrInternalError
+			}
+		}
+		l.Errorf("调用 UserRpc.GetUser 失败：%v", err)
+		return nil, errorx.ErrInternalError
+	}
+
+	// 3. 构建响应结果
+	resp = &types.UserInfoResp{
+		ID:       rpcResp.Id,
+		Username: rpcResp.Username,
+		Email:    rpcResp.Email,
+	}
+
+	// 4. 返回响应
+	return resp, nil
+}
+
+// 备份旧的写法
+func (l *GetUserDetailLogic) GetUserDetailOld(req *types.GetUserDetailReq) (resp *types.UserInfoResp, err error) {
 	// 1. 参数校验
 	if req.ID <= 0 {
 		return nil, errorx.ErrInvalidParam
