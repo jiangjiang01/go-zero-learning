@@ -27,3 +27,9 @@ func (s *UserRpcServer) Ping(ctx context.Context, in *userrpc.Request) (*userrpc
 	l := logic.NewPingLogic(ctx, s.svcCtx)
 	return l.Ping(in)
 }
+
+// 根据 ID 查询用户基本信息（不返回密码）
+func (s *UserRpcServer) GetUser(ctx context.Context, in *userrpc.GetUserReq) (*userrpc.GetUserResp, error) {
+	l := logic.NewGetUserLogic(ctx, s.svcCtx)
+	return l.GetUser(in)
+}

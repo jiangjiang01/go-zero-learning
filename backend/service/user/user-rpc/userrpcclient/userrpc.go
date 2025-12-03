@@ -14,11 +14,15 @@ import (
 )
 
 type (
-	Request  = userrpc.Request
-	Response = userrpc.Response
+	GetUserReq  = userrpc.GetUserReq
+	GetUserResp = userrpc.GetUserResp
+	Request     = userrpc.Request
+	Response    = userrpc.Response
 
 	UserRpc interface {
 		Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+		// 根据 ID 查询用户基本信息（不返回密码）
+		GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error)
 	}
 
 	defaultUserRpc struct {
@@ -35,4 +39,10 @@ func NewUserRpc(cli zrpc.Client) UserRpc {
 func (m *defaultUserRpc) Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
 	client := userrpc.NewUserRpcClient(m.cli.Conn())
 	return client.Ping(ctx, in, opts...)
+}
+
+// 根据 ID 查询用户基本信息（不返回密码）
+func (m *defaultUserRpc) GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error) {
+	client := userrpc.NewUserRpcClient(m.cli.Conn())
+	return client.GetUser(ctx, in, opts...)
 }
