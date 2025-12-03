@@ -33,7 +33,7 @@ func (j *OrderCancelJob) Run() {
 
 	// 查询待支付且超过30分钟的订单
 	var orders []model.Order
-	err := j.db.Where("status = ? AND created_at < ?", 1, timeoutTime).Find(&orders).Error
+	err := j.db.Where("status = ? AND created_at < ?", model.OrderStatusPending, timeoutTime).Find(&orders).Error
 	if err != nil {
 		j.logger.Errorf("查询超时订单失败：%v", err)
 		return
@@ -44,8 +44,8 @@ func (j *OrderCancelJob) Run() {
 	for _, order := range orders {
 		// 使用事务确保订单取消和库存恢复的原子性
 		err := j.db.Transaction(func(tx *gorm.DB) error {
-			// 1. 更新订单状态为已取消（5）
-			err := tx.Model(&order).Update("status", 5).Error
+			// 1. 更新订单状态为已取消
+			err := tx.Model(&order).Update("status", model.OrderStatusCancelled).Error
 			if err != nil {
 				return err
 			}

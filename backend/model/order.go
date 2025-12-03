@@ -45,7 +45,7 @@ type Order struct {
 	TotalAmount int64 `gorm:"not null" json:"total_amount"`
 
 	// 订单状态
-	// 1-待支付，2-已支付，3-已发货，4-已完成，5-已取消
+	// GORM 标签中不能使用 Go 常量，所以保留数字是合理的，默认值为 1（待支付）
 	Status int `gorm:"type:tinyint;default:1" json:"status"`
 
 	// 订单备注(可选)
