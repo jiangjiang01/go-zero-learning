@@ -6,6 +6,7 @@ package config
 import (
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/rest"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type Config struct {
@@ -14,6 +15,8 @@ type Config struct {
 	JWT        JWTConfig       `json:"jwt"`        // JWT 配置
 	Upload     UploadConfig    `json:"upload"`     // 文件上传配置
 	Redis      redis.RedisConf `json:"redis"`      // Redis 配置
+
+	UserRpc zrpc.RpcClientConf `json:"userRpc"` // 用户 UserRpc 客户端配置
 }
 
 type JWTConfig struct {

@@ -2,6 +2,8 @@ package logic
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"go-zero-learning/service/user/user-rpc/internal/svc"
 	"go-zero-learning/service/user/user-rpc/userrpc"
@@ -24,7 +26,16 @@ func NewPingLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PingLogic {
 }
 
 func (l *PingLogic) Ping(in *userrpc.Request) (*userrpc.Response, error) {
-	// todo: add your logic here and delete this line
+	// 记录请求日志
+	l.Infof("收到 Ping 请求：%s", in.Ping)
 
-	return &userrpc.Response{}, nil
+	// 返回带时间戳的响应
+	pongMsg := fmt.Sprintf("pong from server, received: %s, timestamp: %s", in.Ping, time.Now().Format("2006-01-02 15:04:05"))
+
+	// 记录响应日志
+	l.Infof("返回 Ping 响应：%s", pongMsg)
+
+	return &userrpc.Response{
+		Pong: pongMsg,
+	}, nil
 }

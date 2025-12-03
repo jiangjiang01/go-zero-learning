@@ -10,10 +10,12 @@ import (
 	"go-zero-learning/common/jwt"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/config"
+	"go-zero-learning/service/user/user-rpc/userrpcclient"
 
 	rediscache "go-zero-learning/common/redis"
 
 	"github.com/zeromicro/go-zero/core/stores/redis"
+	"github.com/zeromicro/go-zero/zrpc"
 	"gorm.io/gorm"
 )
 
@@ -23,6 +25,8 @@ type ServiceContext struct {
 	JWT    *jwt.JWTManager   // JWT 管理器
 	Redis  *redis.Redis      // Redis 客户端
 	Cron   *cron.CronManager // 定时任务管理器
+
+	UserRpc userrpcclient.UserRpc // 用户 RPC 客户端
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -89,11 +93,16 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	// 启动定时任务
 	cronManager.Start()
 
+	// 初始化用户 RPC 客户端
+	userRpcClient := zrpc.MustNewClient(c.UserRpc)
+	userRpc := userrpcclient.NewUserRpc(userRpcClient)
+
 	return &ServiceContext{
-		Config: c,
-		DB:     db.GetDB(),
-		JWT:    jwtManager,
-		Redis:  rediscache.GetRedis(),
-		Cron:   cronManager,
+		Config:  c,
+		DB:      db.GetDB(),
+		JWT:     jwtManager,
+		Redis:   rediscache.GetRedis(),
+		Cron:    cronManager,
+		UserRpc: userRpc, // 添加 RPC 客户端
 	}
 }

@@ -40,3 +40,9 @@ Upload:
     - image/gif
     - image/webp
   BaseURL: http://127.0.0.1:8888/static # 静态资源访问地址
+
+# 用户 RPC 客户端配置
+UserRpc:
+  Endpoints:
+    - 127.0.0.1:8081
+  Timeout: 3000
