@@ -8,6 +8,7 @@ import (
 	"errors"
 	"strings"
 
+	"go-zero-learning/common/consts"
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
@@ -37,7 +38,7 @@ func (l *CreateCategoryLogic) CreateCategory(req *types.CreateCategoryReq) (resp
 	if name == "" {
 		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "分类名称不能为空")
 	}
-	if len(name) > 100 {
+	if len(name) > consts.MaxCategoryNameLength {
 		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "分类名称长度不能超过100个字符")
 	}
 

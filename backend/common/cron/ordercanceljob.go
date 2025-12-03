@@ -2,6 +2,7 @@ package cron
 
 import (
 	"context"
+	"go-zero-learning/common/consts"
 	"go-zero-learning/model"
 	"time"
 
@@ -28,7 +29,7 @@ func (j *OrderCancelJob) Run() {
 	j.logger.Infof("开始执行订单取消任务...")
 
 	// 计算30分钟前的时间
-	timeoutTime := time.Now().Add(-30 * time.Minute)
+	timeoutTime := time.Now().Add(-consts.OrderCancelTimeout)
 
 	// 查询待支付且超过30分钟的订单
 	var orders []model.Order
