@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"strings"
 
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/user-rpc/internal/svc"
@@ -44,19 +45,26 @@ func (l *ListUsersLogic) ListUsers(in *userrpc.ListUsersReq) (*userrpc.ListUsers
 
 	db := l.svcCtx.DB.WithContext(l.ctx).Model(&model.User{})
 
-	// 2. 查询总数
+	// 2. 关键词搜索（用户名或邮箱）
+	if in.Keyword != "" {
+		keyword := strings.TrimSpace(in.Keyword)
+		likeStr := "%" + keyword + "%"
+		db = db.Where("username LIKE ? OR email LIKE ?", likeStr, likeStr)
+	}
+
+	// 3. 查询总数
 	if err := db.Count(&total).Error; err != nil {
 		l.Errorf("查询用户总数失败：%v", err)
 		return nil, status.Error(codes.Internal, "内部错误")
 	}
 
-	// 3. 查询当前页数据
+	// 4. 查询当前页数据
 	if err := db.Order("id DESC").Offset(int(offset)).Limit(int(limit)).Find(&users).Error; err != nil {
 		l.Errorf("查询用户列表失败：%v", err)
 		return nil, status.Error(codes.Internal, "内部错误")
 	}
 
-	// 4. 构建响应
+	// 5. 构建响应
 	resp := &userrpc.ListUsersResp{
 		Users: make([]*userrpc.UserItem, 0, len(users)),
 		Total: total,

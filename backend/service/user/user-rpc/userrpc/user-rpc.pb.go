@@ -219,6 +219,7 @@ type ListUsersReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Page          int64                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
 	PageSize      int64                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Keyword       string                 `protobuf:"bytes,3,opt,name=keyword,proto3" json:"keyword,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -265,6 +266,13 @@ func (x *ListUsersReq) GetPageSize() int64 {
 		return x.PageSize
 	}
 	return 0
+}
+
+func (x *ListUsersReq) GetKeyword() string {
+	if x != nil {
+		return x.Keyword
+	}
+	return ""
 }
 
 type UserItem struct {
@@ -394,10 +402,11 @@ const file_user_rpc_proto_rawDesc = "" +
 	"\vGetUserResp\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email\"?\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\"Y\n" +
 	"\fListUsersReq\x12\x12\n" +
 	"\x04page\x18\x01 \x01(\x03R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x03R\bpageSize\"L\n" +
+	"\tpage_size\x18\x02 \x01(\x03R\bpageSize\x12\x18\n" +
+	"\akeyword\x18\x03 \x01(\tR\akeyword\"L\n" +
 	"\bUserItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x14\n" +

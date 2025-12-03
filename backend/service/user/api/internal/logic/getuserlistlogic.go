@@ -41,15 +41,11 @@ func (l *GetUserListLogic) GetUserList(req *types.GetUserListReq) (resp *types.G
 		req.PageSize = 100
 	}
 
-	// ⚠️ low 版：暂时忽略 Keyword，不支持搜索（后续在 RPC 层加搜索能力再补上）
-	if req.Keyword != "" {
-		l.Infof("当前 RPC 版本暂不支持用户列表搜索，忽略 keyword=%s", req.Keyword)
-	}
-
 	// 2. 调用 UserRpc.ListUsers（替代直接访问DB）
 	rpcResp, err := l.svcCtx.UserRpc.ListUsers(l.ctx, &userrpc.ListUsersReq{
 		Page:     req.Page,
 		PageSize: req.PageSize,
+		Keyword:  req.Keyword,
 	})
 	if err != nil {
 		// gRPC 错误到业务错误的简单映射（这里主要是参数错误，其他都视为内部错误）
