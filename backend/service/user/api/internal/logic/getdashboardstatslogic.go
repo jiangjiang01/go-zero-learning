@@ -120,32 +120,32 @@ func (l *GetDashboardStatsLogic) getOrderStats(todayStart time.Time) (resp *type
 func (l *GetDashboardStatsLogic) getOrderStatusCount() (resp *types.OrderStatusCount, err error) {
 	var statsCount types.OrderStatusCount
 
-	// 待支付（状态1）
-	err = l.svcCtx.DB.Model(&model.Order{}).Where("status = ?", 1).Count(&statsCount.Pending).Error
+	// 待支付
+	err = l.svcCtx.DB.Model(&model.Order{}).Where("status = ?", model.OrderStatusPending).Count(&statsCount.Pending).Error
 	if err != nil {
 		return nil, err
 	}
 
-	// 已支付（状态2）
-	err = l.svcCtx.DB.Model(&model.Order{}).Where("status = ?", 2).Count(&statsCount.Paid).Error
+	// 已支付
+	err = l.svcCtx.DB.Model(&model.Order{}).Where("status = ?", model.OrderStatusPaid).Count(&statsCount.Paid).Error
 	if err != nil {
 		return nil, err
 	}
 
-	// 已发货（状态3）
-	err = l.svcCtx.DB.Model(&model.Order{}).Where("status = ?", 3).Count(&statsCount.Shipped).Error
+	// 已发货
+	err = l.svcCtx.DB.Model(&model.Order{}).Where("status = ?", model.OrderStatusShipped).Count(&statsCount.Shipped).Error
 	if err != nil {
 		return nil, err
 	}
 
-	// 已完成（状态4）
-	err = l.svcCtx.DB.Model(&model.Order{}).Where("status = ?", 4).Count(&statsCount.Completed).Error
+	// 已完成
+	err = l.svcCtx.DB.Model(&model.Order{}).Where("status = ?", model.OrderStatusCompleted).Count(&statsCount.Completed).Error
 	if err != nil {
 		return nil, err
 	}
 
-	// 已取消（状态5）
-	err = l.svcCtx.DB.Model(&model.Order{}).Where("status = ?", 5).Count(&statsCount.Canceled).Error
+	// 已取消
+	err = l.svcCtx.DB.Model(&model.Order{}).Where("status = ?", model.OrderStatusCancelled).Count(&statsCount.Canceled).Error
 	if err != nil {
 		return nil, err
 	}

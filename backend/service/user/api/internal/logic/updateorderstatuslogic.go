@@ -43,7 +43,7 @@ func (l *UpdateOrderStatusLogic) UpdateOrderStatus(req *types.UpdateOrderStatusR
 	if req.ID <= 0 {
 		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "订单ID格式不正确")
 	}
-	if req.Status <= 0 || req.Status > 5 {
+	if !model.IsValidOrderStatus(req.Status) {
 		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "订单状态格式不正确")
 	}
 

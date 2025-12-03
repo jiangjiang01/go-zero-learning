@@ -14,6 +14,20 @@ const (
 	OrderStatusCancelled = 5 // 已取消
 )
 
+// ValidOrderStatuses 定义所有有效的订单状态
+var ValidOrderStatuses = map[int]bool{
+	OrderStatusPending:   true,
+	OrderStatusPaid:      true,
+	OrderStatusShipped:   true,
+	OrderStatusCompleted: true,
+	OrderStatusCancelled: true,
+}
+
+// IsValidOrderStatus 检查订单状态是否有效
+func IsValidOrderStatus(status int) bool {
+	return ValidOrderStatuses[status]
+}
+
 // 订单模型
 type Order struct {
 	// 主键

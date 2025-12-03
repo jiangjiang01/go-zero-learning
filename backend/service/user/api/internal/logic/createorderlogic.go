@@ -97,7 +97,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderReq) (resp *types.C
 			OrderNo:     model.GenerateOrderNo(),
 			UserID:      userID,
 			TotalAmount: totalAmount,
-			Status:      1, // 待支付
+			Status:      model.OrderStatusPending,
 			Remark:      req.Remark,
 			// 【注意】不设置 OrderItems 字段，避免 GORM 尝试级联创建导致 product_id 为 0 的错误
 		}
