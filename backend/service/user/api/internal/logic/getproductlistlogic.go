@@ -107,7 +107,7 @@ func (l *GetProductListLogic) GetProductList(req *types.GetProductListReq) (resp
 		data, _ := json.Marshal(emptyResp)
 		// 防止缓存雪崩：避免大量缓存同时过期，给过期时间加入随机偏移
 		// 随机过期时间范围：60-90秒，避免同时过期
-		randomExpire := 60 + rand.Intn(30)
+		randomExpire := consts.CacheEmptyResultTTL + rand.Intn(consts.CacheEmptyRandomRange)
 		_ = l.svcCtx.Redis.SetexCtx(l.ctx, cacheKey, string(data), randomExpire)
 
 		return emptyResp, nil
@@ -134,7 +134,7 @@ func (l *GetProductListLogic) GetProductList(req *types.GetProductListReq) (resp
 	data, err := json.Marshal(resp)
 	if err == nil {
 		// 基础时间 300 秒 + 随机 0-60 秒，避免同时过期
-		randomExpire := 300 + rand.Intn(60)
+		randomExpire := consts.CacheResultTTL + rand.Intn(consts.CacheResultRandomRange)
 		err = l.svcCtx.Redis.SetexCtx(l.ctx, cacheKey, string(data), randomExpire)
 		if err != nil {
 			l.Errorf("缓存商品列表失败：%v", err)
