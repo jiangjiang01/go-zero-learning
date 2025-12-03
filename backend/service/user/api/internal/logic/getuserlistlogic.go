@@ -3,11 +3,9 @@ package logic
 import (
 	"context"
 	"go-zero-learning/common/errorx"
-	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
 	"go-zero-learning/service/user/user-rpc/userrpc"
-	"strings"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/codes"
@@ -83,6 +81,7 @@ func (l *GetUserListLogic) GetUserList(req *types.GetUserListReq) (resp *types.G
 }
 
 // 备份旧的写法
+/*
 func (l *GetUserListLogic) GetUserListOld(req *types.GetUserListReq) (resp *types.GetUserListResp, err error) {
 	// 1. 参数校验和默认值设置
 	if req.Page < 1 {
@@ -140,3 +139,4 @@ func (l *GetUserListLogic) GetUserListOld(req *types.GetUserListReq) (resp *type
 	}
 	return resp, nil
 }
+*/

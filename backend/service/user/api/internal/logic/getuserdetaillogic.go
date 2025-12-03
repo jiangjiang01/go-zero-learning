@@ -2,9 +2,7 @@ package logic
 
 import (
 	"context"
-	"errors"
 	"go-zero-learning/common/errorx"
-	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
 	"go-zero-learning/service/user/user-rpc/userrpc"
@@ -12,7 +10,6 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"gorm.io/gorm"
 )
 
 type GetUserDetailLogic struct {
@@ -68,6 +65,7 @@ func (l *GetUserDetailLogic) GetUserDetail(req *types.GetUserDetailReq) (resp *t
 }
 
 // 备份旧的写法
+/*
 func (l *GetUserDetailLogic) GetUserDetailOld(req *types.GetUserDetailReq) (resp *types.UserInfoResp, err error) {
 	// 1. 参数校验
 	if req.ID <= 0 {
@@ -94,3 +92,4 @@ func (l *GetUserDetailLogic) GetUserDetailOld(req *types.GetUserDetailReq) (resp
 	// 4. 返回响应
 	return resp, nil
 }
+*/
