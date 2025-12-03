@@ -152,7 +152,8 @@ go-zero-learning/
 │   ├── model/                # 数据模型
 │   └── service/               # 服务
 │       └── user/
-│           └── api/          # 用户 API 服务
+│           ├── api/          # 用户 API 服务
+│           └── user-rpc/     # 用户 RPC 服务
 ├── frontend/                  # 前端项目
 │   ├── src/
 │   │   ├── api/              # API 接口
@@ -746,6 +747,21 @@ response.OkJson(w, r, resp)
 - [x] 定时任务测试脚本（scripts/test-order-cancel-job.sh）
 - [x] 所有功能测试通过
 
+#### ✅ 用户 RPC 服务（后端）
+
+- [x] RPC 服务创建（backend/service/user/user-rpc）
+- [x] Proto 文件定义（user-rpc.proto）
+- [x] RPC 服务配置（数据库连接、端口 8081）
+- [x] 用户查询 RPC（GetUser、ListUsers 含 keyword 搜索）
+- [x] 用户创建 RPC（CreateUser，包含密码加密、唯一性检查）
+- [x] 用户更新 RPC（UpdateUser，支持邮箱和密码更新）
+- [x] 用户删除 RPC（DeleteUser）
+- [x] gRPC 错误处理（使用标准错误码：InvalidArgument、NotFound、AlreadyExists）
+- [x] API 服务集成 RPC 客户端（ServiceContext 中添加 UserRpc）
+- [x] 所有用户接口迁移到 RPC（GetUserDetail、GetUserList、Register、UpdateUser、UpdateUserDetail、DeleteUser）
+- [x] 错误码映射（gRPC 错误码 → 业务错误码）
+- [x] 所有功能测试通过
+
 ### 待完成功能
 
 #### 阶段三：商品管理扩展
@@ -769,10 +785,16 @@ response.OkJson(w, r, resp)
 
 #### 阶段六：RPC 服务
 
-- [ ] 用户 RPC 服务
+- [x] 用户 RPC 服务 ✅
+  - [x] RPC 服务创建和配置 ✅
+  - [x] 用户查询接口（GetUser、ListUsers）✅
+  - [x] 用户创建接口（CreateUser）✅
+  - [x] 用户更新接口（UpdateUser）✅
+  - [x] 用户删除接口（DeleteUser）✅
+  - [x] API 服务集成 RPC 客户端 ✅
+  - [x] 所有用户接口迁移到 RPC ✅
 - [ ] 商品 RPC 服务
 - [ ] 订单 RPC 服务
-- [ ] API 服务调用 RPC 服务
 
 #### 阶段七：优化和部署
 
@@ -801,7 +823,9 @@ response.OkJson(w, r, resp)
 
 #### 常规配置
 - 配置文件字段名：使用 `dataSource`（小写驼峰）
-- 运行方式：`cd backend/service/user/api && go run user-api.go -f etc/user-api.yaml`
+- **API 服务运行方式**：`cd backend/service/user/api && go run user-api.go -f etc/user-api.yaml`（端口 8888）
+- **RPC 服务运行方式**：`cd backend/service/user/user-rpc && go run userrpc.go -f etc/userrpc.yaml`（端口 8081）
+- **注意**：API 服务依赖 RPC 服务，需要先启动 RPC 服务，再启动 API 服务
 - 数据库：MySQL 3307 端口，数据库名 testdb
 - Redis 配置：默认使用 `127.0.0.1:6379`，使用 Docker 启动：`docker run -d --name redis-dev -p 6379:6379 redis:7-alpine`
 - go-zero 参数验证：可选字段（optional）在 JSON 中缺失时会报错，需要在请求中包含所有字段（临时方案）
@@ -845,24 +869,26 @@ const fetchProductList = async () => {
 
 ### 下一步计划
 
-**当前阶段**：阶段五 - 高级功能（进行中）
+**当前阶段**：阶段六 - RPC 服务（进行中）
 
 **完成情况**：
-- 商品管理（后端+前端）✅
-- 订单管理（后端+前端）✅
-- 商品分类管理（后端+前端）✅
-- 购物车管理（后端+前端）✅
-- 商品库存管理（后端+前端）✅
-- 数据统计 Dashboard（后端+前端）✅
+- 阶段一（用户认证和管理）全部完成 ✅
+- 阶段二（权限管理）全部完成 ✅
+- 阶段三（商品管理）全部完成 ✅
+- 阶段四（订单管理）全部完成 ✅
+- 阶段五（高级功能）全部完成 ✅
+- 阶段六（RPC 服务）部分完成：
+  - 用户 RPC 服务 ✅
+  - API 服务调用 RPC 服务 ✅
 
 **下一步选择**：
-1. **高级功能**：定时任务
-2. **RPC 服务**：微服务架构改造
-3. **优化和部署**：日志系统、Docker 部署、性能优化
+1. **继续 RPC 迁移**：商品 RPC 服务、订单 RPC 服务
+2. **优化和部署**：日志系统、Docker 部署、性能优化
+3. **服务发现**：集成 Etcd 实现服务注册与发现
 
-**教学方法论已总结**：基于商品管理的成功实践，已将核心教学策略整理到文档中
+**教学方法论已总结**：基于商品管理和 RPC 迁移的成功实践，已将核心教学策略整理到文档中
 
-**最后更新**：2025-12-02（完成定时任务功能）
+**最后更新**：2025-12-03（完成用户 RPC 服务迁移）
 **当前状态**：
 
 - 阶段一（用户认证和管理）全部完成 ✅
@@ -914,6 +940,211 @@ const fetchProductList = async () => {
 
 ---
 
+## 🚀 RPC 服务架构与迁移经验
+
+### 为什么需要 RPC？
+
+在微服务架构中，RPC 服务用于：
+
+1. **领域边界清晰**：将业务逻辑按领域拆分（用户、商品、订单等）
+2. **服务复用**：多个 API 服务可以共享同一个 RPC 服务的能力
+3. **独立扩展**：可以单独扩容某个领域的服务，而不影响其他服务
+4. **技术异构**：不同领域可以使用不同的技术栈或数据库
+5. **安全隔离**：数据库只对 RPC 服务暴露，其他服务通过 RPC 访问
+
+### 当前架构
+
+```
+前端 → API 服务（8888） → UserRpc 服务（8081） → MySQL
+       │                    │
+       │                    └─ 用户领域业务逻辑
+       └─ HTTP 协议、认证、权限、错误映射
+```
+
+### 已迁移的用户接口
+
+| API 接口 | HTTP 方法 | 路径 | RPC 方法 | 状态 |
+|---------|----------|------|---------|------|
+| 用户详情 | GET | `/api/users/:id` | `GetUser` | ✅ |
+| 用户列表 | GET | `/api/users` | `ListUsers` | ✅ |
+| 创建用户 | POST | `/api/users` | `CreateUser` | ✅ |
+| 更新当前用户 | PUT | `/api/users/me` | `UpdateUser` | ✅ |
+| 更新指定用户 | PUT | `/api/users/:id` | `UpdateUser`（复用） | ✅ |
+| 删除用户 | DELETE | `/api/users/:id` | `DeleteUser` | ✅ |
+
+### RPC 服务开发步骤
+
+#### 1. 创建 RPC 服务
+
+```bash
+cd backend/service/user
+goctl rpc new user-rpc --module go-zero-learning
+```
+
+#### 2. 定义 Proto 文件
+
+```protobuf
+syntax = "proto3";
+
+package userrpc;
+option go_package="./userrpc";
+
+message GetUserReq {
+  int64 id = 1;
+}
+
+message GetUserResp {
+  int64 id = 1;
+  string username = 2;
+  string email = 3;
+}
+
+service UserRpc {
+  rpc GetUser(GetUserReq) returns (GetUserResp);
+}
+```
+
+**注意事项**：
+- `package` 和 `service` 名称不能包含连字符（`-`），使用驼峰命名
+- `go_package` 指定生成的 Go 包路径
+
+#### 3. 生成代码
+
+```bash
+cd backend/service/user/user-rpc
+goctl rpc protoc user-rpc.proto --go_out=. --go-grpc_out=. --zrpc_out=. --style=gozero
+```
+
+#### 4. 实现业务逻辑
+
+在 `internal/logic/` 中实现 RPC 方法：
+
+```go
+func (l *GetUserLogic) GetUser(in *userrpc.GetUserReq) (*userrpc.GetUserResp, error) {
+    // 业务逻辑
+    // 使用 gRPC 标准错误码
+    if in.Id <= 0 {
+        return nil, status.Error(codes.InvalidArgument, "用户ID必须大于0")
+    }
+    // ...
+}
+```
+
+#### 5. 在 API 服务中集成 RPC 客户端
+
+**配置文件中添加 RPC 客户端配置**（`etc/user-api.yaml`）：
+
+```yaml
+UserRpc:
+  Endpoints:
+    - 127.0.0.1:8081
+  Timeout: 3000
+```
+
+**在 ServiceContext 中创建客户端**：
+
+```go
+// internal/config/config.go
+type Config struct {
+    // ...
+    UserRpc zrpc.RpcClientConf `json:"userRpc"`
+}
+
+// internal/svc/servicecontext.go
+func NewServiceContext(c config.Config) *ServiceContext {
+    // ...
+    userRpcClient := zrpc.MustNewClient(c.UserRpc)
+    userRpc := userrpcclient.NewUserRpc(userRpcClient)
+    
+    return &ServiceContext{
+        // ...
+        UserRpc: userRpc,
+    }
+}
+```
+
+#### 6. 在 API Logic 中调用 RPC
+
+```go
+func (l *GetUserDetailLogic) GetUserDetail(req *types.GetUserDetailReq) (*types.UserInfoResp, error) {
+    // 调用 RPC
+    rpcResp, err := l.svcCtx.UserRpc.GetUser(l.ctx, &userrpc.GetUserReq{
+        Id: req.ID,
+    })
+    if err != nil {
+        // gRPC 错误码映射到业务错误
+        if st, ok := status.FromError(err); ok {
+            switch st.Code() {
+            case codes.NotFound:
+                return nil, errorx.ErrUserNotFound
+            // ...
+            }
+        }
+        return nil, errorx.ErrInternalError
+    }
+    
+    // 转换为 API 响应格式
+    return &types.UserInfoResp{
+        ID:       rpcResp.Id,
+        Username: rpcResp.Username,
+        Email:    rpcResp.Email,
+    }, nil
+}
+```
+
+### 错误处理模式
+
+**RPC 层**：使用 gRPC 标准错误码
+- `codes.InvalidArgument`：参数错误
+- `codes.NotFound`：资源不存在
+- `codes.AlreadyExists`：资源已存在
+- `codes.Internal`：内部错误
+
+**API 层**：将 gRPC 错误码映射到业务错误码
+- `codes.NotFound` → `errorx.ErrUserNotFound`
+- `codes.AlreadyExists` → `errorx.ErrEmailExists`
+- `codes.InvalidArgument` → `errorx.ErrInvalidParam`
+
+### 职责划分原则
+
+**RPC 层负责**：
+- 领域业务逻辑（用户创建、更新、删除等）
+- 数据验证（唯一性检查、格式验证等）
+- 数据访问（数据库操作）
+- 业务规则（密码加密、状态流转等）
+
+**API 层负责**：
+- HTTP 协议处理（请求解析、响应格式化）
+- 认证和授权（JWT 验证、权限检查）
+- 错误映射（gRPC 错误 → 业务错误）
+- 数据组合（调用多个 RPC 组合数据）
+
+### 迁移经验总结
+
+1. **渐进式迁移**：先迁移查询接口，再迁移写操作接口
+2. **保留旧代码**：迁移时保留旧逻辑作为备份，方便对比和回滚
+3. **统一错误处理**：RPC 层使用 gRPC 标准错误码，API 层统一映射
+4. **职责清晰**：RPC 只关注领域逻辑，API 只关注协议和权限
+5. **复用 RPC 方法**：`UpdateUser` 既可以更新当前用户，也可以更新指定用户（通过传入不同的 ID）
+
+### 运行方式
+
+**启动 RPC 服务**：
+```bash
+cd backend/service/user/user-rpc
+go run userrpc.go -f etc/userrpc.yaml
+```
+
+**启动 API 服务**：
+```bash
+cd backend/service/user/api
+go run user-api.go -f etc/user-api.yaml
+```
+
+**注意**：API 服务依赖 RPC 服务，需要先启动 RPC 服务。
+
+---
+
 ## 📚 最小必要知识
 
 ### 1. go-zero 项目结构
@@ -957,6 +1188,30 @@ func (l *LoginLogic) Login(req *types.LoginReq) {
     // 通过 l.svcCtx.Redis 访问 Redis
 }
 ```
+
+### 4. RPC 服务开发流程
+
+```text
+go-zero RPC：
+1. 写 .proto 文件：定义 RPC 服务和方法
+2. 运行 goctl rpc protoc：生成 server、logic 骨架
+3. 在 logic 中实现业务逻辑
+4. 在 API 服务的 ServiceContext 中创建 RPC 客户端
+5. 在 API logic 中调用 RPC 方法
+```
+
+### 5. RPC 服务架构
+
+```text
+前端 → API 服务（HTTP） → RPC 服务（gRPC） → MySQL
+       │                    │
+       │                    └─ 领域业务逻辑
+       └─ HTTP 协议、认证、权限、错误映射
+```
+
+**职责划分**：
+- **API 层**：HTTP 协议处理、认证、权限、错误映射、组合数据
+- **RPC 层**：领域业务逻辑、数据访问、业务规则验证
 
 ---
 
