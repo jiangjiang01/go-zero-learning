@@ -8,6 +8,7 @@ import (
 
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
+	"go-zero-learning/service/user/user-rpc/userrpc"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -27,7 +28,18 @@ func NewRpcPingLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RpcPingLo
 }
 
 func (l *RpcPingLogic) RpcPing(req *types.RpcPingReq) (resp *types.RpcPingResp, err error) {
-	// todo: add your logic here and delete this line
+	// 调用 user-rpc 的 Ping
+	rpcResp, err := l.svcCtx.UserRpc.Ping(l.ctx, &userrpc.Request{
+		Ping: req.Message,
+	})
+	if err != nil {
+		l.Errorf("调用 UserRpc.Ping 失败：%v", err)
+		return
+	}
 
-	return
+	resp = &types.RpcPingResp{
+		Pong: rpcResp.Pong,
+	}
+
+	return resp, nil
 }
