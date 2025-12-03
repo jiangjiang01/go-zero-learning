@@ -98,7 +98,7 @@ func (l *UpdateProductLogic) UpdateProduct(req *types.UpdateProductReq) (resp *t
 	// 处理状态更新
 	if req.Status != nil {
 		status := *req.Status
-		if status != 0 && status != 1 {
+		if !model.IsValidProductStatus(status) {
 			return nil, errorx.ErrProductStatusInvalid
 		}
 		if status != product.Status {

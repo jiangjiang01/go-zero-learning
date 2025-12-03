@@ -2,6 +2,23 @@ package model
 
 import "time"
 
+// 商品状态常量
+const (
+	ProductStatusDisabled = 0 // 禁用（下架）
+	ProductStatusEnabled  = 1 // 启用（上架）
+)
+
+// ValidProductStatuses 定义所有有效的商品状态
+var ValidProductStatuses = map[int]bool{
+	ProductStatusDisabled: true,
+	ProductStatusEnabled:  true,
+}
+
+// IsValidProductStatus 检查商品状态是否有效
+func IsValidProductStatus(status int) bool {
+	return ValidProductStatuses[status]
+}
+
 // Product 商品模型
 // 用于存储系统中的商品信息，包括名称、描述、价格、状态等
 type Product struct {

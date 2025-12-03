@@ -104,7 +104,7 @@ func (l *GetCartLogic) getCartItemListAndTotalAmount(cartItems []model.CartItem)
 
 	// 一次性批量查询所有商品（解决 N+1 查询问题）
 	var products []model.Product
-	err := l.svcCtx.DB.Where("id IN ? AND status = 1", productIDs).Find(&products).Error
+	err := l.svcCtx.DB.Where("id IN ? AND status = ?", productIDs, model.ProductStatusEnabled).Find(&products).Error
 	if err != nil {
 		l.Errorf("查询商品信息失败：%v", err)
 		return nil, 0, errorx.ErrInternalError

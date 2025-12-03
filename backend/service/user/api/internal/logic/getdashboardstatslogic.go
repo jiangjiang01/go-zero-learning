@@ -164,13 +164,13 @@ func (l *GetDashboardStatsLogic) getProductStats() (resp *types.ProductStats, er
 	}
 
 	// 上架商品数
-	err = l.svcCtx.DB.Model(&model.Product{}).Where("status = ?", 1).Count(&stats.OnsaleProducts).Error
+	err = l.svcCtx.DB.Model(&model.Product{}).Where("status = ?", model.ProductStatusEnabled).Count(&stats.OnsaleProducts).Error
 	if err != nil {
 		return nil, err
 	}
 
 	// 下架商品数
-	err = l.svcCtx.DB.Model(&model.Product{}).Where("status = ?", 0).Count(&stats.OffsaleProducts).Error
+	err = l.svcCtx.DB.Model(&model.Product{}).Where("status = ?", model.ProductStatusDisabled).Count(&stats.OffsaleProducts).Error
 	if err != nil {
 		return nil, err
 	}

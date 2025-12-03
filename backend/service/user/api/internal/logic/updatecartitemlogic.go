@@ -74,7 +74,7 @@ func (l *UpdateCartItemLogic) UpdateCartItem(req *types.UpdateCartItemReq) (resp
 
 	// 6. 查询商品是否仍然可用
 	var product model.Product
-	err = l.svcCtx.DB.Where("id = ? AND status = 1", cartItem.ProductID).First(&product).Error
+	err = l.svcCtx.DB.Where("id = ? AND status = ?", cartItem.ProductID, model.ProductStatusEnabled).First(&product).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errorx.ErrCartProductNotAvailable

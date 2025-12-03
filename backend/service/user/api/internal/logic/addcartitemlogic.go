@@ -52,7 +52,7 @@ func (l *AddCartItemLogic) AddCartItem(req *types.AddCartItemReq) (resp *types.C
 
 	// 4. 验证商品是否存在
 	var product model.Product
-	err = l.svcCtx.DB.Where("id = ? AND status = 1", req.ProductID).First(&product).Error
+	err = l.svcCtx.DB.Where("id = ? AND status = ?", req.ProductID, model.ProductStatusEnabled).First(&product).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errorx.ErrCartProductNotAvailable

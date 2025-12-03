@@ -64,7 +64,7 @@ func (l *CreateProductLogic) CreateProduct(req *types.CreateProductReq) (resp *t
 	}
 
 	// 3. 创建商品
-	status := 1 // 默认启用
+	status := model.ProductStatusEnabled // 默认启用
 	if req.Status != nil {
 		status = *req.Status
 	}

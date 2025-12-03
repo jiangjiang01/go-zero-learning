@@ -61,7 +61,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderReq) (resp *types.C
 
 			// 验证商品是否存在
 			var product model.Product
-			err = tx.Where("id = ? AND status = 1", item.ProductID).
+			err = tx.Where("id = ? AND status = ?", item.ProductID, model.ProductStatusEnabled).
 				First(&product).Error
 			if err != nil {
 				if errors.Is(err, gorm.ErrRecordNotFound) {
