@@ -124,15 +124,15 @@ func convertToOrderInfoRespList(orders []model.Order) []types.OrderInfoResp {
 // 获取订单状态文本
 func getOrderStatusText(status int) string {
 	switch status {
-	case 1:
+	case model.OrderStatusPending:
 		return "待支付"
-	case 2:
+	case model.OrderStatusPaid:
 		return "已支付"
-	case 3:
+	case model.OrderStatusShipped:
 		return "已发货"
-	case 4:
+	case model.OrderStatusCompleted:
 		return "已完成"
-	case 5:
+	case model.OrderStatusCancelled:
 		return "已取消"
 	default:
 		return "未知状态"

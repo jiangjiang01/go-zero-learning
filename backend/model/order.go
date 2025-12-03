@@ -5,6 +5,15 @@ import (
 	"time"
 )
 
+// 订单状态常量
+const (
+	OrderStatusPending   = 1 // 待支付
+	OrderStatusPaid      = 2 // 已支付
+	OrderStatusShipped   = 3 // 已发货
+	OrderStatusCompleted = 4 // 已完成
+	OrderStatusCancelled = 5 // 已取消
+)
+
 // 订单模型
 type Order struct {
 	// 主键

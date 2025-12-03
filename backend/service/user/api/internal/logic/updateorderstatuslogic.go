@@ -93,26 +93,25 @@ func (l *UpdateOrderStatusLogic) UpdateOrderStatus(req *types.UpdateOrderStatusR
 }
 
 // isValidStatusTransition 验证订单状态流转是否合法
-// 状态定义：1-待支付，2-已支付，3-已发货，4-已完成，5-已取消
 func isValidStatusTransition(currentStatus, newStatus int) bool {
 	// 相同状态，允许（幂等性）
 	if currentStatus == newStatus {
 		return true
 	}
 	switch currentStatus {
-	case 1: // 待支付
+	case model.OrderStatusPending: // 待支付
 		// 可以 支付，取消
-		return newStatus == 2 || newStatus == 5
-	case 2: // 已支付
+		return newStatus == model.OrderStatusPaid || newStatus == model.OrderStatusCancelled
+	case model.OrderStatusPaid: // 已支付
 		// 可以：发货(3)、取消(5) - 注意：实际业务中已支付可能不能取消，这里先允许
-		return newStatus == 3 || newStatus == 5
-	case 3: // 已发货
+		return newStatus == model.OrderStatusShipped || newStatus == model.OrderStatusCancelled
+	case model.OrderStatusShipped: // 已发货
 		// 可以 完成
-		return newStatus == 4
-	case 4: // 已完成
+		return newStatus == model.OrderStatusCompleted
+	case model.OrderStatusCompleted: // 已完成
 		// 不能改变
 		return false
-	case 5: // 已取消
+	case model.OrderStatusCancelled: // 已取消
 		// 不能改变
 		return false
 	default:
