@@ -9,6 +9,7 @@ import (
 	"errors"
 	"strings"
 
+	"go-zero-learning/common/consts"
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
@@ -87,7 +88,7 @@ func (l *UpdateProductLogic) UpdateProduct(req *types.UpdateProductReq) (resp *t
 		if price <= 0 {
 			return nil, errorx.ErrProductPriceTooLow
 		}
-		if price > 99999900 {
+		if price > consts.MaxProductPrice {
 			return nil, errorx.ErrProductPriceTooHigh
 		}
 		if price != product.Price {

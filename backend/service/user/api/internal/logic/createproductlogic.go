@@ -9,6 +9,7 @@ import (
 	"errors"
 	"strings"
 
+	"go-zero-learning/common/consts"
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
@@ -45,7 +46,7 @@ func (l *CreateProductLogic) CreateProduct(req *types.CreateProductReq) (resp *t
 		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "商品名称长度不能超过100个字符")
 	}
 
-	if req.Price <= 0 {
+	if req.Price < consts.MinProductPrice {
 		return nil, errorx.ErrProductPriceTooLow
 	}
 	// if req.Price > 99999900 {
