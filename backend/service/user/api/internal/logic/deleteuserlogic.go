@@ -2,15 +2,15 @@ package logic
 
 import (
 	"context"
-	"errors"
 	"go-zero-learning/common/ctxdata"
 	"go-zero-learning/common/errorx"
-	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
+	"go-zero-learning/service/user/user-rpc/userrpc"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"gorm.io/gorm"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type DeleteUserLogic struct {
@@ -39,24 +39,29 @@ func (l *DeleteUserLogic) DeleteUser(req *types.DeleteUserReq) (resp *types.Dele
 		return nil, errorx.ErrCannotDeleteSelf
 	}
 
-	// 3. 查询用户是否存在
-	var user model.User
-	if err = l.svcCtx.DB.First(&user, req.ID).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errorx.ErrUserNotFound
+	// 3. 调用 RPC 删除用户
+	rpcResp, err := l.svcCtx.UserRpc.DeleteUser(l.ctx, &userrpc.DeleteUserReq{
+		Id: req.ID,
+	})
+	if err != nil {
+		if st, ok := status.FromError(err); ok {
+			switch st.Code() {
+			case codes.InvalidArgument:
+				return nil, errorx.ErrInvalidParam
+			case codes.NotFound:
+				return nil, errorx.ErrUserNotFound
+			default:
+				l.Errorf("调用 UserRpc.DeleteUser 失败：code=%v, msg=%s", st.Code(), st.Message())
+				return nil, errorx.ErrInternalError
+			}
 		}
-		l.Errorf("查询用户失败：%v", err)
-		return nil, errorx.ErrInternalError
-	}
-	// 4. 删除用户
-	if err = l.svcCtx.DB.Delete(&user).Error; err != nil {
-		l.Errorf("删除用户失败：%v", err)
+		l.Errorf("调用 UserRpc.DeleteUser 失败：%v", err)
 		return nil, errorx.ErrInternalError
 	}
 
-	// 5. 返回响应
+	// 4. 返回响应
 	resp = &types.DeleteUserResp{
-		Message: "用户删除成功",
+		Message: rpcResp.Message,
 	}
 
 	return resp, nil
