@@ -45,3 +45,9 @@ func (s *UserRpcServer) CreateUser(ctx context.Context, in *userrpc.CreateUserRe
 	l := logic.NewCreateUserLogic(ctx, s.svcCtx)
 	return l.CreateUser(in)
 }
+
+// 更新用户（当前用户）
+func (s *UserRpcServer) UpdateUser(ctx context.Context, in *userrpc.UpdateUserReq) (*userrpc.UpdateUserResp, error) {
+	l := logic.NewUpdateUserLogic(ctx, s.svcCtx)
+	return l.UpdateUser(in)
+}

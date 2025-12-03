@@ -22,6 +22,8 @@ type (
 	ListUsersResp  = userrpc.ListUsersResp
 	Request        = userrpc.Request
 	Response       = userrpc.Response
+	UpdateUserReq  = userrpc.UpdateUserReq
+	UpdateUserResp = userrpc.UpdateUserResp
 	UserItem       = userrpc.UserItem
 
 	UserRpc interface {
@@ -32,6 +34,8 @@ type (
 		ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersResp, error)
 		// 创建用户
 		CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error)
+		// 更新用户（当前用户）
+		UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UpdateUserResp, error)
 	}
 
 	defaultUserRpc struct {
@@ -66,4 +70,10 @@ func (m *defaultUserRpc) ListUsers(ctx context.Context, in *ListUsersReq, opts .
 func (m *defaultUserRpc) CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error) {
 	client := userrpc.NewUserRpcClient(m.cli.Conn())
 	return client.CreateUser(ctx, in, opts...)
+}
+
+// 更新用户（当前用户）
+func (m *defaultUserRpc) UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UpdateUserResp, error) {
+	client := userrpc.NewUserRpcClient(m.cli.Conn())
+	return client.UpdateUser(ctx, in, opts...)
 }

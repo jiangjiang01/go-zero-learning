@@ -54,6 +54,19 @@ message CreateUserResp {
     string email = 3;
 }
 
+// 更新用户（当前用户）
+message UpdateUserReq {
+	int64 id = 1; // 用户ID（由API层从Token中取出）
+	string email = 2; // 新邮箱（可选）
+	string password = 3; // 新密码（可选）
+}
+
+message UpdateUserResp {
+	int64 id = 1;
+	string username = 2;
+	string email = 3;
+}
+
 service UserRpc {
     rpc Ping(Request) returns (Response);
 
@@ -65,4 +78,7 @@ service UserRpc {
 
     // 创建用户
     rpc CreateUser(CreateUserReq) returns (CreateUserResp);
+
+	// 更新用户（当前用户）
+	rpc UpdateUser(UpdateUserReq) returns (UpdateUserResp);
 }
