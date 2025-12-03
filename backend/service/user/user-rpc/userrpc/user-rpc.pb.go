@@ -630,6 +630,95 @@ func (x *UpdateUserResp) GetEmail() string {
 	return ""
 }
 
+// 删除用户
+type DeleteUserReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteUserReq) Reset() {
+	*x = DeleteUserReq{}
+	mi := &file_user_rpc_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteUserReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteUserReq) ProtoMessage() {}
+
+func (x *DeleteUserReq) ProtoReflect() protoreflect.Message {
+	mi := &file_user_rpc_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteUserReq.ProtoReflect.Descriptor instead.
+func (*DeleteUserReq) Descriptor() ([]byte, []int) {
+	return file_user_rpc_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *DeleteUserReq) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type DeleteUserResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteUserResp) Reset() {
+	*x = DeleteUserResp{}
+	mi := &file_user_rpc_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteUserResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteUserResp) ProtoMessage() {}
+
+func (x *DeleteUserResp) ProtoReflect() protoreflect.Message {
+	mi := &file_user_rpc_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteUserResp.ProtoReflect.Descriptor instead.
+func (*DeleteUserResp) Descriptor() ([]byte, []int) {
+	return file_user_rpc_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *DeleteUserResp) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_user_rpc_proto protoreflect.FileDescriptor
 
 const file_user_rpc_proto_rawDesc = "" +
@@ -672,7 +761,11 @@ const file_user_rpc_proto_rawDesc = "" +
 	"\x0eUpdateUserResp\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email2\xa6\x02\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\"\x1f\n" +
+	"\rDeleteUserReq\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"*\n" +
+	"\x0eDeleteUserResp\x12\x18\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2\xe5\x02\n" +
 	"\aUserRpc\x12+\n" +
 	"\x04Ping\x12\x10.userrpc.Request\x1a\x11.userrpc.Response\x124\n" +
 	"\aGetUser\x12\x13.userrpc.GetUserReq\x1a\x14.userrpc.GetUserResp\x12:\n" +
@@ -680,7 +773,9 @@ const file_user_rpc_proto_rawDesc = "" +
 	"\n" +
 	"CreateUser\x12\x16.userrpc.CreateUserReq\x1a\x17.userrpc.CreateUserResp\x12=\n" +
 	"\n" +
-	"UpdateUser\x12\x16.userrpc.UpdateUserReq\x1a\x17.userrpc.UpdateUserRespB\vZ\t./userrpcb\x06proto3"
+	"UpdateUser\x12\x16.userrpc.UpdateUserReq\x1a\x17.userrpc.UpdateUserResp\x12=\n" +
+	"\n" +
+	"DeleteUser\x12\x16.userrpc.DeleteUserReq\x1a\x17.userrpc.DeleteUserRespB\vZ\t./userrpcb\x06proto3"
 
 var (
 	file_user_rpc_proto_rawDescOnce sync.Once
@@ -694,7 +789,7 @@ func file_user_rpc_proto_rawDescGZIP() []byte {
 	return file_user_rpc_proto_rawDescData
 }
 
-var file_user_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_user_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_user_rpc_proto_goTypes = []any{
 	(*Request)(nil),        // 0: userrpc.Request
 	(*Response)(nil),       // 1: userrpc.Response
@@ -707,6 +802,8 @@ var file_user_rpc_proto_goTypes = []any{
 	(*CreateUserResp)(nil), // 8: userrpc.CreateUserResp
 	(*UpdateUserReq)(nil),  // 9: userrpc.UpdateUserReq
 	(*UpdateUserResp)(nil), // 10: userrpc.UpdateUserResp
+	(*DeleteUserReq)(nil),  // 11: userrpc.DeleteUserReq
+	(*DeleteUserResp)(nil), // 12: userrpc.DeleteUserResp
 }
 var file_user_rpc_proto_depIdxs = []int32{
 	5,  // 0: userrpc.ListUsersResp.users:type_name -> userrpc.UserItem
@@ -715,13 +812,15 @@ var file_user_rpc_proto_depIdxs = []int32{
 	4,  // 3: userrpc.UserRpc.ListUsers:input_type -> userrpc.ListUsersReq
 	7,  // 4: userrpc.UserRpc.CreateUser:input_type -> userrpc.CreateUserReq
 	9,  // 5: userrpc.UserRpc.UpdateUser:input_type -> userrpc.UpdateUserReq
-	1,  // 6: userrpc.UserRpc.Ping:output_type -> userrpc.Response
-	3,  // 7: userrpc.UserRpc.GetUser:output_type -> userrpc.GetUserResp
-	6,  // 8: userrpc.UserRpc.ListUsers:output_type -> userrpc.ListUsersResp
-	8,  // 9: userrpc.UserRpc.CreateUser:output_type -> userrpc.CreateUserResp
-	10, // 10: userrpc.UserRpc.UpdateUser:output_type -> userrpc.UpdateUserResp
-	6,  // [6:11] is the sub-list for method output_type
-	1,  // [1:6] is the sub-list for method input_type
+	11, // 6: userrpc.UserRpc.DeleteUser:input_type -> userrpc.DeleteUserReq
+	1,  // 7: userrpc.UserRpc.Ping:output_type -> userrpc.Response
+	3,  // 8: userrpc.UserRpc.GetUser:output_type -> userrpc.GetUserResp
+	6,  // 9: userrpc.UserRpc.ListUsers:output_type -> userrpc.ListUsersResp
+	8,  // 10: userrpc.UserRpc.CreateUser:output_type -> userrpc.CreateUserResp
+	10, // 11: userrpc.UserRpc.UpdateUser:output_type -> userrpc.UpdateUserResp
+	12, // 12: userrpc.UserRpc.DeleteUser:output_type -> userrpc.DeleteUserResp
+	7,  // [7:13] is the sub-list for method output_type
+	1,  // [1:7] is the sub-list for method input_type
 	1,  // [1:1] is the sub-list for extension type_name
 	1,  // [1:1] is the sub-list for extension extendee
 	0,  // [0:1] is the sub-list for field type_name
@@ -738,7 +837,7 @@ func file_user_rpc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_rpc_proto_rawDesc), len(file_user_rpc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

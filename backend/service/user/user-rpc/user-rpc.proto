@@ -67,6 +67,15 @@ message UpdateUserResp {
 	string email = 3;
 }
 
+// 删除用户
+message DeleteUserReq {
+	int64 id = 1;
+}
+
+message DeleteUserResp {
+	string message = 1;
+}
+
 service UserRpc {
     rpc Ping(Request) returns (Response);
 
@@ -81,4 +90,7 @@ service UserRpc {
 
 	// 更新用户（通用：谁调用就传谁的ID）
 	rpc UpdateUser(UpdateUserReq) returns (UpdateUserResp);
+
+	// 删除用户
+	rpc DeleteUser(DeleteUserReq) returns (DeleteUserResp);
 }

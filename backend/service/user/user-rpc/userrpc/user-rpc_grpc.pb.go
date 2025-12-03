@@ -24,6 +24,7 @@ const (
 	UserRpc_ListUsers_FullMethodName  = "/userrpc.UserRpc/ListUsers"
 	UserRpc_CreateUser_FullMethodName = "/userrpc.UserRpc/CreateUser"
 	UserRpc_UpdateUser_FullMethodName = "/userrpc.UserRpc/UpdateUser"
+	UserRpc_DeleteUser_FullMethodName = "/userrpc.UserRpc/DeleteUser"
 )
 
 // UserRpcClient is the client API for UserRpc service.
@@ -39,6 +40,8 @@ type UserRpcClient interface {
 	CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error)
 	// 更新用户（通用：谁调用就传谁的ID）
 	UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UpdateUserResp, error)
+	// 删除用户
+	DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*DeleteUserResp, error)
 }
 
 type userRpcClient struct {
@@ -99,6 +102,16 @@ func (c *userRpcClient) UpdateUser(ctx context.Context, in *UpdateUserReq, opts 
 	return out, nil
 }
 
+func (c *userRpcClient) DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*DeleteUserResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteUserResp)
+	err := c.cc.Invoke(ctx, UserRpc_DeleteUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserRpcServer is the server API for UserRpc service.
 // All implementations must embed UnimplementedUserRpcServer
 // for forward compatibility.
@@ -112,6 +125,8 @@ type UserRpcServer interface {
 	CreateUser(context.Context, *CreateUserReq) (*CreateUserResp, error)
 	// 更新用户（通用：谁调用就传谁的ID）
 	UpdateUser(context.Context, *UpdateUserReq) (*UpdateUserResp, error)
+	// 删除用户
+	DeleteUser(context.Context, *DeleteUserReq) (*DeleteUserResp, error)
 	mustEmbedUnimplementedUserRpcServer()
 }
 
@@ -136,6 +151,9 @@ func (UnimplementedUserRpcServer) CreateUser(context.Context, *CreateUserReq) (*
 }
 func (UnimplementedUserRpcServer) UpdateUser(context.Context, *UpdateUserReq) (*UpdateUserResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateUser not implemented")
+}
+func (UnimplementedUserRpcServer) DeleteUser(context.Context, *DeleteUserReq) (*DeleteUserResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteUser not implemented")
 }
 func (UnimplementedUserRpcServer) mustEmbedUnimplementedUserRpcServer() {}
 func (UnimplementedUserRpcServer) testEmbeddedByValue()                 {}
@@ -248,6 +266,24 @@ func _UserRpc_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserRpc_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserRpcServer).DeleteUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserRpc_DeleteUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserRpcServer).DeleteUser(ctx, req.(*DeleteUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserRpc_ServiceDesc is the grpc.ServiceDesc for UserRpc service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -274,6 +310,10 @@ var UserRpc_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateUser",
 			Handler:    _UserRpc_UpdateUser_Handler,
+		},
+		{
+			MethodName: "DeleteUser",
+			Handler:    _UserRpc_DeleteUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

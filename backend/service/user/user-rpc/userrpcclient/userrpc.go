@@ -16,6 +16,8 @@ import (
 type (
 	CreateUserReq  = userrpc.CreateUserReq
 	CreateUserResp = userrpc.CreateUserResp
+	DeleteUserReq  = userrpc.DeleteUserReq
+	DeleteUserResp = userrpc.DeleteUserResp
 	GetUserReq     = userrpc.GetUserReq
 	GetUserResp    = userrpc.GetUserResp
 	ListUsersReq   = userrpc.ListUsersReq
@@ -36,6 +38,8 @@ type (
 		CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error)
 		// 更新用户（通用：谁调用就传谁的ID）
 		UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UpdateUserResp, error)
+		// 删除用户
+		DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*DeleteUserResp, error)
 	}
 
 	defaultUserRpc struct {
@@ -76,4 +80,10 @@ func (m *defaultUserRpc) CreateUser(ctx context.Context, in *CreateUserReq, opts
 func (m *defaultUserRpc) UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UpdateUserResp, error) {
 	client := userrpc.NewUserRpcClient(m.cli.Conn())
 	return client.UpdateUser(ctx, in, opts...)
+}
+
+// 删除用户
+func (m *defaultUserRpc) DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*DeleteUserResp, error) {
+	client := userrpc.NewUserRpcClient(m.cli.Conn())
+	return client.DeleteUser(ctx, in, opts...)
 }

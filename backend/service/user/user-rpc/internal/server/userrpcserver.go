@@ -51,3 +51,9 @@ func (s *UserRpcServer) UpdateUser(ctx context.Context, in *userrpc.UpdateUserRe
 	l := logic.NewUpdateUserLogic(ctx, s.svcCtx)
 	return l.UpdateUser(in)
 }
+
+// 删除用户
+func (s *UserRpcServer) DeleteUser(ctx context.Context, in *userrpc.DeleteUserReq) (*userrpc.DeleteUserResp, error) {
+	l := logic.NewDeleteUserLogic(ctx, s.svcCtx)
+	return l.DeleteUser(in)
+}
