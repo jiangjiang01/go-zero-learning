@@ -1,51 +1,68 @@
 syntax = "proto3";
 
 package userrpc;
-option go_package="./userrpc";
+option go_package = "./userrpc";
 
+// Ping request/response
 message Request {
- 	string ping = 1;
+    string ping = 1;
 }
 
 message Response {
- 	string pong = 1;
+    string pong = 1;
 }
 
 // 用户相关
 message GetUserReq {
-	int64 id = 1;
+    int64 id = 1;
 }
 
 message GetUserResp {
-	int64 id = 1;
-	string username = 2;
-	string email = 3;
+    int64 id = 1;
+    string username = 2;
+    string email = 3;
 }
 
 // 用户列表
 message ListUsersReq {
-	int64 page = 1;
-	int64 page_size = 2;
-	string keyword = 3;
+    int64 page = 1;
+    int64 page_size = 2;
+    string keyword = 3;
 }
 
 message UserItem {
-	int64 id = 1;
-	string username = 2;
-	string email = 3;
+    int64 id = 1;
+    string username = 2;
+    string email = 3;
 }
 
 message ListUsersResp {
-	repeated UserItem users = 1;
-	int64 total = 2;
+    repeated UserItem users = 1;
+    int64 total = 2;
+}
+
+// 创建用户
+message CreateUserReq {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+}
+
+message CreateUserResp {
+    int64 id = 1;
+    string username = 2;
+    string email = 3;
 }
 
 service UserRpc {
-  	rpc Ping(Request) returns (Response);
+    rpc Ping(Request) returns (Response);
 
-	// 根据 ID 查询用户基本信息（不返回密码）
-	rpc GetUser(GetUserReq) returns (GetUserResp);
+    // 根据 ID 查询用户基本信息（不返回密码）
+    rpc GetUser(GetUserReq) returns (GetUserResp);
 
-	// 用户列表（分页， 支持 keyword 搜索）
-	rpc ListUsers(ListUsersReq) returns (ListUsersResp);
+    // 用户列表（分页，支持 keyword 搜索）
+    rpc ListUsers(ListUsersReq) returns (ListUsersResp);
+
+    // 创建用户
+    rpc CreateUser(CreateUserReq) returns (CreateUserResp);
 }

@@ -34,8 +34,14 @@ func (s *UserRpcServer) GetUser(ctx context.Context, in *userrpc.GetUserReq) (*u
 	return l.GetUser(in)
 }
 
-// 用户列表（分页， 无搜索条件）
+// 用户列表（分页，支持 keyword 搜索）
 func (s *UserRpcServer) ListUsers(ctx context.Context, in *userrpc.ListUsersReq) (*userrpc.ListUsersResp, error) {
 	l := logic.NewListUsersLogic(ctx, s.svcCtx)
 	return l.ListUsers(in)
+}
+
+// 创建用户
+func (s *UserRpcServer) CreateUser(ctx context.Context, in *userrpc.CreateUserReq) (*userrpc.CreateUserResp, error) {
+	l := logic.NewCreateUserLogic(ctx, s.svcCtx)
+	return l.CreateUser(in)
 }

@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserRpc_Ping_FullMethodName      = "/userrpc.UserRpc/Ping"
-	UserRpc_GetUser_FullMethodName   = "/userrpc.UserRpc/GetUser"
-	UserRpc_ListUsers_FullMethodName = "/userrpc.UserRpc/ListUsers"
+	UserRpc_Ping_FullMethodName       = "/userrpc.UserRpc/Ping"
+	UserRpc_GetUser_FullMethodName    = "/userrpc.UserRpc/GetUser"
+	UserRpc_ListUsers_FullMethodName  = "/userrpc.UserRpc/ListUsers"
+	UserRpc_CreateUser_FullMethodName = "/userrpc.UserRpc/CreateUser"
 )
 
 // UserRpcClient is the client API for UserRpc service.
@@ -31,8 +32,10 @@ type UserRpcClient interface {
 	Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 	// 根据 ID 查询用户基本信息（不返回密码）
 	GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error)
-	// 用户列表（分页， 无搜索条件）
+	// 用户列表（分页，支持 keyword 搜索）
 	ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersResp, error)
+	// 创建用户
+	CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error)
 }
 
 type userRpcClient struct {
@@ -73,6 +76,16 @@ func (c *userRpcClient) ListUsers(ctx context.Context, in *ListUsersReq, opts ..
 	return out, nil
 }
 
+func (c *userRpcClient) CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateUserResp)
+	err := c.cc.Invoke(ctx, UserRpc_CreateUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserRpcServer is the server API for UserRpc service.
 // All implementations must embed UnimplementedUserRpcServer
 // for forward compatibility.
@@ -80,8 +93,10 @@ type UserRpcServer interface {
 	Ping(context.Context, *Request) (*Response, error)
 	// 根据 ID 查询用户基本信息（不返回密码）
 	GetUser(context.Context, *GetUserReq) (*GetUserResp, error)
-	// 用户列表（分页， 无搜索条件）
+	// 用户列表（分页，支持 keyword 搜索）
 	ListUsers(context.Context, *ListUsersReq) (*ListUsersResp, error)
+	// 创建用户
+	CreateUser(context.Context, *CreateUserReq) (*CreateUserResp, error)
 	mustEmbedUnimplementedUserRpcServer()
 }
 
@@ -100,6 +115,9 @@ func (UnimplementedUserRpcServer) GetUser(context.Context, *GetUserReq) (*GetUse
 }
 func (UnimplementedUserRpcServer) ListUsers(context.Context, *ListUsersReq) (*ListUsersResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (UnimplementedUserRpcServer) CreateUser(context.Context, *CreateUserReq) (*CreateUserResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateUser not implemented")
 }
 func (UnimplementedUserRpcServer) mustEmbedUnimplementedUserRpcServer() {}
 func (UnimplementedUserRpcServer) testEmbeddedByValue()                 {}
@@ -176,6 +194,24 @@ func _UserRpc_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserRpc_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserRpcServer).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserRpc_CreateUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserRpcServer).CreateUser(ctx, req.(*CreateUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserRpc_ServiceDesc is the grpc.ServiceDesc for UserRpc service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -194,6 +230,10 @@ var UserRpc_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUsers",
 			Handler:    _UserRpc_ListUsers_Handler,
+		},
+		{
+			MethodName: "CreateUser",
+			Handler:    _UserRpc_CreateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
