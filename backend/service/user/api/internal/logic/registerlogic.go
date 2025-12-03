@@ -5,17 +5,16 @@ package logic
 
 import (
 	"context"
-	"errors"
 
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/common/validator"
-	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
+	"go-zero-learning/service/user/user-rpc/userrpc"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type RegisterLogic struct {
@@ -34,6 +33,62 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 
 // 用户注册逻辑
 func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.LoginResp, err error) {
+	// 1. 参数校验 - 邮箱格式
+	if err = validator.ValidateEmail(req.Email); err != nil {
+		return nil, err
+	}
+
+	// 2. 参数校验 - 用户密码强度
+	if err = validator.ValidateUserPassword(req.Password); err != nil {
+		return nil, err
+	}
+
+	// 3. 调用 user-rpc 创建用户
+	rpcResp, err := l.svcCtx.UserRpc.CreateUser(l.ctx, &userrpc.CreateUserReq{
+		Username: req.Username,
+		Email:    req.Email,
+		Password: req.Password,
+	})
+	if err != nil {
+		// gRPC 错误到业务错误的映射
+		if st, ok := status.FromError(err); ok {
+			switch st.Code() {
+			case codes.InvalidArgument:
+				return nil, errorx.ErrInvalidParam
+			case codes.AlreadyExists:
+				return nil, errorx.ErrUserAlreadExists
+			default:
+				l.Errorf("调用 UserRpc.CreateUser 失败：code=%v, msg=%s", st.Code(), st.Message())
+				return nil, errorx.ErrInternalError
+			}
+		}
+		l.Errorf("调用 UserRpc.CreateUser 失败：%v", err)
+		return nil, errorx.ErrInternalError
+	}
+
+	// 4. 生成 Token (API 层职责，RPC 不处理)
+	token, err := l.svcCtx.JWT.GenerateToken(rpcResp.Id, rpcResp.Username)
+	if err != nil {
+		l.Errorf("生成 Token 失败：%v", err)
+		return nil, errorx.ErrInternalError
+	}
+
+	// 5. 返回响应
+	resp = &types.LoginResp{
+		Token: token,
+		UserInfo: types.UserInfoResp{
+			ID:       rpcResp.Id,
+			Username: rpcResp.Username,
+			Email:    rpcResp.Email,
+		},
+	}
+
+	return resp, nil
+}
+
+// 旧的注册逻辑，用于对比新旧逻辑
+/*
+func (l *RegisterLogic) RegisterOld(req *types.RegisterReq) (resp *types.LoginResp, err error) {
 	// 1. 参数校验 - 邮箱格式
 	if err = validator.ValidateEmail(req.Email); err != nil {
 		return nil, err
@@ -105,3 +160,4 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.LoginResp,
 
 	return resp, nil
 }
+*/
