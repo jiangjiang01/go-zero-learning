@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"go-zero-learning/common/consts"
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
@@ -32,11 +33,11 @@ func (l *GetUserListLogic) GetUserList(req *types.GetUserListReq) (resp *types.G
 		req.Page = 1
 	}
 	if req.PageSize < 1 {
-		req.PageSize = 10
+		req.PageSize = consts.DefaultPageSize
 	}
 	// 限制每页最大数量，防止过大查询
-	if req.PageSize > 100 {
-		req.PageSize = 100
+	if req.PageSize > consts.MaxPageSize {
+		req.PageSize = consts.MaxPageSize
 	}
 
 	// 2. 调用 UserRpc.ListUsers（替代直接访问DB）

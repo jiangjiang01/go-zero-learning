@@ -6,6 +6,7 @@ package logic
 import (
 	"context"
 
+	"go-zero-learning/common/consts"
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
@@ -35,10 +36,10 @@ func (l *GetCategoryListLogic) GetCategoryList(req *types.GetCategoryListReq) (r
 		req.Page = 1
 	}
 	if req.PageSize < 1 {
-		req.PageSize = 10
+		req.PageSize = consts.DefaultPageSize
 	}
-	if req.PageSize > 100 {
-		req.PageSize = 100
+	if req.PageSize > consts.MaxPageSize {
+		req.PageSize = consts.MaxPageSize
 	}
 
 	// 2. 构建查询条件

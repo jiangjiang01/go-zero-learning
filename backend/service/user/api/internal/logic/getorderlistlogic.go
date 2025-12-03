@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"go-zero-learning/common/ctxdata"
+	"go-zero-learning/common/consts"
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
 	"go-zero-learning/service/user/api/internal/svc"
@@ -42,10 +43,10 @@ func (l *GetOrderListLogic) GetOrderList(req *types.GetOrderListReq) (resp *type
 	}
 
 	if req.PageSize < 1 {
-		req.PageSize = 10
+		req.PageSize = consts.DefaultPageSize
 	}
-	if req.PageSize > 100 {
-		req.PageSize = 100
+	if req.PageSize > consts.MaxPageSize {
+		req.PageSize = consts.MaxPageSize
 	}
 
 	// 3. 构建查询模型
