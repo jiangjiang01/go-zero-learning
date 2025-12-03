@@ -10,6 +10,9 @@ import (
 	"gorm.io/gorm"
 )
 
+// ⚠️ 警告：仅用于开发环境的测试账号，生产环境必须删除或通过环境变量控制
+const DevTestUsername = "admin"
+
 // PermissionMiddleware 权限验证中间件
 type PermissionMiddleware struct {
 	db *gorm.DB
@@ -31,7 +34,7 @@ func (m *PermissionMiddleware) Handle(requiredPermission string) func(http.Handl
 
 			// 测试账号：admin,密码：123456。放开所有权限
 			username, ok := ctxdata.GetUsername(r.Context())
-			if ok && username == "admin" {
+			if ok && username == DevTestUsername {
 				next(w, r)
 				return
 			}
