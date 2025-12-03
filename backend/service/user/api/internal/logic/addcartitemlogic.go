@@ -103,7 +103,7 @@ func (l *AddCartItemLogic) AddCartItem(req *types.AddCartItemReq) (resp *types.C
 		// 更新数量（累加购买数量）
 		newQuantity := cartItem.Quantity + req.Quantity
 		// 再次验证总数量
-		if newQuantity > maxQuantity {
+		if newQuantity > consts.MaxCartQuantity {
 			return nil, errorx.ErrCartItemQuantityTooLarge
 		}
 		cartItem.Quantity = newQuantity
