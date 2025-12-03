@@ -46,7 +46,7 @@ func (s *UserRpcServer) CreateUser(ctx context.Context, in *userrpc.CreateUserRe
 	return l.CreateUser(in)
 }
 
-// 更新用户（当前用户）
+// 更新用户（通用：谁调用就传谁的ID）
 func (s *UserRpcServer) UpdateUser(ctx context.Context, in *userrpc.UpdateUserReq) (*userrpc.UpdateUserResp, error) {
 	l := logic.NewUpdateUserLogic(ctx, s.svcCtx)
 	return l.UpdateUser(in)

@@ -37,7 +37,7 @@ type UserRpcClient interface {
 	ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersResp, error)
 	// 创建用户
 	CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error)
-	// 更新用户（当前用户）
+	// 更新用户（通用：谁调用就传谁的ID）
 	UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UpdateUserResp, error)
 }
 
@@ -110,7 +110,7 @@ type UserRpcServer interface {
 	ListUsers(context.Context, *ListUsersReq) (*ListUsersResp, error)
 	// 创建用户
 	CreateUser(context.Context, *CreateUserReq) (*CreateUserResp, error)
-	// 更新用户（当前用户）
+	// 更新用户（通用：谁调用就传谁的ID）
 	UpdateUser(context.Context, *UpdateUserReq) (*UpdateUserResp, error)
 	mustEmbedUnimplementedUserRpcServer()
 }

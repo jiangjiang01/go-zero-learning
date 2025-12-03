@@ -34,7 +34,7 @@ type (
 		ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersResp, error)
 		// 创建用户
 		CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error)
-		// 更新用户（当前用户）
+		// 更新用户（通用：谁调用就传谁的ID）
 		UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UpdateUserResp, error)
 	}
 
@@ -72,7 +72,7 @@ func (m *defaultUserRpc) CreateUser(ctx context.Context, in *CreateUserReq, opts
 	return client.CreateUser(ctx, in, opts...)
 }
 
-// 更新用户（当前用户）
+// 更新用户（通用：谁调用就传谁的ID）
 func (m *defaultUserRpc) UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UpdateUserResp, error) {
 	client := userrpc.NewUserRpcClient(m.cli.Conn())
 	return client.UpdateUser(ctx, in, opts...)

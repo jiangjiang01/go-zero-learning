@@ -79,6 +79,6 @@ service UserRpc {
     // 创建用户
     rpc CreateUser(CreateUserReq) returns (CreateUserResp);
 
-	// 更新用户（当前用户）
+	// 更新用户（通用：谁调用就传谁的ID）
 	rpc UpdateUser(UpdateUserReq) returns (UpdateUserResp);
 }
