@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 
+	"go-zero-learning/common/consts"
 	"go-zero-learning/common/ctxdata"
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
@@ -45,8 +46,7 @@ func (l *UpdateCartItemLogic) UpdateCartItem(req *types.UpdateCartItemReq) (resp
 	}
 
 	// 3. 参数验证：数量不能过大（防止恶意刷单）
-	maxQuantity := 999
-	if req.Quantity > maxQuantity {
+	if req.Quantity > consts.MaxCartQuantity {
 		return nil, errorx.ErrCartItemQuantityTooLarge
 	}
 
