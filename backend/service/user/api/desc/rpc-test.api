@@ -1,0 +1,17 @@
+syntax = "v1"
+
+type RpcPingReq {
+	Message string `json:"message"`
+}
+
+type RpcPingResp {
+	Pong string `json:"pong"`
+}
+
+@server (
+	prefix: /api/rpc-test
+)
+service rpcTestApi {
+	@handler RpcPing
+	post /ping (RpcPingReq) returns (RpcPingResp)
+}

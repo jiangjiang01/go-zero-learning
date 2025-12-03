@@ -34,6 +34,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/api/users",
 				Handler: RegisterHandler(serverCtx),
 			},
+			rest.Route{
+				Method:  http.MethodPost,
+				Path:    "/api/rpc-test/ping",
+				Handler: RpcPingHandler(serverCtx),
+			},
 		),
 	)
 

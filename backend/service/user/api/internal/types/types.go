@@ -553,3 +553,11 @@ type UploadFileResp struct {
 	Filename string `json:"filename"` // 文件名
 	Size     int64  `json:"size"`     // 文件大小（字节）
 }
+
+type RpcPingReq struct {
+	Message string `json:"message"`
+}
+
+type RpcPingResp struct {
+	Pong string `json:"pong"`
+}

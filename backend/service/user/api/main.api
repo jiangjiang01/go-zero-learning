@@ -12,5 +12,6 @@ import (
 	"desc/cart.api"
 	"desc/dashboard.api"
 	"desc/upload.api"
+	"desc/rpc-test.api"
 )
 
