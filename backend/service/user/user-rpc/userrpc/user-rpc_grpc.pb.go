@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserRpc_Ping_FullMethodName    = "/userrpc.UserRpc/Ping"
-	UserRpc_GetUser_FullMethodName = "/userrpc.UserRpc/GetUser"
+	UserRpc_Ping_FullMethodName      = "/userrpc.UserRpc/Ping"
+	UserRpc_GetUser_FullMethodName   = "/userrpc.UserRpc/GetUser"
+	UserRpc_ListUsers_FullMethodName = "/userrpc.UserRpc/ListUsers"
 )
 
 // UserRpcClient is the client API for UserRpc service.
@@ -30,6 +31,8 @@ type UserRpcClient interface {
 	Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 	// 根据 ID 查询用户基本信息（不返回密码）
 	GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error)
+	// 用户列表（分页， 无搜索条件）
+	ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersResp, error)
 }
 
 type userRpcClient struct {
@@ -60,6 +63,16 @@ func (c *userRpcClient) GetUser(ctx context.Context, in *GetUserReq, opts ...grp
 	return out, nil
 }
 
+func (c *userRpcClient) ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUsersResp)
+	err := c.cc.Invoke(ctx, UserRpc_ListUsers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserRpcServer is the server API for UserRpc service.
 // All implementations must embed UnimplementedUserRpcServer
 // for forward compatibility.
@@ -67,6 +80,8 @@ type UserRpcServer interface {
 	Ping(context.Context, *Request) (*Response, error)
 	// 根据 ID 查询用户基本信息（不返回密码）
 	GetUser(context.Context, *GetUserReq) (*GetUserResp, error)
+	// 用户列表（分页， 无搜索条件）
+	ListUsers(context.Context, *ListUsersReq) (*ListUsersResp, error)
 	mustEmbedUnimplementedUserRpcServer()
 }
 
@@ -82,6 +97,9 @@ func (UnimplementedUserRpcServer) Ping(context.Context, *Request) (*Response, er
 }
 func (UnimplementedUserRpcServer) GetUser(context.Context, *GetUserReq) (*GetUserResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetUser not implemented")
+}
+func (UnimplementedUserRpcServer) ListUsers(context.Context, *ListUsersReq) (*ListUsersResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListUsers not implemented")
 }
 func (UnimplementedUserRpcServer) mustEmbedUnimplementedUserRpcServer() {}
 func (UnimplementedUserRpcServer) testEmbeddedByValue()                 {}
@@ -140,6 +158,24 @@ func _UserRpc_GetUser_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserRpc_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUsersReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserRpcServer).ListUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserRpc_ListUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserRpcServer).ListUsers(ctx, req.(*ListUsersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserRpc_ServiceDesc is the grpc.ServiceDesc for UserRpc service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -154,6 +190,10 @@ var UserRpc_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUser",
 			Handler:    _UserRpc_GetUser_Handler,
+		},
+		{
+			MethodName: "ListUsers",
+			Handler:    _UserRpc_ListUsers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

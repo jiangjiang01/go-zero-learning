@@ -14,15 +14,20 @@ import (
 )
 
 type (
-	GetUserReq  = userrpc.GetUserReq
-	GetUserResp = userrpc.GetUserResp
-	Request     = userrpc.Request
-	Response    = userrpc.Response
+	GetUserReq    = userrpc.GetUserReq
+	GetUserResp   = userrpc.GetUserResp
+	ListUsersReq  = userrpc.ListUsersReq
+	ListUsersResp = userrpc.ListUsersResp
+	Request       = userrpc.Request
+	Response      = userrpc.Response
+	UserItem      = userrpc.UserItem
 
 	UserRpc interface {
 		Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 		// 根据 ID 查询用户基本信息（不返回密码）
 		GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error)
+		// 用户列表（分页， 无搜索条件）
+		ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersResp, error)
 	}
 
 	defaultUserRpc struct {
@@ -45,4 +50,10 @@ func (m *defaultUserRpc) Ping(ctx context.Context, in *Request, opts ...grpc.Cal
 func (m *defaultUserRpc) GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error) {
 	client := userrpc.NewUserRpcClient(m.cli.Conn())
 	return client.GetUser(ctx, in, opts...)
+}
+
+// 用户列表（分页， 无搜索条件）
+func (m *defaultUserRpc) ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersResp, error) {
+	client := userrpc.NewUserRpcClient(m.cli.Conn())
+	return client.ListUsers(ctx, in, opts...)
 }

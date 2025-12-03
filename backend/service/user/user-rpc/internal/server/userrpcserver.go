@@ -33,3 +33,9 @@ func (s *UserRpcServer) GetUser(ctx context.Context, in *userrpc.GetUserReq) (*u
 	l := logic.NewGetUserLogic(ctx, s.svcCtx)
 	return l.GetUser(in)
 }
+
+// 用户列表（分页， 无搜索条件）
+func (s *UserRpcServer) ListUsers(ctx context.Context, in *userrpc.ListUsersReq) (*userrpc.ListUsersResp, error) {
+	l := logic.NewListUsersLogic(ctx, s.svcCtx)
+	return l.ListUsers(in)
+}

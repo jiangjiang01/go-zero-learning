@@ -214,6 +214,171 @@ func (x *GetUserResp) GetEmail() string {
 	return ""
 }
 
+// 用户列表
+type ListUsersReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Page          int64                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int64                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListUsersReq) Reset() {
+	*x = ListUsersReq{}
+	mi := &file_user_rpc_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListUsersReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListUsersReq) ProtoMessage() {}
+
+func (x *ListUsersReq) ProtoReflect() protoreflect.Message {
+	mi := &file_user_rpc_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListUsersReq.ProtoReflect.Descriptor instead.
+func (*ListUsersReq) Descriptor() ([]byte, []int) {
+	return file_user_rpc_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ListUsersReq) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListUsersReq) GetPageSize() int64 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type UserItem struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserItem) Reset() {
+	*x = UserItem{}
+	mi := &file_user_rpc_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserItem) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserItem) ProtoMessage() {}
+
+func (x *UserItem) ProtoReflect() protoreflect.Message {
+	mi := &file_user_rpc_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserItem.ProtoReflect.Descriptor instead.
+func (*UserItem) Descriptor() ([]byte, []int) {
+	return file_user_rpc_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *UserItem) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UserItem) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *UserItem) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+type ListUsersResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Users         []*UserItem            `protobuf:"bytes,1,rep,name=users,proto3" json:"users,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListUsersResp) Reset() {
+	*x = ListUsersResp{}
+	mi := &file_user_rpc_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListUsersResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListUsersResp) ProtoMessage() {}
+
+func (x *ListUsersResp) ProtoReflect() protoreflect.Message {
+	mi := &file_user_rpc_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListUsersResp.ProtoReflect.Descriptor instead.
+func (*ListUsersResp) Descriptor() ([]byte, []int) {
+	return file_user_rpc_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ListUsersResp) GetUsers() []*UserItem {
+	if x != nil {
+		return x.Users
+	}
+	return nil
+}
+
+func (x *ListUsersResp) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
 var File_user_rpc_proto protoreflect.FileDescriptor
 
 const file_user_rpc_proto_rawDesc = "" +
@@ -229,10 +394,21 @@ const file_user_rpc_proto_rawDesc = "" +
 	"\vGetUserResp\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email2l\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\"?\n" +
+	"\fListUsersReq\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x03R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x03R\bpageSize\"L\n" +
+	"\bUserItem\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
+	"\busername\x18\x02 \x01(\tR\busername\x12\x14\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\"N\n" +
+	"\rListUsersResp\x12'\n" +
+	"\x05users\x18\x01 \x03(\v2\x11.userrpc.UserItemR\x05users\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total2\xa8\x01\n" +
 	"\aUserRpc\x12+\n" +
 	"\x04Ping\x12\x10.userrpc.Request\x1a\x11.userrpc.Response\x124\n" +
-	"\aGetUser\x12\x13.userrpc.GetUserReq\x1a\x14.userrpc.GetUserRespB\vZ\t./userrpcb\x06proto3"
+	"\aGetUser\x12\x13.userrpc.GetUserReq\x1a\x14.userrpc.GetUserResp\x12:\n" +
+	"\tListUsers\x12\x15.userrpc.ListUsersReq\x1a\x16.userrpc.ListUsersRespB\vZ\t./userrpcb\x06proto3"
 
 var (
 	file_user_rpc_proto_rawDescOnce sync.Once
@@ -246,23 +422,29 @@ func file_user_rpc_proto_rawDescGZIP() []byte {
 	return file_user_rpc_proto_rawDescData
 }
 
-var file_user_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_user_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_user_rpc_proto_goTypes = []any{
-	(*Request)(nil),     // 0: userrpc.Request
-	(*Response)(nil),    // 1: userrpc.Response
-	(*GetUserReq)(nil),  // 2: userrpc.GetUserReq
-	(*GetUserResp)(nil), // 3: userrpc.GetUserResp
+	(*Request)(nil),       // 0: userrpc.Request
+	(*Response)(nil),      // 1: userrpc.Response
+	(*GetUserReq)(nil),    // 2: userrpc.GetUserReq
+	(*GetUserResp)(nil),   // 3: userrpc.GetUserResp
+	(*ListUsersReq)(nil),  // 4: userrpc.ListUsersReq
+	(*UserItem)(nil),      // 5: userrpc.UserItem
+	(*ListUsersResp)(nil), // 6: userrpc.ListUsersResp
 }
 var file_user_rpc_proto_depIdxs = []int32{
-	0, // 0: userrpc.UserRpc.Ping:input_type -> userrpc.Request
-	2, // 1: userrpc.UserRpc.GetUser:input_type -> userrpc.GetUserReq
-	1, // 2: userrpc.UserRpc.Ping:output_type -> userrpc.Response
-	3, // 3: userrpc.UserRpc.GetUser:output_type -> userrpc.GetUserResp
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	5, // 0: userrpc.ListUsersResp.users:type_name -> userrpc.UserItem
+	0, // 1: userrpc.UserRpc.Ping:input_type -> userrpc.Request
+	2, // 2: userrpc.UserRpc.GetUser:input_type -> userrpc.GetUserReq
+	4, // 3: userrpc.UserRpc.ListUsers:input_type -> userrpc.ListUsersReq
+	1, // 4: userrpc.UserRpc.Ping:output_type -> userrpc.Response
+	3, // 5: userrpc.UserRpc.GetUser:output_type -> userrpc.GetUserResp
+	6, // 6: userrpc.UserRpc.ListUsers:output_type -> userrpc.ListUsersResp
+	4, // [4:7] is the sub-list for method output_type
+	1, // [1:4] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_user_rpc_proto_init() }
@@ -276,7 +458,7 @@ func file_user_rpc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_rpc_proto_rawDesc), len(file_user_rpc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
