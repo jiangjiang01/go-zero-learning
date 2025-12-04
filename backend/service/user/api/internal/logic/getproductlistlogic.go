@@ -13,7 +13,7 @@ import (
 
 	"go-zero-learning/common/consts"
 	"go-zero-learning/common/errorx"
-	"go-zero-learning/model"
+	"go-zero-learning/service/product/product-rpc/productrpc"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
 
@@ -78,24 +78,22 @@ func (l *GetProductListLogic) GetProductList(req *types.GetProductListReq) (resp
 		l.Errorf("缓存数据反序列化失败，继续查询数据库：%v", err)
 	}
 
-	// 4. 缓存未命中，查询数据库
-	// 4.1 构建查询模型
-	query := l.svcCtx.DB.Model(&model.Product{})
-	if req.Keyword != "" {
-		likeStr := "%" + req.Keyword + "%"
-		query = query.Where("name LIKE ? AND description LIKE ?", likeStr, likeStr)
-	}
-
-	// 4.2 查询总数
-	var total int64
-	err = query.Count(&total).Error
+	// 4. 从 ProductRpc 获取商品列表
+	rpcResp, err := l.svcCtx.ProductRpc.ListProducts(l.ctx, &productrpc.ListProductReq{
+		Page:     req.Page,
+		PageSize: req.PageSize,
+		Keyword:  req.Keyword,
+	})
 	if err != nil {
-		l.Errorf("查询商品总数失败：%v", err)
-		return nil, errorx.ErrInternalError
+		// 使用统一的错误映射函数
+		rpcErr := errorx.MapRpcError(err, l.Logger, "ProductRpc.ListProducts", errorx.RpcErrorMapper{})
+		if rpcErr != nil {
+			return nil, rpcErr
+		}
 	}
 
 	// 4.3 空结果提前处理
-	if total == 0 {
+	if rpcResp.Total == 0 && len(rpcResp.Products) == 0 {
 		emptyResp := &types.GetProductListResp{
 			Products: []types.ProductInfoResp{},
 			Total:    0,
@@ -113,19 +111,10 @@ func (l *GetProductListLogic) GetProductList(req *types.GetProductListReq) (resp
 		return emptyResp, nil
 	}
 
-	// 4.4 分页查询数据
-	offset := (req.Page - 1) * req.PageSize
-	var products []model.Product
-	err = query.Order("created_at DESC").Offset(int(offset)).Limit(int(req.PageSize)).Find(&products).Error
-	if err != nil {
-		l.Errorf("查询商品列表失败：%v", err)
-		return nil, errorx.ErrInternalError
-	}
-
 	// 5. 构建响应结果
 	resp = &types.GetProductListResp{
-		Products: convertToProductInfoRespList(products),
-		Total:    total,
+		Products: convertToProductInfoRespList(rpcResp.Products),
+		Total:    rpcResp.Total,
 		Page:     req.Page,
 		PageSize: req.PageSize,
 	}
@@ -147,11 +136,21 @@ func (l *GetProductListLogic) GetProductList(req *types.GetProductListReq) (resp
 	return resp, nil
 }
 
-func convertToProductInfoRespList(products []model.Product) []types.ProductInfoResp {
+func convertToProductInfoRespList(products []*productrpc.ProductItem) []types.ProductInfoResp {
 	productList := make([]types.ProductInfoResp, 0, len(products))
 
-	for _, p := range products {
-		productList = append(productList, *convertToProductInfoResp(p))
+	for _, product := range products {
+		productList = append(productList, types.ProductInfoResp{
+			ID:          product.Id,
+			Name:        product.Name,
+			Description: product.Description,
+			Price:       product.Price,
+			Status:      int(product.Status),
+			Stock:       product.Stock,
+			Images:      product.Images,
+			CreatedAt:   product.CreatedAt,
+			UpdatedAt:   product.UpdatedAt,
+		})
 	}
 
 	return productList
