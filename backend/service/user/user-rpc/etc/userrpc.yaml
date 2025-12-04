@@ -6,3 +6,12 @@ ListenOn: 0.0.0.0:8081
 #   Key: userrpc.rpc
 
 DataSource: root:123456@tcp(127.0.0.1:3307)/testdb?charset=utf8mb4&parseTime=True&loc=Local
+
+Log:
+  ServiceName: productrpc         # 服务名称（用于日志标识）
+  Mode: file                      # 日志模式：console（控制台）、file（文件）、volume（容器卷）
+  Path: logs                      # 日志文件路径（相对于工作目录）
+  Level: info                     # 日志级别：debug、info、error、severe
+  Compress: true                  # 是否压缩历史日志文件
+  KeepDays: 7                     # 保留日志天数
+  StackCooldownMillis: 100        # 堆栈跟踪冷却时间（毫秒）
