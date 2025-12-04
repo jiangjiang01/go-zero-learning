@@ -9,6 +9,7 @@ import (
 	"go-zero-learning/common/db"
 	"go-zero-learning/common/jwt"
 	"go-zero-learning/model"
+	"go-zero-learning/service/product/product-rpc/productrpcclient"
 	"go-zero-learning/service/user/api/internal/config"
 	"go-zero-learning/service/user/user-rpc/userrpcclient"
 
@@ -26,7 +27,8 @@ type ServiceContext struct {
 	Redis  *redis.Redis      // Redis 客户端
 	Cron   *cron.CronManager // 定时任务管理器
 
-	UserRpc userrpcclient.UserRpc // 用户 RPC 客户端
+	UserRpc    userrpcclient.UserRpc       // 用户 RPC 客户端
+	ProductRpc productrpcclient.ProductRpc // 商品 RPC 客户端
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -97,12 +99,17 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	userRpcClient := zrpc.MustNewClient(c.UserRpc)
 	userRpc := userrpcclient.NewUserRpc(userRpcClient)
 
+	// 初始化商品 RPC 客户端
+	productRpcClient := zrpc.MustNewClient(c.ProductRpc)
+	productRpc := productrpcclient.NewProductRpc(productRpcClient)
+
 	return &ServiceContext{
-		Config:  c,
-		DB:      db.GetDB(),
-		JWT:     jwtManager,
-		Redis:   rediscache.GetRedis(),
-		Cron:    cronManager,
-		UserRpc: userRpc, // 添加 RPC 客户端
+		Config:     c,
+		DB:         db.GetDB(),
+		JWT:        jwtManager,
+		Redis:      rediscache.GetRedis(),
+		Cron:       cronManager,
+		UserRpc:    userRpc,    // 添加 RPC 客户端
+		ProductRpc: productRpc, // 添加商品 RPC 客户端
 	}
 }

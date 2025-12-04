@@ -6,15 +6,14 @@ package logic
 import (
 	"context"
 	"encoding/json"
-	"errors"
 
 	"go-zero-learning/common/errorx"
 	"go-zero-learning/model"
+	"go-zero-learning/service/product/product-rpc/productrpc"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"gorm.io/gorm"
 )
 
 type GetProductDetailLogic struct {
@@ -37,19 +36,32 @@ func (l *GetProductDetailLogic) GetProductDetail(req *types.GetProductDetailReq)
 		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "商品ID不能小于等于0")
 	}
 
-	// 2. 查询商品是否存在
-	var product model.Product
-	err = l.svcCtx.DB.First(&product, req.ID).Error
+	// 2. 调用 ProductRpc.GetProduct
+	rpcResp, err := l.svcCtx.ProductRpc.GetProduct(l.ctx, &productrpc.GetProductReq{
+		Id: req.ID,
+	})
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errorx.ErrProductNotFound
+		// 使用统一的错误映射函数
+		rpcErr := errorx.MapRpcError(err, l.Logger, "ProductRpc.GetProduct", errorx.RpcErrorMapper{
+			NotFoundErr: errorx.ErrProductNotFound,
+		})
+		if rpcErr != nil {
+			return nil, rpcErr
 		}
-		l.Errorf("查询商品失败：%v", err)
-		return nil, errorx.ErrInternalError
 	}
 
 	// 3. 构建响应结果
-	resp = convertToProductInfoResp(product)
+	resp = &types.ProductInfoResp{
+		ID:          rpcResp.Id,
+		Name:        rpcResp.Name,
+		Description: rpcResp.Description,
+		Price:       rpcResp.Price,
+		Status:      int(rpcResp.Status),
+		Stock:       rpcResp.Stock,
+		Images:      rpcResp.Images,
+		CreatedAt:   rpcResp.CreatedAt,
+		UpdatedAt:   rpcResp.UpdatedAt,
+	}
 
 	return resp, nil
 }

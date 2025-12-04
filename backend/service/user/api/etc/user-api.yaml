@@ -46,3 +46,9 @@ UserRpc:
   Endpoints:
     - 127.0.0.1:8081
   Timeout: 3000
+
+# 商品 RPC 客户端配置
+ProductRpc:
+  Endpoints:
+    - 127.0.0.1:8082
+  Timeout: 3000
