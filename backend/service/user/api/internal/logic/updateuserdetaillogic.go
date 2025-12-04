@@ -8,8 +8,6 @@ import (
 	"go-zero-learning/service/user/user-rpc/userrpc"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type UpdateUserDetailLogic struct {
@@ -50,21 +48,13 @@ func (l *UpdateUserDetailLogic) UpdateUserDetail(req *types.UpdateUserDetailReq)
 
 	rpcResp, err := l.svcCtx.UserRpc.UpdateUser(l.ctx, rpcReq)
 	if err != nil {
-		if st, ok := status.FromError(err); ok {
-			switch st.Code() {
-			case codes.InvalidArgument:
-				return nil, errorx.ErrInvalidParam
-			case codes.AlreadyExists:
-				return nil, errorx.ErrEmailExists
-			case codes.NotFound:
-				return nil, errorx.ErrUserNotFound
-			default:
-				l.Errorf("调用 UserRpc.UpdateUser(Detail) 失败：code=%v, msg=%s", st.Code(), st.Message())
-				return nil, errorx.ErrInternalError
-			}
+		// 使用统一的错误映射函数
+		if rpcErr := errorx.MapRpcError(err, l.Logger, "UserRpc.UpdateUser", errorx.RpcErrorMapper{
+			NotFoundErr:      errorx.ErrUserNotFound,
+			AlreadyExistsErr: errorx.ErrEmailExists,
+		}); rpcErr != nil {
+			return nil, rpcErr
 		}
-		l.Errorf("调用 UserRpc.UpdateUser(Detail) 失败：%v", err)
-		return nil, errorx.ErrInternalError
 	}
 
 	// 3. 返回更新后的用户信息

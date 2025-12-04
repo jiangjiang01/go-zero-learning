@@ -9,8 +9,6 @@ import (
 	"go-zero-learning/service/user/user-rpc/userrpc"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type GetUserListLogic struct {
@@ -47,18 +45,10 @@ func (l *GetUserListLogic) GetUserList(req *types.GetUserListReq) (resp *types.G
 		Keyword:  req.Keyword,
 	})
 	if err != nil {
-		// gRPC 错误到业务错误的简单映射（这里主要是参数错误，其他都视为内部错误）
-		if st, ok := status.FromError(err); ok {
-			switch st.Code() {
-			case codes.InvalidArgument:
-				return nil, errorx.ErrInvalidParam
-			default:
-				l.Errorf("调用 UserRpc.ListUsers 失败：code=%v, msg=%s", st.Code(), st.Message())
-				return nil, errorx.ErrInternalError
-			}
+		// 使用统一的错误映射函数
+		if rpcErr := errorx.MapRpcError(err, l.Logger, "UserRpc.ListUsers", errorx.RpcErrorMapper{}); rpcErr != nil {
+			return nil, rpcErr
 		}
-		l.Errorf("调用 UserRpc.ListUsers 失败：%v", err)
-		return nil, errorx.ErrInternalError
 	}
 
 	// 3. 转换为 API 的响应类型

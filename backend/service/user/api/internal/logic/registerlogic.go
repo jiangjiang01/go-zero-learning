@@ -13,8 +13,6 @@ import (
 	"go-zero-learning/service/user/user-rpc/userrpc"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type RegisterLogic struct {
@@ -50,20 +48,12 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.LoginResp,
 		Password: req.Password,
 	})
 	if err != nil {
-		// gRPC 错误到业务错误的映射
-		if st, ok := status.FromError(err); ok {
-			switch st.Code() {
-			case codes.InvalidArgument:
-				return nil, errorx.ErrInvalidParam
-			case codes.AlreadyExists:
-				return nil, errorx.ErrUserAlreadExists
-			default:
-				l.Errorf("调用 UserRpc.CreateUser 失败：code=%v, msg=%s", st.Code(), st.Message())
-				return nil, errorx.ErrInternalError
-			}
+		// 使用统一的错误映射函数
+		if rpcErr := errorx.MapRpcError(err, l.Logger, "UserRpc.CreateUser", errorx.RpcErrorMapper{
+			AlreadyExistsErr: errorx.ErrUserAlreadExists,
+		}); rpcErr != nil {
+			return nil, rpcErr
 		}
-		l.Errorf("调用 UserRpc.CreateUser 失败：%v", err)
-		return nil, errorx.ErrInternalError
 	}
 
 	// 4. 生成 Token (API 层职责，RPC 不处理)

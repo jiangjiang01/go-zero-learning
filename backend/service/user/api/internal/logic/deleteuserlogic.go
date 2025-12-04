@@ -9,8 +9,6 @@ import (
 	"go-zero-learning/service/user/user-rpc/userrpc"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type DeleteUserLogic struct {
@@ -44,19 +42,12 @@ func (l *DeleteUserLogic) DeleteUser(req *types.DeleteUserReq) (resp *types.Dele
 		Id: req.ID,
 	})
 	if err != nil {
-		if st, ok := status.FromError(err); ok {
-			switch st.Code() {
-			case codes.InvalidArgument:
-				return nil, errorx.ErrInvalidParam
-			case codes.NotFound:
-				return nil, errorx.ErrUserNotFound
-			default:
-				l.Errorf("调用 UserRpc.DeleteUser 失败：code=%v, msg=%s", st.Code(), st.Message())
-				return nil, errorx.ErrInternalError
-			}
+		// 使用统一的错误映射函数
+		if rpcErr := errorx.MapRpcError(err, l.Logger, "UserRpc.DeleteUser", errorx.RpcErrorMapper{
+			NotFoundErr: errorx.ErrUserNotFound,
+		}); rpcErr != nil {
+			return nil, rpcErr
 		}
-		l.Errorf("调用 UserRpc.DeleteUser 失败：%v", err)
-		return nil, errorx.ErrInternalError
 	}
 
 	// 4. 返回响应
