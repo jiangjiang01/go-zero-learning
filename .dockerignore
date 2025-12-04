@@ -1,0 +1,70 @@
+# Git 相关
+.git
+.gitignore
+.gitattributes
+
+# IDE 配置
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# 日志文件
+*.log
+logs/
+**/logs/
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 依赖目录
+node_modules/
+vendor/
+
+# 构建产物
+dist/
+build/
+bin/
+*.exe
+*.dll
+*.so
+
+# 环境变量文件
+.env
+.env.local
+.env.*.local
+
+# 数据库文件
+*.db
+*.sqlite
+
+# Docker 相关（避免递归复制）
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# 文档
+README.md
+*.md
+docs/
+
+# 学习目录（不需要打包到镜像）
+learn/
+
+# 测试脚本
+scripts/
+*.sh
+
+# 上传文件（避免打包到镜像，应该使用volume）
+**/uploads/
+
+# macOS
+.DS_Store
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
