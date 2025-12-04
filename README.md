@@ -762,6 +762,23 @@ response.OkJson(w, r, resp)
 - [x] 错误码映射（gRPC 错误码 → 业务错误码）
 - [x] 所有功能测试通过
 
+#### ✅ 商品 RPC 服务（后端）
+
+- [x] RPC 服务创建（backend/service/product/product-rpc）
+- [x] Proto 文件定义（product-rpc.proto）
+- [x] RPC 服务配置（数据库连接、端口 8082）
+- [x] 商品查询 RPC（GetProduct、ListProducts 含 keyword 搜索和分页）
+- [x] 商品创建 RPC（CreateProduct，包含名称唯一性检查、价格验证）
+- [x] 商品更新 RPC（UpdateProduct，支持部分字段更新、图片更新）
+- [x] 商品状态更新 RPC（UpdateProductStatus）
+- [x] 商品删除 RPC（DeleteProduct，支持硬删除和软删除）
+- [x] gRPC 错误处理（使用标准错误码：InvalidArgument、NotFound、AlreadyExists）
+- [x] API 服务集成 RPC 客户端（ServiceContext 中添加 ProductRpc）
+- [x] 所有商品接口迁移到 RPC（GetProductDetail、GetProductList、CreateProduct、UpdateProduct、UpdateProductStatus、DeleteProduct）
+- [x] 错误码映射（gRPC 错误码 → 业务错误码）
+- [x] 缓存清除机制（商品创建/更新/删除时自动清除相关缓存）
+- [x] 所有功能测试通过
+
 ### 待完成功能
 
 #### 阶段三：商品管理扩展
@@ -793,7 +810,15 @@ response.OkJson(w, r, resp)
   - [x] 用户删除接口（DeleteUser）✅
   - [x] API 服务集成 RPC 客户端 ✅
   - [x] 所有用户接口迁移到 RPC ✅
-- [ ] 商品 RPC 服务
+- [x] 商品 RPC 服务 ✅
+  - [x] RPC 服务创建和配置 ✅
+  - [x] 商品查询接口（GetProduct、ListProducts）✅
+  - [x] 商品创建接口（CreateProduct）✅
+  - [x] 商品更新接口（UpdateProduct、UpdateProductStatus）✅
+  - [x] 商品删除接口（DeleteProduct）✅
+  - [x] API 服务集成 RPC 客户端 ✅
+  - [x] 所有商品接口迁移到 RPC ✅
+  - [x] 缓存清除机制集成 ✅
 - [ ] 订单 RPC 服务
 
 #### 阶段七：优化和部署
@@ -824,7 +849,8 @@ response.OkJson(w, r, resp)
 #### 常规配置
 - 配置文件字段名：使用 `dataSource`（小写驼峰）
 - **API 服务运行方式**：`cd backend/service/user/api && go run user-api.go -f etc/user-api.yaml`（端口 8888）
-- **RPC 服务运行方式**：`cd backend/service/user/user-rpc && go run userrpc.go -f etc/userrpc.yaml`（端口 8081）
+- **用户 RPC 服务运行方式**：`cd backend/service/user/user-rpc && go run userrpc.go -f etc/userrpc.yaml`（端口 8081）
+- **商品 RPC 服务运行方式**：`cd backend/service/product/product-rpc && go run productrpc.go -f etc/productrpc.yaml`（端口 8082）
 - **注意**：API 服务依赖 RPC 服务，需要先启动 RPC 服务，再启动 API 服务
 - 数据库：MySQL 3307 端口，数据库名 testdb
 - Redis 配置：默认使用 `127.0.0.1:6379`，使用 Docker 启动：`docker run -d --name redis-dev -p 6379:6379 redis:7-alpine`
@@ -879,6 +905,7 @@ const fetchProductList = async () => {
 - 阶段五（高级功能）全部完成 ✅
 - 阶段六（RPC 服务）部分完成：
   - 用户 RPC 服务 ✅
+  - 商品 RPC 服务 ✅
   - API 服务调用 RPC 服务 ✅
 
 **下一步选择**：
@@ -888,7 +915,7 @@ const fetchProductList = async () => {
 
 **教学方法论已总结**：基于商品管理和 RPC 迁移的成功实践，已将核心教学策略整理到文档中
 
-**最后更新**：2025-12-03（完成用户 RPC 服务迁移）
+**最后更新**：2025-12-04（完成商品 RPC 服务迁移）
 **当前状态**：
 
 - 阶段一（用户认证和管理）全部完成 ✅
@@ -958,6 +985,10 @@ const fetchProductList = async () => {
 前端 → API 服务（8888） → UserRpc 服务（8081） → MySQL
        │                    │
        │                    └─ 用户领域业务逻辑
+       │
+       └─ ProductRpc 服务（8082） → MySQL
+                      │
+                      └─ 商品领域业务逻辑
        └─ HTTP 协议、认证、权限、错误映射
 ```
 
@@ -971,6 +1002,17 @@ const fetchProductList = async () => {
 | 更新当前用户 | PUT | `/api/users/me` | `UpdateUser` | ✅ |
 | 更新指定用户 | PUT | `/api/users/:id` | `UpdateUser`（复用） | ✅ |
 | 删除用户 | DELETE | `/api/users/:id` | `DeleteUser` | ✅ |
+
+### 已迁移的商品接口
+
+| API 接口 | HTTP 方法 | 路径 | RPC 方法 | 状态 |
+|---------|----------|------|---------|------|
+| 商品详情 | GET | `/api/products/:id` | `GetProduct` | ✅ |
+| 商品列表 | GET | `/api/products` | `ListProducts` | ✅ |
+| 创建商品 | POST | `/api/products` | `CreateProduct` | ✅ |
+| 更新商品 | PUT | `/api/products/:id` | `UpdateProduct` | ✅ |
+| 更新商品状态 | PUT | `/api/products/:id/status` | `UpdateProductStatus` | ✅ |
+| 删除商品 | DELETE | `/api/products/:id` | `DeleteProduct` | ✅ |
 
 ### RPC 服务开发步骤
 
