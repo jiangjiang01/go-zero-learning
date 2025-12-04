@@ -19,8 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProductRpc_Ping_FullMethodName       = "/productrpc.ProductRpc/Ping"
-	ProductRpc_GetProduct_FullMethodName = "/productrpc.ProductRpc/GetProduct"
+	ProductRpc_Ping_FullMethodName          = "/productrpc.ProductRpc/Ping"
+	ProductRpc_GetProduct_FullMethodName    = "/productrpc.ProductRpc/GetProduct"
+	ProductRpc_ListProducts_FullMethodName  = "/productrpc.ProductRpc/ListProducts"
+	ProductRpc_CreateProduct_FullMethodName = "/productrpc.ProductRpc/CreateProduct"
 )
 
 // ProductRpcClient is the client API for ProductRpc service.
@@ -30,6 +32,10 @@ type ProductRpcClient interface {
 	Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 	// 根据 ID 查询商品详情
 	GetProduct(ctx context.Context, in *GetProductReq, opts ...grpc.CallOption) (*GetProductResp, error)
+	// 商品列表（分页，支持 keyword 搜索）
+	ListProducts(ctx context.Context, in *ListProductReq, opts ...grpc.CallOption) (*ListProductResp, error)
+	// 创建商品
+	CreateProduct(ctx context.Context, in *CreateProductReq, opts ...grpc.CallOption) (*CreateProductResp, error)
 }
 
 type productRpcClient struct {
@@ -60,6 +66,26 @@ func (c *productRpcClient) GetProduct(ctx context.Context, in *GetProductReq, op
 	return out, nil
 }
 
+func (c *productRpcClient) ListProducts(ctx context.Context, in *ListProductReq, opts ...grpc.CallOption) (*ListProductResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListProductResp)
+	err := c.cc.Invoke(ctx, ProductRpc_ListProducts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productRpcClient) CreateProduct(ctx context.Context, in *CreateProductReq, opts ...grpc.CallOption) (*CreateProductResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateProductResp)
+	err := c.cc.Invoke(ctx, ProductRpc_CreateProduct_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductRpcServer is the server API for ProductRpc service.
 // All implementations must embed UnimplementedProductRpcServer
 // for forward compatibility.
@@ -67,6 +93,10 @@ type ProductRpcServer interface {
 	Ping(context.Context, *Request) (*Response, error)
 	// 根据 ID 查询商品详情
 	GetProduct(context.Context, *GetProductReq) (*GetProductResp, error)
+	// 商品列表（分页，支持 keyword 搜索）
+	ListProducts(context.Context, *ListProductReq) (*ListProductResp, error)
+	// 创建商品
+	CreateProduct(context.Context, *CreateProductReq) (*CreateProductResp, error)
 	mustEmbedUnimplementedProductRpcServer()
 }
 
@@ -82,6 +112,12 @@ func (UnimplementedProductRpcServer) Ping(context.Context, *Request) (*Response,
 }
 func (UnimplementedProductRpcServer) GetProduct(context.Context, *GetProductReq) (*GetProductResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetProduct not implemented")
+}
+func (UnimplementedProductRpcServer) ListProducts(context.Context, *ListProductReq) (*ListProductResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListProducts not implemented")
+}
+func (UnimplementedProductRpcServer) CreateProduct(context.Context, *CreateProductReq) (*CreateProductResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateProduct not implemented")
 }
 func (UnimplementedProductRpcServer) mustEmbedUnimplementedProductRpcServer() {}
 func (UnimplementedProductRpcServer) testEmbeddedByValue()                    {}
@@ -140,6 +176,42 @@ func _ProductRpc_GetProduct_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductRpc_ListProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListProductReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductRpcServer).ListProducts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductRpc_ListProducts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductRpcServer).ListProducts(ctx, req.(*ListProductReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductRpc_CreateProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateProductReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductRpcServer).CreateProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductRpc_CreateProduct_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductRpcServer).CreateProduct(ctx, req.(*CreateProductReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductRpc_ServiceDesc is the grpc.ServiceDesc for ProductRpc service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -154,6 +226,14 @@ var ProductRpc_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProduct",
 			Handler:    _ProductRpc_GetProduct_Handler,
+		},
+		{
+			MethodName: "ListProducts",
+			Handler:    _ProductRpc_ListProducts_Handler,
+		},
+		{
+			MethodName: "CreateProduct",
+			Handler:    _ProductRpc_CreateProduct_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -14,15 +14,24 @@ import (
 )
 
 type (
-	GetProductReq  = productrpc.GetProductReq
-	GetProductResp = productrpc.GetProductResp
-	Request        = productrpc.Request
-	Response       = productrpc.Response
+	CreateProductReq  = productrpc.CreateProductReq
+	CreateProductResp = productrpc.CreateProductResp
+	GetProductReq     = productrpc.GetProductReq
+	GetProductResp    = productrpc.GetProductResp
+	ListProductReq    = productrpc.ListProductReq
+	ListProductResp   = productrpc.ListProductResp
+	ProductItem       = productrpc.ProductItem
+	Request           = productrpc.Request
+	Response          = productrpc.Response
 
 	ProductRpc interface {
 		Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 		// 根据 ID 查询商品详情
 		GetProduct(ctx context.Context, in *GetProductReq, opts ...grpc.CallOption) (*GetProductResp, error)
+		// 商品列表（分页，支持 keyword 搜索）
+		ListProducts(ctx context.Context, in *ListProductReq, opts ...grpc.CallOption) (*ListProductResp, error)
+		// 创建商品
+		CreateProduct(ctx context.Context, in *CreateProductReq, opts ...grpc.CallOption) (*CreateProductResp, error)
 	}
 
 	defaultProductRpc struct {
@@ -45,4 +54,16 @@ func (m *defaultProductRpc) Ping(ctx context.Context, in *Request, opts ...grpc.
 func (m *defaultProductRpc) GetProduct(ctx context.Context, in *GetProductReq, opts ...grpc.CallOption) (*GetProductResp, error) {
 	client := productrpc.NewProductRpcClient(m.cli.Conn())
 	return client.GetProduct(ctx, in, opts...)
+}
+
+// 商品列表（分页，支持 keyword 搜索）
+func (m *defaultProductRpc) ListProducts(ctx context.Context, in *ListProductReq, opts ...grpc.CallOption) (*ListProductResp, error) {
+	client := productrpc.NewProductRpcClient(m.cli.Conn())
+	return client.ListProducts(ctx, in, opts...)
+}
+
+// 创建商品
+func (m *defaultProductRpc) CreateProduct(ctx context.Context, in *CreateProductReq, opts ...grpc.CallOption) (*CreateProductResp, error) {
+	client := productrpc.NewProductRpcClient(m.cli.Conn())
+	return client.CreateProduct(ctx, in, opts...)
 }

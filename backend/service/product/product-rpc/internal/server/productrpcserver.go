@@ -33,3 +33,15 @@ func (s *ProductRpcServer) GetProduct(ctx context.Context, in *productrpc.GetPro
 	l := logic.NewGetProductLogic(ctx, s.svcCtx)
 	return l.GetProduct(in)
 }
+
+// 商品列表（分页，支持 keyword 搜索）
+func (s *ProductRpcServer) ListProducts(ctx context.Context, in *productrpc.ListProductReq) (*productrpc.ListProductResp, error) {
+	l := logic.NewListProductsLogic(ctx, s.svcCtx)
+	return l.ListProducts(in)
+}
+
+// 创建商品
+func (s *ProductRpcServer) CreateProduct(ctx context.Context, in *productrpc.CreateProductReq) (*productrpc.CreateProductResp, error) {
+	l := logic.NewCreateProductLogic(ctx, s.svcCtx)
+	return l.CreateProduct(in)
+}

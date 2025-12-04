@@ -30,9 +30,64 @@ message GetProductResp {
 	int64 updated_at = 10;
 }
 
+// 商品列表
+message ListProductReq {
+	int64 page = 1;
+	int64 page_size = 2;
+	string keyword = 3;
+}
+
+message ProductItem {
+	int64 id = 1;
+	string name = 2;
+	string description = 3;
+	int64 price = 4;
+	int32 status = 5;
+	int64 category_id = 6;
+	int64 stock = 7;
+	repeated string images = 8;
+	int64 created_at = 9;
+	int64 updated_at = 10;
+}
+
+message ListProductResp {
+	repeated ProductItem products = 1;
+	int64 total = 2;
+}
+
+// 创建商品
+message CreateProductReq {
+	string name = 1;
+	string description = 2;
+	int64 price = 3;
+	int32 status = 4; // 可选，默认1（启用）
+	int64 category_id = 5;
+	int64 stock = 6; // 可选，默认0
+	repeated string images = 7; // 可选
+}
+
+message CreateProductResp {
+	int64 id = 1;
+	string name = 2;
+	string description = 3;
+	int64 price = 4;
+	int32 status = 5;
+	int64 category_id = 6;
+	int64 stock = 7;
+	repeated string images = 8;
+	int64 created_at = 9;
+	int64 updated_at = 10;
+}
+
 service ProductRpc {
 	rpc Ping(Request) returns (Response);
 
 	// 根据 ID 查询商品详情
 	rpc GetProduct(GetProductReq) returns (GetProductResp);
+
+	// 商品列表（分页，支持 keyword 搜索）
+	rpc ListProducts(ListProductReq) returns (ListProductResp);
+
+	// 创建商品
+	rpc CreateProduct(CreateProductReq) returns (CreateProductResp);
 }
