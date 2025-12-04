@@ -45,3 +45,21 @@ func (s *ProductRpcServer) CreateProduct(ctx context.Context, in *productrpc.Cre
 	l := logic.NewCreateProductLogic(ctx, s.svcCtx)
 	return l.CreateProduct(in)
 }
+
+// 更新商品
+func (s *ProductRpcServer) UpdateProduct(ctx context.Context, in *productrpc.UpdateProductReq) (*productrpc.UpdateProductResp, error) {
+	l := logic.NewUpdateProductLogic(ctx, s.svcCtx)
+	return l.UpdateProduct(in)
+}
+
+// 更新商品状态
+func (s *ProductRpcServer) UpdateProductStatus(ctx context.Context, in *productrpc.UpdateProductStatusReq) (*productrpc.UpdateProductStatusResp, error) {
+	l := logic.NewUpdateProductStatusLogic(ctx, s.svcCtx)
+	return l.UpdateProductStatus(in)
+}
+
+// 删除商品
+func (s *ProductRpcServer) DeleteProduct(ctx context.Context, in *productrpc.DeleteProductReq) (*productrpc.DeleteProductResp, error) {
+	l := logic.NewDeleteProductLogic(ctx, s.svcCtx)
+	return l.DeleteProduct(in)
+}

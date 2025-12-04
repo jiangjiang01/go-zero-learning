@@ -14,15 +14,21 @@ import (
 )
 
 type (
-	CreateProductReq  = productrpc.CreateProductReq
-	CreateProductResp = productrpc.CreateProductResp
-	GetProductReq     = productrpc.GetProductReq
-	GetProductResp    = productrpc.GetProductResp
-	ListProductReq    = productrpc.ListProductReq
-	ListProductResp   = productrpc.ListProductResp
-	ProductItem       = productrpc.ProductItem
-	Request           = productrpc.Request
-	Response          = productrpc.Response
+	CreateProductReq        = productrpc.CreateProductReq
+	CreateProductResp       = productrpc.CreateProductResp
+	DeleteProductReq        = productrpc.DeleteProductReq
+	DeleteProductResp       = productrpc.DeleteProductResp
+	GetProductReq           = productrpc.GetProductReq
+	GetProductResp          = productrpc.GetProductResp
+	ListProductReq          = productrpc.ListProductReq
+	ListProductResp         = productrpc.ListProductResp
+	ProductItem             = productrpc.ProductItem
+	Request                 = productrpc.Request
+	Response                = productrpc.Response
+	UpdateProductReq        = productrpc.UpdateProductReq
+	UpdateProductResp       = productrpc.UpdateProductResp
+	UpdateProductStatusReq  = productrpc.UpdateProductStatusReq
+	UpdateProductStatusResp = productrpc.UpdateProductStatusResp
 
 	ProductRpc interface {
 		Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
@@ -32,6 +38,12 @@ type (
 		ListProducts(ctx context.Context, in *ListProductReq, opts ...grpc.CallOption) (*ListProductResp, error)
 		// 创建商品
 		CreateProduct(ctx context.Context, in *CreateProductReq, opts ...grpc.CallOption) (*CreateProductResp, error)
+		// 更新商品
+		UpdateProduct(ctx context.Context, in *UpdateProductReq, opts ...grpc.CallOption) (*UpdateProductResp, error)
+		// 更新商品状态
+		UpdateProductStatus(ctx context.Context, in *UpdateProductStatusReq, opts ...grpc.CallOption) (*UpdateProductStatusResp, error)
+		// 删除商品
+		DeleteProduct(ctx context.Context, in *DeleteProductReq, opts ...grpc.CallOption) (*DeleteProductResp, error)
 	}
 
 	defaultProductRpc struct {
@@ -66,4 +78,22 @@ func (m *defaultProductRpc) ListProducts(ctx context.Context, in *ListProductReq
 func (m *defaultProductRpc) CreateProduct(ctx context.Context, in *CreateProductReq, opts ...grpc.CallOption) (*CreateProductResp, error) {
 	client := productrpc.NewProductRpcClient(m.cli.Conn())
 	return client.CreateProduct(ctx, in, opts...)
+}
+
+// 更新商品
+func (m *defaultProductRpc) UpdateProduct(ctx context.Context, in *UpdateProductReq, opts ...grpc.CallOption) (*UpdateProductResp, error) {
+	client := productrpc.NewProductRpcClient(m.cli.Conn())
+	return client.UpdateProduct(ctx, in, opts...)
+}
+
+// 更新商品状态
+func (m *defaultProductRpc) UpdateProductStatus(ctx context.Context, in *UpdateProductStatusReq, opts ...grpc.CallOption) (*UpdateProductStatusResp, error) {
+	client := productrpc.NewProductRpcClient(m.cli.Conn())
+	return client.UpdateProductStatus(ctx, in, opts...)
+}
+
+// 删除商品
+func (m *defaultProductRpc) DeleteProduct(ctx context.Context, in *DeleteProductReq, opts ...grpc.CallOption) (*DeleteProductResp, error) {
+	client := productrpc.NewProductRpcClient(m.cli.Conn())
+	return client.DeleteProduct(ctx, in, opts...)
 }
