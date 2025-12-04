@@ -46,6 +46,10 @@ func (l *CreateProductLogic) CreateProduct(in *productrpc.CreateProductReq) (*pr
 		return nil, status.Error(codes.InvalidArgument, "商品价格太低")
 	}
 
+	if in.Price > consts.MaxProductPrice {
+		return nil, status.Error(codes.InvalidArgument, "商品价格太高")
+	}
+
 	// 2. 查询商品名称是否已存在
 	var existingProduct model.Product
 	err := l.svcCtx.DB.WithContext(l.ctx).Where("name = ?", name).First(&existingProduct).Error
@@ -59,7 +63,8 @@ func (l *CreateProductLogic) CreateProduct(in *productrpc.CreateProductReq) (*pr
 
 	// 3. 设置默认值
 	productStatus := model.ProductStatusEnabled // 默认启用
-	if in.Status != 0 {
+	// 只有明确传入 0 或 1 时才使用，其他值（包括 -1）都使用默认值
+	if in.Status == int32(model.ProductStatusDisabled) || in.Status == int32(model.ProductStatusEnabled) {
 		productStatus = int(in.Status)
 	}
 	stock := int64(0) // 默认库存为0

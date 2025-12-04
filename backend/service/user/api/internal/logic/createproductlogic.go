@@ -5,18 +5,15 @@ package logic
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"strings"
 
 	"go-zero-learning/common/consts"
 	"go-zero-learning/common/errorx"
-	"go-zero-learning/model"
+	"go-zero-learning/service/product/product-rpc/productrpc"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"gorm.io/gorm"
 )
 
 type CreateProductLogic struct {
@@ -49,83 +46,51 @@ func (l *CreateProductLogic) CreateProduct(req *types.CreateProductReq) (resp *t
 	if req.Price < consts.MinProductPrice {
 		return nil, errorx.ErrProductPriceTooLow
 	}
-	// if req.Price > 99999900 {
-	// 	return nil, errorx.ErrProductPriceTooHigh
-	// }
 
-	// 2. 查询商品名称是否已存在
-	var existingProduct model.Product
-	err = l.svcCtx.DB.Where("name = ?", name).First(&existingProduct).Error
-	if err == nil {
-		return nil, errorx.ErrProductNameExists
-	}
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		l.Errorf("查询商品名称失败：%v", err)
-		return nil, errorx.ErrInternalError
-	}
-
-	// 3. 创建商品
-	status := model.ProductStatusEnabled // 默认启用
-	if req.Status != nil {
-		status = *req.Status
-	}
-	stock := int64(0) // 默认库存为0
-	if req.Stock != nil {
-		// 不能为负数
-		if *req.Stock < 0 {
-			return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "库存不能为负数")
-		}
-		stock = *req.Stock
-	}
-
-	// 处理图片: 将 []string 转换为 JSON 字符串
-	imagesJSON := "[]" // 默认空数据
-	if len(req.Images) > 0 {
-		imagesBytes, err := json.Marshal(req.Images)
-		if err != nil {
-			l.Errorf("序列化图片列表失败：%v", err)
-			return nil, errorx.ErrInternalError
-		}
-		imagesJSON = string(imagesBytes)
-	}
-
-	product := &model.Product{
+	// 2. 调用 ProductRpc 创建商品
+	rpcResp, err := l.svcCtx.ProductRpc.CreateProduct(l.ctx, &productrpc.CreateProductReq{
 		Name:        name,
 		Description: description,
 		Price:       req.Price,
-		Status:      status,
-		Stock:       stock,
-		Images:      imagesJSON, // 存储JSON字符串
-	}
-	err = l.svcCtx.DB.Create(&product).Error
+		Status: func() int32 {
+			if req.Status != nil {
+				return int32(*req.Status)
+			}
+			return -1 // -1 表示使用默认值
+		}(),
+		Stock: func() int64 {
+			if req.Stock != nil {
+				return *req.Stock
+			}
+			return 0
+		}(),
+		Images: req.Images,
+	})
 	if err != nil {
-		l.Errorf("创建商品失败：%v", err)
-		return nil, errorx.ErrInternalError
-	}
-
-	// 清除商品列表缓存（新增商品后，列表需要更新）
-	l.clearProductListCache()
-
-	// 4. 构建响应（需要将JSON字符串解析回数组）
-	var images []string
-	if product.Images != "" {
-		err = json.Unmarshal([]byte(product.Images), &images)
-		if err != nil {
-			l.Errorf("解析图片列表失败：%v", err)
-			images = []string{} // 解析失败时使用空数组
+		// 使用统一的错误映射函数
+		rpcErr := errorx.MapRpcError(err, l.Logger, "ProductRpc.CreateProduct", errorx.RpcErrorMapper{
+			AlreadyExistsErr: errorx.ErrProductNameExists,
+		})
+		if rpcErr != nil {
+			return nil, rpcErr
 		}
 	}
+
+	// 3. 构建响应
 	resp = &types.ProductInfoResp{
-		ID:          product.ID,
-		Name:        product.Name,
-		Description: product.Description,
-		Price:       product.Price,
-		Status:      product.Status,
-		Stock:       product.Stock,
-		Images:      images, // 返回数组
-		CreatedAt:   product.CreatedAt.Unix(),
-		UpdatedAt:   product.UpdatedAt.Unix(),
+		ID:          rpcResp.Id,
+		Name:        rpcResp.Name,
+		Description: rpcResp.Description,
+		Price:       rpcResp.Price,
+		Status:      int(rpcResp.Status),
+		Stock:       rpcResp.Stock,
+		Images:      rpcResp.Images,
+		CreatedAt:   rpcResp.CreatedAt,
+		UpdatedAt:   rpcResp.UpdatedAt,
 	}
+
+	// 4. 清除商品列表缓存（新增商品后，列表需要更新）
+	l.clearProductListCache()
 
 	return resp, nil
 }
