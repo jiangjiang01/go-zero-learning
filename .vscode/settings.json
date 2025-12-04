@@ -6,6 +6,11 @@
   },
   "editor.formatOnSave": false,
   "[go]": {
-    "editor.defaultFormatter": "golang.go",
+    "editor.defaultFormatter": "golang.go"
+  },
+  "gopls": {
+    "analyses": {
+      "SA5008": false
+    }
   }
 }

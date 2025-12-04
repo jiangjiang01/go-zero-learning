@@ -24,25 +24,25 @@ type AssignUserRoleResp struct {
 type CreateMenuReq struct {
 	Name     string `json:"name"`
 	Code     string `json:"code"`
-	Desc     string `json:"desc,omitempty"`
-	ParentID int64  `json:"parent_id,omitempty"`
-	Path     string `json:"path,omitempty"`
-	Icon     string `json:"icon,omitempty"`
+	Desc     string `json:"desc,optional"`
+	ParentID int64  `json:"parent_id,optional"`
+	Path     string `json:"path,optional"`
+	Icon     string `json:"icon,optional"`
 	Type     int    `json:"type"`
-	Sort     int    `json:"sort,omitempty"`
-	Status   int    `json:"status,omitempty"` // 默认在逻辑层处理
+	Sort     int    `json:"sort,optional"`
+	Status   int    `json:"status,optional"` // 默认在逻辑层处理
 }
 
 type CreatePermissionReq struct {
 	Name string `json:"name"`
 	Code string `json:"code"`
-	Desc string `json:"desc,omitempty"`
+	Desc string `json:"desc,optional"`
 }
 
 type CreateRoleReq struct {
 	Name string `json:"name"`
 	Code string `json:"code"`
-	Desc string `json:"desc,omitempty"`
+	Desc string `json:"desc,optional"`
 }
 
 type DeleteMenuReq struct {
@@ -234,40 +234,40 @@ type RoleInfoResp struct {
 
 type UpdateMenuReq struct {
 	ID       int64   `path:"id"`
-	Name     *string `json:"name,omitempty"`
-	Code     *string `json:"code,omitempty"`
-	Desc     *string `json:"desc,omitempty"`
+	Name     *string `json:"name,optional"`
+	Code     *string `json:"code,optional"`
+	Desc     *string `json:"desc,optional"`
 	ParentID int64   `json:"parent_id"`
-	Path     *string `json:"path,omitempty"`
-	Icon     *string `json:"icon,omitempty"`
-	Type     *int    `json:"type,omitempty"`
-	Sort     *int    `json:"sort,omitempty"`
-	Status   *int    `json:"status,omitempty"`
+	Path     *string `json:"path,optional"`
+	Icon     *string `json:"icon,optional"`
+	Type     *int    `json:"type,optional"`
+	Sort     *int    `json:"sort,optional"`
+	Status   *int    `json:"status,optional"`
 }
 
 type UpdatePermissionReq struct {
 	ID   int64   `path:"id"`
-	Name *string `json:"name,omitempty"`
-	Code *string `json:"code,omitempty"`
-	Desc *string `json:"desc,omitempty"`
+	Name *string `json:"name,optional"`
+	Code *string `json:"code,optional"`
+	Desc *string `json:"desc,optional"`
 }
 
 type UpdateRoleReq struct {
-	ID   int64   `path:"id"`             // 路径参数：角色ID
-	Name *string `json:"name,omitempty"` // 角色名称（可选）
-	Code *string `json:"code,omitempty"` // 角色代码（可选）
-	Desc *string `json:"desc,omitempty"` // 角色描述（可选）
+	ID   int64   `path:"id"`            // 路径参数：角色ID
+	Name *string `json:"name,optional"` // 角色名称（可选）
+	Code *string `json:"code,optional"` // 角色代码（可选）
+	Desc *string `json:"desc,optional"` // 角色描述（可选）
 }
 
 type UpdateUserDetailReq struct {
-	ID       int64   `path:"id"`                 // 路径参数：用户ID
-	Email    *string `json:"email,omitempty"`    // 邮箱（可选）
-	Password *string `json:"password,omitempty"` // 密码（可选）
+	ID       int64   `path:"id"`                // 路径参数：用户ID
+	Email    *string `json:"email,optional"`    // 邮箱（可选）
+	Password *string `json:"password,optional"` // 密码（可选）
 }
 
 type UpdateUserReq struct {
-	Email    *string `json:"email,omitempty"`    // 邮箱（可选）
-	Password *string `json:"password,omitempty"` // 密码（可选）
+	Email    *string `json:"email,optional"`    // 邮箱（可选）
+	Password *string `json:"password,optional"` // 密码（可选）
 }
 
 type UserInfoResp struct {
@@ -278,11 +278,11 @@ type UserInfoResp struct {
 
 type CreateProductReq struct {
 	Name        string   `json:"name" validate:"required,max=100"`
-	Description string   `json:"description,omitempty"`
+	Description string   `json:"description,optional"`
 	Price       int64    `json:"price" validate:"required,min=1,max=99999900"`
-	Status      *int     `json:"status,omitempty" validate:"omitempty,oneof 0 1"`
-	Stock       *int64   `json:"stock,omitempty" validate:"omitempty,min=0"`
-	Images      []string `json:"images,omitempty"`
+	Status      *int     `json:"status,optional" validate:"omitempty,oneof 0 1"`
+	Stock       *int64   `json:"stock,optional" validate:"omitempty,min=0"`
+	Images      []string `json:"images,optional"`
 }
 
 type DeleteProductReq struct {
@@ -324,12 +324,12 @@ type ProductInfoResp struct {
 
 type UpdateProductReq struct {
 	ID          int64    `path:"id"`
-	Name        *string  `json:"name,omitempty"`
-	Description *string  `json:"description,omitempty"`
-	Price       *int64   `json:"price,omitempty"`
-	Status      *int     `json:"status,omitempty"`
-	Stock       *int64   `json:"stock,omitempty"`
-	Images      []string `json:"images,omitempty"`
+	Name        *string  `json:"name,optional"`
+	Description *string  `json:"description,optional"`
+	Price       *int64   `json:"price,optional"`
+	Status      *int     `json:"status,optional"`
+	Stock       *int64   `json:"stock,optional"`
+	Images      []string `json:"images,optional"`
 }
 
 type UpdateProductStatusReq struct {
@@ -347,8 +347,8 @@ type CreateOrderItem struct {
 }
 
 type CreateOrderReq struct {
-	Items  []CreateOrderItem `json:"items"`            // 商品列表
-	Remark string            `json:"remark,omitempty"` // 订单备注（可选）
+	Items  []CreateOrderItem `json:"items"`           // 商品列表
+	Remark string            `json:"remark,optional"` // 订单备注（可选）
 }
 
 type CreateOrderResp struct {
@@ -422,10 +422,10 @@ type CategoryInfoResp struct {
 
 type CreateCategoryReq struct {
 	Name     string `json:"name"`
-	Desc     string `json:"desc,omitempty"`
-	ParentID int64  `json:"parent_id,omitempty"`
-	Sort     int    `json:"sort,omitempty"`
-	Status   *int   `json:"status,omitempty"`
+	Desc     string `json:"desc,optional"`
+	ParentID int64  `json:"parent_id,optional"`
+	Sort     int    `json:"sort,optional"`
+	Status   *int   `json:"status,optional"`
 }
 
 type DeleteCategoryReq struct {
@@ -456,11 +456,11 @@ type GetCategoryListResp struct {
 
 type UpdateCategoryReq struct {
 	ID       int64   `path:"id"`
-	Name     *string `json:"name,omitempty"`
-	Desc     *string `json:"desc,omitempty"`
-	ParentID *int64  `json:"parent_id,omitempty"`
-	Sort     *int    `json:"sort,omitempty"`
-	Status   *int    `json:"status,omitempty"`
+	Name     *string `json:"name,optional"`
+	Desc     *string `json:"desc,optional"`
+	ParentID *int64  `json:"parent_id,optional"`
+	Sort     *int    `json:"sort,optional"`
+	Status   *int    `json:"status,optional"`
 }
 
 type AddCartItemReq struct {
