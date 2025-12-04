@@ -5,15 +5,13 @@ package logic
 
 import (
 	"context"
-	"errors"
 
 	"go-zero-learning/common/errorx"
-	"go-zero-learning/model"
+	"go-zero-learning/service/product/product-rpc/productrpcclient"
 	"go-zero-learning/service/user/api/internal/svc"
 	"go-zero-learning/service/user/api/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"gorm.io/gorm"
 )
 
 type DeleteProductLogic struct {
@@ -36,25 +34,20 @@ func (l *DeleteProductLogic) DeleteProduct(req *types.DeleteProductReq) (resp *t
 		return nil, errorx.NewBusinessError(errorx.CodeInvalidParam, "商品ID不能小于等于0")
 	}
 
-	// 2. 查询商品是否存在
-	var product model.Product
-	err = l.svcCtx.DB.First(&product, req.ID).Error
+	// 2. 调用 ProductRpc 删除商品（默认使用硬删除）
+	_, err = l.svcCtx.ProductRpc.DeleteProduct(l.ctx, &productrpcclient.DeleteProductReq{
+		Id:         req.ID,
+		HardDelete: true, // 硬删除
+	})
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errorx.ErrProductNotFound
-		}
-		l.Errorf("查询商品失败：%v", err)
-		return nil, errorx.ErrInternalError
+		// 使用统一的错误映射函数
+		rpcErr := errorx.MapRpcError(err, l.Logger, "ProductRpc.DeleteProduct", errorx.RpcErrorMapper{
+			NotFoundErr: errorx.ErrProductNotFound,
+		})
+		return nil, rpcErr
 	}
 
-	// 3. 删除商品
-	err = l.svcCtx.DB.Delete(&product).Error
-	if err != nil {
-		l.Errorf("删除商品失败：%v", err)
-		return nil, errorx.ErrInternalError
-	}
-
-	// 清除商品列表缓存（删除商品后， 列表需要更新）
+	// 3. 清除商品列表缓存（删除商品后，列表需要更新）
 	l.clearProductListCache()
 
 	// 4. 构建响应结果
