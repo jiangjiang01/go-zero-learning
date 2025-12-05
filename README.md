@@ -7,6 +7,8 @@
 > **技术栈**：go-zero v1.9.3 + GORM + MySQL + Redis + JWT + gRPC
 >
 > **参考项目**：[go-zero-looklook](https://github.com/Mikaelemmmm/go-zero-looklook)
+>
+> **学习方法详解**：[AI 四步实践型成长法](./learn.md)（强烈建议先阅读！）
 
 ---
 
