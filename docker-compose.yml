@@ -160,3 +160,7 @@ volumes:
     # 默认路径由 Docker 管理，也可以通过 driver/options 自定义存储路径
   redis_data:                 # Redis 数据卷，用于持久化 Redis 持久化文件
     # Redis 运行时的数据、AOF 文件等会保存在该卷中，实现断电和重启后的数据恢复
+  user-api-logs: # API 服务日志卷
+  user-api-uploads: # API 服务上传文件卷
+  user-rpc-logs: # 用户RPC服务日志卷
+  product-rpc-logs: # 商品RPC服务日志卷

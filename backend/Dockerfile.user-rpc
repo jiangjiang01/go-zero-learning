@@ -20,7 +20,7 @@ COPY . .
 WORKDIR /build/service/user/user-rpc
 
 # 构建 RPC 服务
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-w -s" -o user-rpc user-rpc.go
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-w -s" -o user-rpc userrpc.go
 
 # ==================== 运行阶段（最小镜像） ====================
 FROM alpine:latest
