@@ -5,6 +5,14 @@
 -- 注意：此脚本会先清理旧数据，然后插入新数据
 -- ============================================
 
+-- 设置字符集（必须在最前面，确保中文正确存储）
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+SET character_set_client = utf8mb4;
+SET character_set_connection = utf8mb4;
+SET character_set_results = utf8mb4;
+SET collation_connection = utf8mb4_unicode_ci;
+
 -- 设置时区
 SET time_zone = '+08:00';
 
