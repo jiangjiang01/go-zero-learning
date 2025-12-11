@@ -11,7 +11,7 @@ services:
       - "3307:3306" # 将主机的 3307 端口映射到容器的 3306 端口，避免与本地已有 MySQL 冲突
     volumes:
       - mysql_data:/var/lib/mysql # 使用 Docker 卷持久化 MySQL 数据，防止数据丢失
-      - ./scripts/init_test_data.sql:/docker-entrypoint-initdb.d/init.sql:ro # 启动时自动导入初始化 SQL 脚本（只读挂载）
+      # - ./scripts/init_test_data.sql:/docker-entrypoint-initdb.d/init.sql:ro # 启动时自动导入初始化 SQL 脚本（只读挂载）
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci  # 配置默认字符集及排序规则为 utf8mb4，支持 Emoji 和多语言
     networks:
       - go-zero-network # 加入自定义网络，便于与其他服务（如后端、前端等）互联互通
