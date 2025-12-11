@@ -20,7 +20,7 @@ COPY . .
 WORKDIR /build/service/product/product-rpc
 
 # 构建 Product RPC 服务
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-w -s" -o product-rpc product-rpc.go
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-w -s" -o product-rpc productrpc.go
 
 # ==================== 运行阶段（最小镜像） ====================
 FROM alpine:latest
