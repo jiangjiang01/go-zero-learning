@@ -23,6 +23,11 @@ docker compose ps
 
 echo ""
 echo "服务启动完成！"
+# 初始化数据库
+echo ""
+echo "初始化数据库"
+echo "docker exec -i go-zero-mysql mysql -uroot -p123456 --default-character-set=utf8mb4 testdb < scripts/init_test_data.sql"
+echo "--------------------------------"
 echo ""
 echo "访问地址："
 echo "  - 前端：http://localhost"
