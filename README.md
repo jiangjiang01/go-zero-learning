@@ -827,7 +827,14 @@ response.OkJson(w, r, resp)
 
 - [x] 错误处理完善 ✅
 - [ ] 日志系统
-- [ ] Docker 部署
+- [x] Docker 部署 ✅
+  - [x] 创建所有服务的 Dockerfile（user-api、user-rpc、product-rpc、frontend）✅
+  - [x] 创建 docker-compose.yml 编排文件 ✅
+  - [x] 创建 Docker 环境配置文件（docker/config/）✅
+  - [x] 创建 Nginx 配置文件 ✅
+  - [x] 创建启动和停止脚本 ✅
+  - [x] 修复中文乱码问题（SQL 脚本字符集设置）✅
+  - [x] 所有服务成功启动和运行 ✅
 - [ ] 性能优化
 
 ### 测试脚本
@@ -856,6 +863,19 @@ response.OkJson(w, r, resp)
 - **注意**：API 服务依赖 RPC 服务，需要先启动 RPC 服务，再启动 API 服务
 - 数据库：MySQL 3307 端口，数据库名 testdb
 - Redis 配置：默认使用 `127.0.0.1:6379`，使用 Docker 启动：`docker run -d --name redis-dev -p 6379:6379 redis:7-alpine`
+
+#### Docker 部署（推荐）
+- **快速启动**：`./docker/start.sh` 或 `docker compose up -d`
+- **停止服务**：`./docker/stop.sh` 或 `docker compose down`
+- **查看日志**：`docker compose logs -f [服务名]`
+- **查看状态**：`docker compose ps`
+- **访问地址**：
+  - 前端：http://localhost
+  - API：http://localhost:8888
+  - MySQL：localhost:3307（root/123456）
+  - Redis：localhost:6379
+- **数据持久化**：所有数据存储在 Docker volumes 中，容器删除后数据不会丢失
+- **重新初始化数据**：`docker exec -i go-zero-mysql mysql -uroot -p123456 --default-character-set=utf8mb4 testdb < scripts/init_test_data.sql`
 - go-zero 参数验证：可选字段（optional）在 JSON 中缺失时会报错，需要在请求中包含所有字段（临时方案）
 - 网络配置：如果系统无法解析 `localhost`，配置文件已使用 `127.0.0.1` 替代
 - 测试脚本：所有测试脚本统一存放在 `scripts/` 目录，使用 kebab-case 命名规范
@@ -897,7 +917,7 @@ const fetchProductList = async () => {
 
 ### 下一步计划
 
-**当前阶段**：阶段六 - RPC 服务（进行中）
+**当前阶段**：阶段七 - 优化和部署（进行中）
 
 **完成情况**：
 - 阶段一（用户认证和管理）全部完成 ✅
@@ -909,15 +929,17 @@ const fetchProductList = async () => {
   - 用户 RPC 服务 ✅
   - 商品 RPC 服务 ✅
   - API 服务调用 RPC 服务 ✅
+- 阶段七（优化和部署）部分完成：
+  - Docker 部署 ✅
 
 **下一步选择**：
-1. **继续 RPC 迁移**：商品 RPC 服务、订单 RPC 服务
-2. **优化和部署**：日志系统、Docker 部署、性能优化
+1. **继续 RPC 迁移**：订单 RPC 服务
+2. **优化和部署**：日志系统、性能优化
 3. **服务发现**：集成 Etcd 实现服务注册与发现
 
 **教学方法论已总结**：基于商品管理和 RPC 迁移的成功实践，已将核心教学策略整理到文档中
 
-**最后更新**：2025-12-04（完成商品 RPC 服务迁移）
+**最后更新**：2025-12-11（完成 Docker 部署）
 **当前状态**：
 
 - 阶段一（用户认证和管理）全部完成 ✅
