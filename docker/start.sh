@@ -23,6 +23,11 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
+# 加载 .env，便于脚本内复用变量（如初始化数据库提示）
+set -a
+. ./.env
+set +a
+
 # 检查 Docker 是否运行
 if ! docker info > /dev/null 2>&1; then
     echo "❌ Docker 未运行，请先启动 Docker。"
@@ -53,7 +58,7 @@ echo "服务启动完成！"
 # 初始化数据库
 echo ""
 echo "初始化数据库"
-echo "docker exec -i -e MYSQL_PWD=123456 go-zero-mysql mysql -uroot --default-character-set=utf8mb4 testdb < scripts/init_test_data.sql"
+echo "docker exec -i -e MYSQL_PWD=${MYSQL_ROOT_PASSWORD} go-zero-mysql mysql -uroot --default-character-set=utf8mb4 ${MYSQL_DATABASE} < scripts/init_test_data.sql"
 echo "--------------------------------"
 echo ""
 echo "访问地址："

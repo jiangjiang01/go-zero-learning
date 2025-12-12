@@ -865,6 +865,29 @@ response.OkJson(w, r, resp)
 - Redis 配置：默认使用 `127.0.0.1:6379`，使用 Docker 启动：`docker run -d --name redis-dev -p 6379:6379 redis:7-alpine`
 
 #### Docker 部署（推荐）
+
+**⚠️ 首次使用前必须配置环境变量**：
+
+1. **创建 .env 文件**（必需）：
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **编辑 .env 文件**，设置必需的环境变量：
+   - `MYSQL_ROOT_PASSWORD`：MySQL root 用户密码
+   - `MYSQL_DATABASE`：数据库名称
+   - `MYSQL_HOST`：MySQL 服务地址（Docker 网络中使用 `mysql`）
+   - `JWT_SECRET`：JWT 令牌签名密钥（生产环境必须使用强随机字符串）
+   - `REDIS_HOST`：Redis 服务地址（Docker 网络中使用 `redis`）
+
+   **注意**：`.env` 文件是必需的，启动脚本会检查文件是否存在。如果文件不存在或环境变量未定义，服务将无法启动。
+
+3. **配置文件环境变量替换**：
+   - `docker/config/*.yaml` 中使用 `${VAR_NAME}` 语法引用环境变量
+   - 服务启动时通过 `conf.UseEnv()` 自动替换并加载到 go-zero 配置结构体中
+
+**常用命令**：
+
 - **快速启动**：`./docker/start.sh` 或 `docker compose up -d`
 - **停止服务**：`./docker/stop.sh` 或 `docker compose down`
 - **查看日志**：`docker compose logs -f [服务名]`
@@ -872,10 +895,17 @@ response.OkJson(w, r, resp)
 - **访问地址**：
   - 前端：http://localhost
   - API：http://localhost:8888
-  - MySQL：localhost:3307（root/123456）
+  - MySQL：localhost:3307（使用 .env 中配置的密码）
   - Redis：localhost:6379
 - **数据持久化**：所有数据存储在 Docker volumes 中，容器删除后数据不会丢失
-- **重新初始化数据**：`docker exec -i go-zero-mysql mysql -uroot -p123456 --default-character-set=utf8mb4 testdb < scripts/init_test_data.sql`
+- **重新初始化数据**：
+
+  ```bash
+  # 需要先启动服务让 GORM 自动创建表结构，再运行初始化脚本插入测试数据
+  # 使用 .env 中的密码/库名（替换为实际值）
+  MYSQL_PWD=123456 docker exec -i go-zero-mysql mysql -uroot --default-character-set=utf8mb4 testdb < scripts/init_test_data.sql
+  ```
+
 - go-zero 参数验证：可选字段（optional）在 JSON 中缺失时会报错，需要在请求中包含所有字段（临时方案）
 - 网络配置：如果系统无法解析 `localhost`，配置文件已使用 `127.0.0.1` 替代
 - 测试脚本：所有测试脚本统一存放在 `scripts/` 目录，使用 kebab-case 命名规范
