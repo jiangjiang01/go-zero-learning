@@ -4,7 +4,7 @@
 后端 Go 代码集中在 `backend/`，公共能力放在 `common/`，业务服务位于 `service/`（如 `service/user/api` 提供 REST、`service/user/user-rpc` 处理 RPC）。数据模型在 `backend/model`，配置文件位于 `service/*/etc`，对应 Dockerfile（示例 `Dockerfile.user-api`）放在 `backend/` 根目录。前端 Vue 项目位于 `frontend/src`，按 `api/`、`views/system/{user,role}/`、`router/` 分类；脚本在 `scripts/`，容器和部署资产在 `docker/`，运行日志写入 `logs/`，而 `learn/` 保存学习性示例代码。
 
 ## Build, Test, and Development Commands
-`cd backend && go build ./...` 校验 Go 模块是否能完整编译。`cd backend/service/user/api && go run user-api.go` 启动 HTTP 网关，`cd backend/service/user/user-rpc && go run user-rpc.go` 启动 RPC 服务。`docker-compose up -d` 会拉起 MySQL、Redis 等依赖。前端开发执行 `cd frontend && pnpm install && pnpm dev`，构建产物用 `pnpm build`，上线前在 `pnpm preview` 中二次确认。待服务监听 `:8888` 后运行 `./scripts/test-order-cancel-job.sh` 或 `./scripts/test-permission-middleware.sh` 回归关键链路。
+`cd backend && go build ./...` 校验 Go 模块是否能完整编译。`cd backend/service/user/api && go run user-api.go` 启动 HTTP 网关，`cd backend/service/user/user-rpc && go run user-rpc.go` 启动 RPC 服务。`docker compose up -d` 会拉起 MySQL、Redis 等依赖。前端开发执行 `cd frontend && pnpm install && pnpm dev`，构建产物用 `pnpm build`，上线前在 `pnpm preview` 中二次确认。待服务监听 `:8888` 后运行 `./scripts/test-order-cancel-job.sh` 或 `./scripts/test-permission-middleware.sh` 回归关键链路。
 
 ## Coding Style & Naming Conventions
 提交前必须 `gofmt`+`goimports`，Go 代码使用制表符缩进，导出符号采用驼峰命名，GORM 标签坚持 snake_case。执行 `cd backend && staticcheck ./...`（规则存于 `backend/staticcheck.conf`）。Vue/TS 文件保持两空格缩进，优先 `<script setup>`，文件名使用 kebab-case（例如 `views/system/user/UserList.vue`）。API 客户端按模块划分到 `frontend/src/api`，通过 `pnpm lint`、`pnpm format`、`pnpm type-check` 统一 ESLint、Prettier、Vue TSC 结果。

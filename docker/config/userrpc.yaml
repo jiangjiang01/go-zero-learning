@@ -8,7 +8,7 @@ DataSource: root:123456@tcp(mysql:3306)/testdb?charset=utf8mb4&parseTime=True&lo
   # 数据库连接字符串格式示例：
   # <用户名>:<密码>@tcp(<数据库主机>:<端口>)/<数据库名>?<参数>
   # 1. 用户名与密码： root:123456 （必须保证有testdb数据库访问权限）
-  # 2. 主机与端口： mysql:3306    （mysql为docker-compose中的服务名, 3306为MySQL默认端口）
+  # 2. 主机与端口： mysql:3306    （mysql为docker compose中的服务名, 3306为MySQL默认端口）
   # 3. 数据库名：    testdb
   # 4. charset=utf8mb4： 推荐utf8mb4, 兼容emoji与多语言字符
   # 5. parseTime=True：  Go驱动自动解析时间为time.Time类型，避免时间戳处理异常

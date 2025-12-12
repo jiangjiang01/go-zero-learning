@@ -9,7 +9,7 @@ Name: user-api
 # HTTP 监听地址，0.0.0.0 表示监听所有网卡（容器内部通常设置为 0.0.0.0 以便外部访问）
 Host: 0.0.0.0
 
-# HTTP 服务监听端口，此端口需与 docker-compose 映射端口保持一致
+# HTTP 服务监听端口，此端口需与 docker compose 映射端口保持一致
 Port: 8888
 
 # --------------------------------------------------------------------
@@ -20,7 +20,7 @@ MaxBytes: 10485760 # 10MB
 # --------------------------------------------------------------------
 # MySQL 数据库连接配置（DataSource）
 # - root:123456   -> 数据库用户名和密码
-# - mysql:3306    -> 服务名及数据库端口（通过 Docker 内部网络访问）
+# - mysql:3306    -> 服务名及数据库端口（通过 docker 内部网络访问）
 # - testdb        -> 数据库名
 # - charset=utf8mb4           -> 字符集（支持 Emoji）
 # - parseTime=True            -> 启用时间类型自动解析
@@ -37,7 +37,7 @@ JWT:
 # --------------------------------------------------------------------
 # Redis 缓存配置（高性能 KV 存储，支持多种业务缓存和分布式场景）
 Redis:
-  Host: "redis:6379"   # Redis 服务地址，直接填写 docker-compose 网络中的服务名
+  Host: "redis:6379"   # Redis 服务地址，直接填写 docker compose 网络中的服务名
   Type: "node"         # 单节点模式（如集群部署请改用 cluster 并提供对应节点信息）
   Pass: ""             # Redis 访问密码，默认为空，生产环境建议设置密码
   Tls: false           # 是否启用 TLS 加密，若 Redis 开启了加密需要设为 true
@@ -69,7 +69,7 @@ Upload:
 # 用户 RPC 微服务客户端调用配置（user-rpc），通过 Docker 服务名通信
 UserRpc:
   Endpoints:
-    - user-rpc:8081           # user-rpc RPC 服务的主机与端口（通过 docker-compose 内部解析）
+    - user-rpc:8081           # user-rpc RPC 服务的主机与端口（通过 docker compose 内部解析）
   Timeout: 3000               # RPC 请求超时时间（单位：毫秒）
 
 # --------------------------------------------------------------------

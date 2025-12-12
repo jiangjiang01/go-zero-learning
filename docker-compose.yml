@@ -136,7 +136,7 @@ services:
       dockerfile: Dockerfile               # 前端服务的多阶段构建 Dockerfile
     container_name: go-zero-frontend       # 容器名称，便于本地和生产环境识别
     ports:
-      - "80:80"                            # 映射宿主机 80 端口到容器（Nginx）80 端口，供外部访问
+      - "8080:80"                            # 映射宿主机 80 端口到容器（Nginx）80 端口，供外部访问
     volumes:
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro   # 挂载自定义 Nginx 配置为只读，便于热更新前端路由与代理规则
     networks:

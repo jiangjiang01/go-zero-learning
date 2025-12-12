@@ -26,7 +26,7 @@ COPY --from=builder /build/dist /usr/share/nginx/html
 
 # 复制 Nginx 配置
 # 因为构建上下文是 ./frontend，无法访问 ../docker/nginx.conf
-# 由于 docker-compose.yml 已通过 volume 挂载配置文件，这里可删除。
+# 由于 docker compose.yml 已通过 volume 挂载配置文件，这里可删除。
 # COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 # 暴露端口
