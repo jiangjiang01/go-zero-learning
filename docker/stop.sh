@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# 开启严格 bash 模式：脚本遇错即停（-e），引用未定义变量时报错（-u），管道一出错即失败（-o pipefail）；可提高脚本健壮性与安全性
+set -euo pipefail
+
 echo "🛑 停止 Go-Zero Learning 项目..."
 
 docker compose down
