@@ -15,6 +15,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci  # 配置默认字符集及排序规则为 utf8mb4，支持 Emoji 和多语言
     networks:
       - go-zero-network # 加入自定义网络，便于与其他服务（如后端、前端等）互联互通
+    restart: unless-stopped
     healthcheck: # 健康检查，确保数据库准备就绪后再被依赖服务访问
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123456"] # 使用 mysqladmin 工具检测数据库活性
       interval: 10s   # 健康检查的时间间隔
@@ -32,6 +33,7 @@ services:
     networks:
       - go-zero-network # 加入自定义网络，允许与其他服务（如后端服务、管理面板等）互通
     command: redis-server --appendonly yes # 以 AOF 模式启动 Redis，记录每次写操作日志，提升数据安全，减少因意外宕机造成的数据丢失
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]    # 使用 redis-cli 工具通过 ping 命令检测服务是否可用，"PONG" 则健康
       interval: 5s      # 每隔 5 秒执行一次健康检查
