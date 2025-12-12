@@ -19,25 +19,25 @@ MaxBytes: 10485760 # 10MB
 
 # --------------------------------------------------------------------
 # MySQL 数据库连接配置（DataSource）
-# - root:123456   -> 数据库用户名和密码
-# - mysql:3306    -> 服务名及数据库端口（通过 docker 内部网络访问）
-# - testdb        -> 数据库名
+# - root:${MYSQL_ROOT_PASSWORD}   -> 数据库用户名和密码
+# - ${MYSQL_HOST}:3306    -> 服务名及数据库端口（通过 docker 内部网络访问）
+# - ${MYSQL_DATABASE}        -> 数据库名
 # - charset=utf8mb4           -> 字符集（支持 Emoji）
 # - parseTime=True            -> 启用时间类型自动解析
 # - loc=Local                 -> 设置时区为本地
 # ⚠️ 建议生产环境修改为强密码和正式数据库
-DataSource: root:123456@tcp(mysql:3306)/testdb?charset=utf8mb4&parseTime=True&loc=Local
+DataSource: root:${MYSQL_ROOT_PASSWORD}@tcp(${MYSQL_HOST}:3306)/${MYSQL_DATABASE}?charset=utf8mb4&parseTime=True&loc=Local
 
 # --------------------------------------------------------------------
 # JWT 配置项，用于用户身份验证等场景下生成与校验令牌（Token）
 JWT:
-  Secret: "your-256-bit-secret"    # JWT 密钥，务必在生产环境替换为安全复杂的随机字符串！
+  Secret: "${JWT_SECRET}"    # JWT 密钥，务必在生产环境替换为安全复杂的随机字符串！
   ExpireDays: 7                    # Token 过期天数（此示例为 7 天，调整可延长/缩短登录态）
 
 # --------------------------------------------------------------------
 # Redis 缓存配置（高性能 KV 存储，支持多种业务缓存和分布式场景）
 Redis:
-  Host: "redis:6379"   # Redis 服务地址，直接填写 docker compose 网络中的服务名
+  Host: "${REDIS_HOST}"   # Redis 服务地址，直接填写 docker compose 网络中的服务名
   Type: "node"         # 单节点模式（如集群部署请改用 cluster 并提供对应节点信息）
   Pass: ""             # Redis 访问密码，默认为空，生产环境建议设置密码
   Tls: false           # 是否启用 TLS 加密，若 Redis 开启了加密需要设为 true

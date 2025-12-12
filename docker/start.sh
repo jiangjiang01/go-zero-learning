@@ -5,6 +5,24 @@ set -euo pipefail
 
 echo "🚀 启动 Go-Zero Learning 项目..."
 
+# 确保在项目根目录执行（避免从其他目录执行导致 docker-compose 相对路径失效）
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+cd "${PROJECT_ROOT}"
+
+# 检查 .env 文件是否存在
+if [ ! -f .env ]; then
+    echo "❌ 错误：.env 文件不存在！"
+    echo ""
+    echo "请按照以下步骤操作："
+    echo "  1. 复制 .env.example 为 .env："
+    echo "     cp .env.example .env"
+    echo "  2. 编辑 .env 文件，设置正确的环境变量值"
+    echo "  3. 重新运行启动脚本"
+    echo ""
+    exit 1
+fi
+
 # 检查 Docker 是否运行
 if ! docker info > /dev/null 2>&1; then
     echo "❌ Docker 未运行，请先启动 Docker。"
@@ -35,7 +53,7 @@ echo "服务启动完成！"
 # 初始化数据库
 echo ""
 echo "初始化数据库"
-echo "docker exec -i go-zero-mysql mysql -uroot -p123456 --default-character-set=utf8mb4 testdb < scripts/init_test_data.sql"
+echo "docker exec -i -e MYSQL_PWD=123456 go-zero-mysql mysql -uroot --default-character-set=utf8mb4 testdb < scripts/init_test_data.sql"
 echo "--------------------------------"
 echo ""
 echo "访问地址："

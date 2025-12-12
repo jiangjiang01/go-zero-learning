@@ -9,8 +9,8 @@ COPY package.json pnpm-lock.yaml ./
 # 安装 pnpm
 RUN npm install -g pnpm@9
 
-# 安装依赖
-RUN pnpm install
+# 安装依赖 冻结锁文件，避免版本冲突
+RUN pnpm install --frozen-lockfile
 
 # 复制源代码
 COPY . .

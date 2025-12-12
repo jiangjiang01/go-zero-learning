@@ -11,13 +11,13 @@ ListenOn: 0.0.0.0:8082 # 0.0.0.0 监听所有网卡，端口为 8082，确保与
 
 # --------------------------------------------------------------------
 # MySQL 数据库连接配置，示例说明如下：
-# - root:123456   -> 数据库用户名:密码（建议生产环境使用复杂密码）
-# - mysql:3306    -> 容器网络中的服务名:端口（docker compose 中内网互通，非本机127.0.0.1）
-# - testdb        -> 默认库名
+# - root:${MYSQL_ROOT_PASSWORD}   -> 数据库用户名:密码（建议生产环境使用复杂密码）
+# - ${MYSQL_HOST}:3306    -> 容器网络中的服务名:端口（docker compose 中内网互通，非本机127.0.0.1）
+# - ${MYSQL_DATABASE}        -> 默认库名
 # - charset=utf8mb4           -> 推荐字符集，支持多语言和 Emoji
 # - parseTime=True            -> 启用时间类型自动解析
 # - loc=Local                 -> 以本地时区为准
-DataSource: root:123456@tcp(mysql:3306)/testdb?charset=utf8mb4&parseTime=True&loc=Local
+DataSource: root:${MYSQL_ROOT_PASSWORD}@tcp(${MYSQL_HOST}:3306)/${MYSQL_DATABASE}?charset=utf8mb4&parseTime=True&loc=Local
 
 # --------------------------------------------------------------------
 # 日志相关配置

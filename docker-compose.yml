@@ -4,8 +4,8 @@ services:
     image: mysql:8.0  # 指定使用 MySQL 8.0 版本官方镜像
     container_name: go-zero-mysql  # 设置容器名称，方便后续管理和调用
     environment:
-      MYSQL_ROOT_PASSWORD: 123456  # 设置 MySQL root 用户的初始密码
-      MYSQL_DATABASE: testdb       # 初始化时自动创建的数据库名称
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  # 从 .env 读取
+      MYSQL_DATABASE: ${MYSQL_DATABASE}       # 从 .env 读取
       TZ: Asia/Shanghai            # 设置容器的时区为上海，保证时间一致性
     ports:
       - "3307:3306" # 将主机的 3307 端口映射到容器的 3306 端口，避免与本地已有 MySQL 冲突
@@ -17,7 +17,7 @@ services:
       - go-zero-network # 加入自定义网络，便于与其他服务（如后端、前端等）互联互通
     restart: unless-stopped
     healthcheck: # 健康检查，确保数据库准备就绪后再被依赖服务访问
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123456"] # 使用 mysqladmin 工具检测数据库活性
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"] # 使用 mysqladmin 工具检测数据库活性
       interval: 10s   # 健康检查的时间间隔
       timeout: 5s     # 健康检查超时时间
       retries: 5      # 重试次数
@@ -59,6 +59,10 @@ services:
       redis:
         condition: service_healthy           # 仅在 Redis 健康检查通过后启动
     restart: unless-stopped                  # 若容器异常退出则自动重启，除非手动停止，提升稳定性
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
 
   # 商品 RPC 服务（Product Service，负责产品相关的远程过程调用，如商品信息的增删改查等）
   product-rpc:
@@ -79,7 +83,11 @@ services:
       redis:
         condition: service_healthy           # 依赖 redis，确保缓存可用
     restart: unless-stopped                  # 自动重启策略，保障服务高可用
-  
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+
   # 用户 API 服务配置
   #
   # 该服务负责对外提供与用户有关的 HTTP API（如注册、登录、资料查询等），
@@ -128,6 +136,12 @@ services:
     # 重启策略：
     # - unless-stopped：若因异常退出会自动重启，除非用户主动停止。此策略提升 API 服务的高可用性。
     restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      JWT_SECRET: ${JWT_SECRET}
+      REDIS_HOST: ${REDIS_HOST}
 
   # 前端服务
   frontend:
