@@ -902,8 +902,8 @@ response.OkJson(w, r, resp)
 
   ```bash
   # 需要先启动服务让 GORM 自动创建表结构，再运行初始化脚本插入测试数据
-  # 使用 .env 中的密码/库名（替换为实际值）
-  MYSQL_PWD=123456 docker exec -i go-zero-mysql mysql -uroot --default-character-set=utf8mb4 testdb < scripts/init_test_data.sql
+  # 使用 .env 中的环境变量（确保已加载 .env 文件）
+  MYSQL_PWD=${MYSQL_ROOT_PASSWORD} docker exec -i go-zero-mysql mysql -uroot --default-character-set=utf8mb4 ${MYSQL_DATABASE} < scripts/init_test_data.sql
   ```
 
 - go-zero 参数验证：可选字段（optional）在 JSON 中缺失时会报错，需要在请求中包含所有字段（临时方案）
